@@ -47,14 +47,13 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
-    @Override // 게정이 갖고있는 권한 목록을 리턴
+    @Override // 계정이 갖고있는 권한 목록을 리턴
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Collection<GrantedAuthority> collectors = new ArrayList<>();
+        collectors.add(()-> "ROLE_"+user.getRole());
 
-        collectors.add((GrantedAuthority) () -> "ROLE_"+ user.getRole());
-
-        return new ArrayList<>();
+        return collectors;
     }
 }
 
