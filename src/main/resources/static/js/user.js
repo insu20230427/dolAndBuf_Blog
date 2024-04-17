@@ -1,12 +1,15 @@
 let index = {
-    init: function() {
-        $('#btn-signup').on('click', ()=>{
+    init: function () {
+        $('#btn-signup').on('click', () => {
             this.signup();
+        });
+        $('#btn-user-update').on('click', () => {
+            this.updateUser();
         });
     },
 
-    signup: function (){
-        // alert('user의 save함수가 호출됨');
+    signup: function () {
+
         let data = {
             username: $('#username').val(),
             password: $('#password').val(),
@@ -25,12 +28,38 @@ let index = {
             data: JSON.stringify(data), // http body data type 명시
             contentType: "application/json; charset=utf-8",
             dataType: "json" // dataType: "json" = 서버의 응답값을 json으로 보낼거니, js객체로 매핑해라라는 형식
-        }).done(function (res){ // res는 json에서 js객체로 변환된 값이 들어옴.
+        }).done(function (res) { // res는 json에서 js객체로 변환된 값이 들어옴.
             alert("회원가입이 완료되었습니다.")
             console.log("res : " + JSON.stringify(res))
             location.href = "/";
-        }).fail(function (error){
+        }).fail(function (error) {
             alert(JSON.stringify(error))  // error도 js객체로 받아오므로, JSON으로 바꿔서 alert 출력해보기.
+        });
+    },
+
+    updateUser: function () {
+
+        let data = {
+            id: $('#id').val(),
+            username: $('#username').val(),
+            password: $('#password').val(),
+            email: $('#email').val()
+        }
+
+        console.log("data 잘 받아옴 : " + JSON.stringify(data));
+
+        $.ajax({
+            type: "PUT",
+            url: "/api/users",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        }).done(function (res) {
+            alert("회원수정이 완료되었습니다.")
+            console.log("res : " + JSON.stringify(res))
+            location.href = "/";
+        }).fail(function (error) {
+            alert(JSON.stringify(error))
         });
     }
 }

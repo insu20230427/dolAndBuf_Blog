@@ -1,4 +1,4 @@
-let index = {
+let indexPost = {
     init: function () {
         $('#btn-post-write').on('click', () => {
             this.writePost();
@@ -73,6 +73,6 @@ let index = {
         }).fail(function (error) {
             alert(JSON.stringify(error))
         });
-    },
+    }
 }
-index.init();
+indexPost.init();
