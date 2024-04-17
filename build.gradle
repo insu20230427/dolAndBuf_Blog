@@ -32,7 +32,6 @@ dependencies {
     // Security Tag Library
     implementation 'org.springframework.security:spring-security-taglibs'
 
-
     // JSP Template Engine
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:10.1.19'
 
@@ -57,7 +56,6 @@ dependencies {
     // Test Dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-
 }
 
 tasks.named('test') {
