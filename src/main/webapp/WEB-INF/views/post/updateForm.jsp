@@ -6,7 +6,7 @@
 
 <div class="container">
     <form>
-        <input aria-hidden="true" id="id" value="${detailPost.id}"/>
+        <input  style="display: none" id="id" value="${detailPost.id}"/>
         <div class="form-group">
             <input value="${detailPost.title}" class="form-control" id="title" placeholder="Enter title">
         </div>
