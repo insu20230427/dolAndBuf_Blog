@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @ControllerAdvice
 @RestController
@@ -26,38 +27,45 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Authentication error occurred: " + ex.getMessage());
+                .body("인증이 실패했습니다: " + ex.getMessage());
     }
 
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<String> handleJsonProcessingException(JsonProcessingException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Json processing error occurred: " + ex.getMessage());
+                .body("Json 변환 처리 오류가 발생했습니다: " + ex.getMessage());
     }
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<String> handleIOException(IOException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("IO error occurred: " + ex.getMessage());
+                .body("IO 오류가 발생했습니다: " + ex.getMessage());
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UsernameNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("User not found: " + ex.getMessage());
+                .body("해당 유저가 존재하지 않습니다: " + ex.getMessage());
     }
 
 
     @ExceptionHandler(StreamReadException.class)
     public ResponseEntity<String> handleStreamReadException(StreamReadException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Stream read error occurred: " + ex.getMessage());
+                .body("스트림 읽기 오류가 발생헀습니다: " + ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handelIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An error occurred while processing the request: " + ex.getMessage());
+                .body("요청하는 처리동안 오류가 발생했습니다: " + ex.getMessage());
     }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<String> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("중복된 값이 발생했습니다: " + ex.getMessage());
+    }
+
 }
 
