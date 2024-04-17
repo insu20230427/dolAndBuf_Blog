@@ -1,16 +1,17 @@
 package com.insu.blog.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
 @DynamicInsert
-@RequiredArgsConstructor
+@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class User {
 
@@ -18,18 +19,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(nullable = false, unique = true, length = 100)
     private String username;
 
     @Column(nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(unique = true, length = 100)
     private String email;
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
+    private String oauth;
+
     @CreationTimestamp
     private LocalDateTime createDate;
+
+    public User(String kakaoUsername, String garbagePassword, String oauth) {
+        this.username = kakaoUsername;
+        this.password = garbagePassword;
+        this.oauth = oauth;
+    }
 }
