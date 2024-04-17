@@ -41,9 +41,9 @@ public class JspPostController {
 
 
     // 상세 게시글 조회
-    @GetMapping("/view/posts/{id}/detailForm")
-    public String showPostDetail(@PathVariable int id, Model model) {
-        model.addAttribute("detailPost", postService.showPostDetail(id));
+    @GetMapping("/view/posts/{postId}/detailForm")
+    public String showPostDetail(@PathVariable int postId, Model model) {
+        model.addAttribute("detailPost", postService.showPostDetail(postId));
         return "post/detailForm";
     }
 }
