@@ -3,6 +3,7 @@ package com.insu.blog.service;
 import com.insu.blog.entity.Post;
 import com.insu.blog.entity.User;
 import com.insu.blog.repository.PostRepository;
+import com.insu.blog.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,14 +26,15 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(int id) {
-        postRepository.deleteById(id);
+    public void deletePost(int boardId) {
+        postRepository.deleteById(boardId);
     }
 
     // 게시글 수정
     @Transactional
-    public void updatePost(int id, Post post) {
-        Post updatePost = postRepository.findById(id).get();
+    public void updatePost(int boardId, Post post) {
+        Post updatePost = postRepository.findById(boardId).orElseThrow(()-> new IllegalArgumentException("게시글 찾기 실패"));
+
         updatePost.setContent(post.getContent());
         updatePost.setTitle(post.getTitle());
     }
@@ -45,7 +47,7 @@ public class PostService {
 
     // 상세 게시글 조회
     @Transactional(readOnly = true)
-    public Post showPostDetail(int id) {
-        return postRepository.findById(id).get();
+    public Post showPostDetail(int boardId) {
+        return postRepository.findById(boardId).orElseThrow(()-> new IllegalArgumentException("게시글 찾기 실패"));
     }
 }
