@@ -3,17 +3,24 @@ package com.insu.blog.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.insu.blog.dto.response.ApiResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
+import java.util.Map;
 
+@RequiredArgsConstructor
 @ControllerAdvice
 @RestController
 public class GlobalExceptionHandler {
@@ -67,5 +74,21 @@ public class GlobalExceptionHandler {
                 .body("중복된 값이 발생했습니다: " + ex.getMessage());
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> onHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("메세지를 읽어오는데 오류가 발생이 되었습니다.: " + ex.getCause());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponseDto> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(objectError -> {
+            FieldError field = (FieldError) objectError;
+            String message = objectError.getDefaultMessage();
+            errors.put(field.getField(), message);
+        });
+        return ResponseEntity.badRequest().body(ApiResponseDto.builder().message("회원정보 수정 혹은 회원가입 실패").errors(errors).build());
+    }
 }
 
