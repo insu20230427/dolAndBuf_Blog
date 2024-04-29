@@ -18,6 +18,21 @@
     <button id="btn-post-update" class="btn btn-primary">수정</button>
 </div>
 
+<style>
+    /* 기본 스타일 */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 100%;
+        height: 78%;
+    }
+
+</style>
+
 <script>
     $('.summernote').summernote({
         tabsize: 2,

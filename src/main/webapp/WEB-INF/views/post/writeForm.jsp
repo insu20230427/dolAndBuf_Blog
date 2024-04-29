@@ -14,8 +14,26 @@
             <textarea class="form-control summernote" rows="5" id="content"></textarea>
         </div>
     </form>
-    <button id="btn-post-write" class="btn btn-primary">등록</button>
+    <div style="text-align: center">
+    <button class="ui icon button" onclick="history.back()"><i class="arrow left icon"></i></button>
+    <button id="btn-post-write" class="ui icon button"><i class="edit icon"></i></button>
+    </div>
 </div>
+
+<style>
+    /* 기본 스타일 */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 100%;
+        height: 78%;
+    }
+
+</style>
 
 <script>
     $('.summernote').summernote({

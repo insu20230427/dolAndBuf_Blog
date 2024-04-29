@@ -4,18 +4,36 @@
 <%@include file="../layout/header.jsp" %>
 
 <div class="container">
-
-    <button class="btn btn-secondary" onclick="history.back()">돌아가기</button>
-    <c:if test="${detailPost.user.id == principal.user.id}">
-        <a href="/view/posts/${detailPost.id}/updateForm" class="btn btn-warning">수정</a>
-        <button id="btn-post-delete" class="btn btn-danger">삭제</button>
-    </c:if>
-    <br/><br/> <%-- <br/>하나 당 1칸 정도 내림--%>
-    <div>
-        글 번호 : <span id="id"><i>${detailPost.id} </i></span>
-        작성자 : <span><i>${detailPost.user.username} </i></span>
+    <br/><%--하나 당 1칸 정도 내림--%>
+    <div class="ui large horizontal divided list">
+        <div class="item">
+            <div class="content">
+                <div class="header">글 번호: <span id="id">${detailPost.id}</span></div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="content">
+                <div class="header">작성자 : ${detailPost.user.username}</div>
+            </div>
+        </div>
+        <div class="ui labeled button" tabindex="0">
+            <div class="ui button" id="btn-post-like">
+                <i class="heart icon"></i> Like
+            </div>
+            <div class="ui red button" id="btn-post-like-delete" style="display: none">
+                <i class="heart icon"></i> Like
+            </div>
+            <a class="ui basic label">
+                ${detailPost.likeCnt}
+            </a>
+        </div>
+        <button class="ui icon button" onclick="history.back()"><i class="arrow left icon"></i></button>
+<%--        <c:if test="${detailPost.user.id == principal.user.id}">--%>
+            <button class="ui icon button" onclick="window.location.href='/view/posts/${detailPost.id}/updateForm'"><i class="edit icon"></i></button>
+            <button class="ui icon button" id="btn-post-delete"><i class="trash alternate icon"></i></button>
+<%--        </c:if>--%>
     </div>
-    <br/>
+    <br/><br/>
     <div>
         <h3>${detailPost.title}</h3>
     </div>
@@ -25,39 +43,75 @@
     </div>
     <hr/>
 
-    <div class="card">
-        <%--form태그 안에 있으면 button type submit이 되므로 type="button"임을 명시--%>
-        <form>
-            <input style="display: none" id="userId" value="${principal.user.id}"/>
-            <input style="display: none" id="postId" value="${detailPost.id}"/>
-            <div class="card-body">
-                <textarea id="reply-content" class="form-control" rows="1"></textarea>
-            </div>
-            <div class="card-footer">
-                <button type="button" id="btn-reply-write" class="btn btn-primary">등록</button>
-            </div>
-        </form>
-    </div>
-    <br/>
-    <div class="card">
-        <div class="card-header">댓글 리스트</div>
-        <ul id="reply-box" class="list-group">
+    <br/><br/>
+    <%--    <h4 class="ui horizontal divider header">--%>
+    <%--        <i></i>--%>
+    <%--        댓글--%>
+    </h4>
+    <div class="ui comments">
+        <div class="ui dividing header">댓글</div>
+        <div class="comment">
             <c:forEach var="reply" items="${detailPost.replyList}">
                 <li id="reply-${reply.id}" class="list-group-item d-flex justify-content-between">
-                    <div class="reply-content" id="reply-update-content">${reply.content}</div>
-                    <div class="d-flex">
-                        <div class="font-italic">${reply.user.username}</div>
-                        <button onclick="indexReply.updateReplyForm(${reply.id})" class="badge btn-update-form" >수정</button>
-                        <div class="btn-group" role="group">
-                            <button onclick="indexReply.updateReply(${detailPost.id}, ${reply.id})" class="badge btn-update-submit" style="display: none;">수정 완료</button>
-                            <button onclick="indexReply.deleteReply(${detailPost.id}, ${reply.id})" class="badge btn-delete-reply">삭제</button>
+                    <div class="content">
+                        <a class="author">${reply.user.username}</a>
+                        <div class="metadata">
+                            <span class="date">${reply.createDate}</span>
+                        </div>
+                        <div class="text reply-content" id="reply-update-content">${reply.content}</div>
+                        <div class="actions">
+<%--                            <c:choose>--%>
+<%--                                <c:when test="${not empty principal.user.id}">--%>
+                                    <a onclick="indexReply.updateReplyForm(${reply.id})" class="reply" id="btn-update-form">수정</a>
+                                    <a onclick="indexReply.updateReply(${detailPost.id}, ${reply.id})"
+                                       class="reply" id="btn-update-submit" style="display: none;">수정 완료
+                                    </a>
+                                    <a onclick="indexReply.deleteReply(${detailPost.id}, ${reply.id})"
+                                       class="reply" id="btn-delete-reply">삭제
+                                    </a>
+<%--                                </c:when>--%>
+<%--                                <c:otherwise>--%>
+<%--                                </c:otherwise>--%>
+<%--                            </c:choose>--%>
                         </div>
                     </div>
                 </li>
             </c:forEach>
-        </ul>
+        </div>
+        <form class="ui reply form">
+            <input style="display: none" id="userId" value="${principal.user.id}"/>
+            <input style="display: none" id="postId" value="${detailPost.id}"/>
+            <div class="field">
+                <textarea id="reply-content"></textarea>
+            </div>
+            <div class="ui blue labeled submit icon button" id="btn-reply-write">
+                <i class="icon edit"></i> 등록
+            </div>
+        </form>
     </div>
 </div>
+
+<style>
+    /* 기본 스타일 */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 100%;
+        height: 78%;
+    }
+
+    @media (min-width: 768px) {
+        .container {
+            max-width: 720px;
+        }
+    }
+
+</style>
+
 <script src="/js/reply.js"></script>
 <script src="/js/post.js"></script>
 <%@include file="../layout/footer.jsp" %>
