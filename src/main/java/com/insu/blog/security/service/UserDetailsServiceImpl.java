@@ -9,12 +9,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-
     private final UserRepository userRepository;
 
     /*
@@ -25,6 +23,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User principal = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 사용자를 찾을 수 없습니다. " + username));
-        return new UserDetailsImpl(principal); // 시큐리티의 세션저장소에 유저 정보가 저장이 됨.
+        return new PrincipalDetails(principal); // 시큐리티의 세션저장소에 유저 정보가 저장이 됨.
     }
 }
+
+//

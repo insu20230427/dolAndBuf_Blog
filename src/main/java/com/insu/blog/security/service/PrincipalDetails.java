@@ -1,22 +1,32 @@
 package com.insu.blog.security.service;
 
+import com.insu.blog.entity.Post;
 import com.insu.blog.entity.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 @Data
-public class UserDetailsImpl implements UserDetails {
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
-    private User user; // 인증된 user의 정보만 주는 것
+    private User user;
+    public Map<String, Object> attributes;
 
-    public UserDetailsImpl(User user) {
+    public PrincipalDetails(User user) {
         this.user = user;
     }
 
+    public PrincipalDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
+    }
+
+    // implments by UserDetails
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -51,10 +61,25 @@ public class UserDetailsImpl implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Collection<GrantedAuthority> collectors = new ArrayList<>();
-        collectors.add(()-> "ROLE_"+user.getRole());
+        collectors.add(()-> String.valueOf(user.getRole()));
 
         return collectors;
     }
-}
 
+    //  implments by OAuth2User
+    @Override
+    public <A> A getAttribute(String name) {
+        return OAuth2User.super.getAttribute(name);
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    // 사용하지 않을 예정
+    public String getName() {
+        return null;
+    }
+}
 
