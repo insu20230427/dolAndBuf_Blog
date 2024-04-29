@@ -2,17 +2,22 @@ package com.insu.blog.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @DynamicInsert
 @RequiredArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 public class Post {
 
@@ -23,10 +28,12 @@ public class Post {
     @Column(nullable = false, unique = true, length = 100)
     private String title;
 
-    @Lob
     private String content;
 
     private int count;
+
+    @ColumnDefault("0")
+    private Long likeCnt;
 
     // 게시글 삭제해도 해당 유저의 게시글이므로 딱히 상관 x
     @ManyToOne(fetch = FetchType.EAGER) // 유저정보는 바로 보여야됨(아이디 or 이름) = EAGER
@@ -34,11 +41,20 @@ public class Post {
     private User user; // user -> User/id -> User
 
     // 게시글 삭제 시 댓글들이 어떤 게시글의 댓글들인지 알 수 없으므로 CascoadeType을 REMOVE를 줘서 강제삭제
+    // Entity의 양방향관계 시,OneToMany에선 FK를 가진 Field(Many쪽)가 연관관계의 주인이 되어서,
+    // Reply의 Post를 업데이트 시, Post로 Reply를 읽어올 수 있음.
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE) // 댓글 보기 버튼이 아닌 바로 보기 = EAGER
-    @JsonIgnoreProperties({"board"}) // Post의 Reply에 한하여, board를 호출 무시(= getter 발동 x)
+    @JsonIgnoreProperties({"post"}) // Post의 Reply에 한하여, post 호출 무시(= getter 발동 x)
     @OrderBy("id desc")
-    private List<Reply> replyList; // replyList -> Reply/post(id) -> List<Reply>
+    private List<Reply> replyList;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @JsonIgnoreProperties({"post"})
+    private List<PostLike> postLikeList = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createDate;
+
+    @UpdateTimestamp
+    private LocalDateTime modifyDate;
 }

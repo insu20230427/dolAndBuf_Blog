@@ -1,15 +1,17 @@
 package com.insu.blog.entity;
 
-import com.insu.blog.dto.request.ReplyRequestDto;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 public class Reply {
 
@@ -30,17 +32,4 @@ public class Reply {
 
     @CreationTimestamp
     private LocalDateTime createDate;
-
-
-    // Reply객체를 출력하면 자동으로 Reply에 overide된 toString()이 호출
-    @Override
-    public String toString() {
-        return "Reply{" +
-                "id=" + id +
-                ", content='" + content + '\'' +
-                ", post=" + post +
-                ", user=" + user +
-                ", createDate=" + createDate +
-                '}';
-    }
 }
