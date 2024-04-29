@@ -1,4 +1,4 @@
-package com.insu.blog.controller.api;
+package com.insu.blog.controller.api.OAuth2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.insu.blog.service.KakaoService;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class KakaoLoginController {
 
     private final KakaoService kakaoService;
-    @GetMapping("/api/auth/kakao/callback")
+    @GetMapping("/api/oauth2/kakao/callback")
     public String kakaoLogin(String code) throws JsonProcessingException {
 
         kakaoService.processKakaoUser(code);

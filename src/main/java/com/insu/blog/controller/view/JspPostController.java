@@ -20,9 +20,9 @@ public class JspPostController {
 
     // 메인 index(전체 게시글 조회)
     @GetMapping({"", "/"})
-    public String index(Model model, @PageableDefault(size = 2, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String index(Model model, @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         model.addAttribute("posts", postService.findAllPagedPosts(pageable));
-        log.info("posts : " + postService.findAllPagedPosts(pageable));
+        log.info("posts : " + postService.findAllPagedPosts(pageable).getContent());
         return "index";
     }
 

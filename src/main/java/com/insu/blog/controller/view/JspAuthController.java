@@ -17,4 +17,15 @@ public class JspAuthController {
         return "user/loginForm";
     }
 
+    @GetMapping("/find-passwordForm")
+    public String findPasswordForm() {
+        return "user/find-passwordForm";
+    }
+
+    @GetMapping("/find-usernameForm")
+    public String findUsernameForm() {
+        return "user/find-usernameForm";
+    }
+
+
 }
