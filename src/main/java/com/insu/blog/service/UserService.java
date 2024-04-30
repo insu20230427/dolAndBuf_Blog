@@ -74,10 +74,6 @@ public class UserService {
 
         if (StringUtils.isNotBlank(token)) {
             redisTemplate.delete(refreshKey);
-
-            String script = "localStorage.removeItem('access_token');";
-            servletRes.setContentType("application/javascript");
-            servletRes.getWriter().write(script);
         }
     }
 
@@ -89,10 +85,6 @@ public class UserService {
 
         if (StringUtils.isNotBlank(token)) {
             redisTemplate.delete(refreshKey);
-
-            String script = "localStorage.removeItem('access_token');";
-            servletRes.setContentType("application/javascript");
-            servletRes.getWriter().write(script);
         }
 
         userRepository.delete(userDetails.getUser());
