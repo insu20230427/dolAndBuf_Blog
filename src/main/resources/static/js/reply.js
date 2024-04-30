@@ -1,3 +1,29 @@
+const tokenByReply = Cookies.get('Authorization');
+
+document.addEventListener('DOMContentLoaded', function () {
+    userInfo()
+})
+
+function userInfo() {
+    $.ajax({
+        type: "GET",
+        url: "/view/users/info",
+        headers: {
+            'Authorization': tokenByReply
+        },
+    }).done(function (res) {
+        const trimmedUsername = $('#userId').var();
+
+        if (trimmedUsername !== res.username) {
+            $('#btn-post-delete').hide();
+            $('#btn-post-edit').hide();
+        }
+    }).fail(function (error) {
+        alert(error.responseJSON.message)
+    });
+}
+
+
 let indexReply = {
     init: function () {
         $('#btn-reply-write').on('click', () => {

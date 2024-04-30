@@ -1,6 +1,28 @@
-const token = localStorage.getItem("accessToken");
-const currentTime = new Date();
-const expirationTime = new Date(currentTime.getTime() + 60 * 30 * 1000);
+const tokenByPost = Cookies.get('Authorization');
+
+document.addEventListener('DOMContentLoaded', function () {
+    userInfo()
+})
+
+function userInfo() {
+    $.ajax({
+        type: "GET",
+        url: "/view/users/info",
+        headers: {
+            'Authorization': tokenByPost
+        },
+    }).done(function (res) {
+        const trimmedUsername = $('#username').text().replace('작성자 : ', '');
+        console.log(res.username);
+        console.log(trimmedUsername)
+        if (trimmedUsername !== res.username) {
+            $('#btn-post-delete').hide();
+            $('#btn-post-edit').hide();
+        }
+    }).fail(function (error) {
+        alert(error.responseJSON.message)
+    });
+}
 
 let indexPost = {
     init: function () {
@@ -32,7 +54,6 @@ let indexPost = {
     },
 
     writePost: function () {
-
         let data = {
             title: $('#title').val(),
             content: $('#content').val(),
@@ -45,7 +66,7 @@ let indexPost = {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: {
-                'Authorization': token
+                'Authorization': tokenByPost
             }
         }).done(function (res) {
             alert("글쓰기가 완료되었습니다.")
@@ -65,7 +86,7 @@ let indexPost = {
             url: "/api/posts/" + id,
             dataType: "json",
             headers: {
-                'Authorization': token
+                'Authorization': tokenByPost
             }
         }).done(function (res) {
             alert("삭제가 완료되었습니다.")
@@ -78,7 +99,6 @@ let indexPost = {
     },
 
     updatePost: function () {
-
         let id = $('#id').val(); // id값이 id인 input태그의 value값을 가져온다.
 
         let data = {
@@ -93,7 +113,7 @@ let indexPost = {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: {
-                'Authorization': token
+                'Authorization': tokenByPost
             }
         }).done(function (res) {
             alert("글 수정이 완료되었습니다.")
@@ -111,7 +131,7 @@ let indexPost = {
             type: "POST",
             url: "/api/posts/likes/" + id,
             headers: {
-                'Authorization': token
+                'Authorization': tokenByPost
             }
         }).done(function (res) {
             localStorage.setItem('post_' + id + '_liked', true);
@@ -128,7 +148,7 @@ let indexPost = {
             type: "DELETE",
             url: "/api/posts/likes/" + id,
             headers: {
-                'Authorization': token
+                'Authorization': tokenByPost
             }
         }).done(function (res) {
             localStorage.setItem('post_' + id + '_liked', false);

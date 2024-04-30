@@ -13,7 +13,7 @@
         </div>
         <div class="item">
             <div class="content">
-                <div class="header">작성자 : ${detailPost.user.username}</div>
+                <div class="header" id="username">작성자 : ${detailPost.user.username}</div>
             </div>
         </div>
         <div class="ui labeled button" tabindex="0">
@@ -28,10 +28,8 @@
             </a>
         </div>
         <button class="ui icon button" onclick="history.back()"><i class="arrow left icon"></i></button>
-<%--        <c:if test="${detailPost.user.id == principal.user.id}">--%>
-            <button class="ui icon button" onclick="window.location.href='/view/posts/${detailPost.id}/updateForm'"><i class="edit icon"></i></button>
-            <button class="ui icon button" id="btn-post-delete"><i class="trash alternate icon"></i></button>
-<%--        </c:if>--%>
+        <button class="ui icon button" id="btn-post-edit" onclick="window.location.href='/view/posts/${detailPost.id}/updateForm'"><i class="edit icon"></i></button>
+        <button class="ui icon button" id="btn-post-delete"><i class="trash alternate icon"></i></button>
     </div>
     <br/><br/>
     <div>
@@ -60,26 +58,27 @@
                         </div>
                         <div class="text reply-content" id="reply-update-content">${reply.content}</div>
                         <div class="actions">
-<%--                            <c:choose>--%>
-<%--                                <c:when test="${not empty principal.user.id}">--%>
-                                    <a onclick="indexReply.updateReplyForm(${reply.id})" class="reply" id="btn-update-form">수정</a>
-                                    <a onclick="indexReply.updateReply(${detailPost.id}, ${reply.id})"
-                                       class="reply" id="btn-update-submit" style="display: none;">수정 완료
-                                    </a>
-                                    <a onclick="indexReply.deleteReply(${detailPost.id}, ${reply.id})"
-                                       class="reply" id="btn-delete-reply">삭제
-                                    </a>
-<%--                                </c:when>--%>
-<%--                                <c:otherwise>--%>
-<%--                                </c:otherwise>--%>
-<%--                            </c:choose>--%>
+                                <%--                            <c:choose>--%>
+                                <%--                                <c:when test="${not empty principal.user.id}">--%>
+                            <a onclick="indexReply.updateReplyForm(${reply.id})" class="reply"
+                               id="btn-update-form">수정</a>
+                            <a onclick="indexReply.updateReply(${detailPost.id}, ${reply.id})"
+                               class="reply" id="btn-update-submit" style="display: none;">수정 완료
+                            </a>
+                            <a onclick="indexReply.deleteReply(${detailPost.id}, ${reply.id})"
+                               class="reply" id="btn-delete-reply">삭제
+                            </a>
+                                <%--                                </c:when>--%>
+                                <%--                                <c:otherwise>--%>
+                                <%--                                </c:otherwise>--%>
+                                <%--                            </c:choose>--%>
                         </div>
                     </div>
                 </li>
             </c:forEach>
         </div>
         <form class="ui reply form">
-            <input style="display: none" id="userId" value="${principal.user.id}"/>
+            <input style="display: none" id="userId" />
             <input style="display: none" id="postId" value="${detailPost.id}"/>
             <div class="field">
                 <textarea id="reply-content"></textarea>
@@ -111,7 +110,6 @@
     }
 
 </style>
-
 <script src="/js/reply.js"></script>
 <script src="/js/post.js"></script>
 <%@include file="../layout/footer.jsp" %>

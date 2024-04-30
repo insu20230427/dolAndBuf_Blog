@@ -1,14 +1,16 @@
-const token = localStorage.getItem("accessToken");
+console.log("token test");
 const currentTime = new Date();
 const expirationTime = new Date(currentTime.getTime() + 60 * 30 * 1000);
 
 let index = {
+
     init: function () {
+
         $('#btn-signup').on('click', () => {
             this.signup();
         });
 
-        $('#btn-login').on('click' ,() => {
+        $('#btn-login').on('click', () => {
             this.login();
         })
 
@@ -16,11 +18,7 @@ let index = {
         //     this.kakaoLogin();
         // })
 
-        $('#btn-user-update').on('click', () => {
-            this.updateUser();
-        });
-
-        $('#btn-verify-code-byUsername').on('click',() => {
+        $('#btn-verify-code-byUsername').on('click', () => {
             this.verifyCode();
         })
         $('#btn-send-code-byUsername').on('click', () => {
@@ -33,7 +31,7 @@ let index = {
         $('#btn-send-code-byPassword').on('click', () => {
             this.sendCode();
         });
-        $('#btn-verify-code-byPassword').on('click',() => {
+        $('#btn-verify-code-byPassword').on('click', () => {
             this.verifyCode();
         })
         $('#send-tempPassword').on('click', () => {
@@ -99,11 +97,12 @@ let index = {
             console.log(errorMessage)
             // window.location.href = '/view/auth/signupForm';
         });
-    },
+    }
+    ,
 
-    // kakaoLogin: function () {
-    //     window.location.href = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ee8abaaf81bcb4e83dff921f9a492de6&redirect_uri=http://localhost:8080/api/oauth2/kakao/callback";
-    // },
+// kakaoLogin: function () {
+//     window.location.href = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ee8abaaf81bcb4e83dff921f9a492de6&redirect_uri=http://localhost:8080/api/oauth2/kakao/callback";
+// },
 
     login: function () {
         let data = {
@@ -125,33 +124,35 @@ let index = {
         }).done(function (res, status, xhr) {
             alert("로그인 되었습니다!")
 
-            const accessToken  = xhr.getResponseHeader("Authorization");
-            Cookies.set('Authorization', token, {expires: expirationTime});
+            const accessToken = xhr.getResponseHeader("Authorization");
+            Cookies.set('Authorization', decodeURIComponent(accessToken), {expires: expirationTime});
 
-            if (accessToken ) {
-                const tokenValue = accessToken .split(' ')[1];
+            if (accessToken) {
+                const tokenValue = accessToken.split(' ')[1];
                 const [, payloadBase64] = tokenValue.split('.');
 
-            try {
-                 // Base64 디코딩 후 JSON 파싱
-                const decodedPayload = JSON.parse(atob(payloadBase64)); // payload에서 username과 email 추출
+                try {
+                    // Base64 디코딩 후 JSON 파싱
+                    const decodedPayload = JSON.parse(atob(payloadBase64)); // payload에서 username과 email 추출
 
-                const username = decodedPayload.sub; // 사용자명 추출
-                const issuedAt = decodedPayload.iat; // 토큰 발급 시간 추출
-                const expiration = decodedPayload.exp; // 토큰 만료 시간 추출
+                    // const username = decodedPayload.sub; // 사용자명 추출
+                    // const issuedAt = decodedPayload.iat; // 토큰 발급 시간 추출
+                    // const expiration = decodedPayload.exp; // 토큰 만료 시간 추출
+                    //
+                    // console.log('username:', username);
+                    // console.log('email:', decodedPayload.email);
+                    // console.log('userId:', decodedPayload.userId);
+                    //
+                    // console.log('issued At:', new Date(issuedAt * 1000));
+                    // console.log('expiration:', new Date(expiration * 1000));
 
-                console.log('username:', username);
-                console.log('email:', decodedPayload.email);
-                console.log('userId:', decodedPayload.userId);
-
-                console.log('issued At:', new Date(issuedAt * 1000));
-                console.log('expiration:', new Date(expiration * 1000));
-            } catch (error) {
-                console.error('토큰 해석 실패:', error.message);
+                    location.href = "/";
+                } catch (error) {
+                    console.error('토큰 해석 실패:', error.message);
+                }
+            } else {
+                console.error('토큰이 없습니다.');
             }
-        } else {
-            console.error('토큰이 없습니다.');
-        }
 
             console.log("res : " + JSON.stringify(res))
             // location.href = "/";
@@ -168,56 +169,9 @@ let index = {
         });
     },
 
-    updateUser: function () {
-        let data = {
-            username: $('#username').val(),
-            email: $('#update-email').val(),
-            password: $('#update-password').val()
-        };
-        console.log("data 잘 받아옴 : " + JSON.stringify(data));
-
-        $.ajax({
-            type: "PUT",
-            url: "/api/users",
-            data: JSON.stringify(data),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            headers: {
-                'Authorization': token
-            }
-        }).done(function (res) {
-            alert("회원수정이 완료되었습니다.")
-            console.log("res : " + JSON.stringify(res))
-            location.href = "/";
-        }).fail(function (error) {
-            const errorMessage = error.responseJSON.message;
-            const errors = error.responseJSON.errors;
-
-            $('#update-password').next('span').text('');
-            $('#update-email').next('span').text('');
-
-            if (errors) {
-                if (errors.password) {
-                    $('#update-password').next('span').text(errors.password);
-                    $('#update-password').next('span').css({
-                        'color': 'red',
-                        'font-size': 'small'
-                    });
-                }
-                if (errors.email) {
-                    $('#update-email').next('span').text(errors.email);
-                    $('#update-email').next('span').css({
-                        'color': 'red',
-                        'font-size': 'small'
-                    });
-                }
-            }
-            console.log("errorMessage : " + errorMessage)
-        });
-    },
 
     sendCode: function () {
-       const email = $('#email').val();
+        const email = $('#email').val();
 
         $.ajax({
             type: "POST",
