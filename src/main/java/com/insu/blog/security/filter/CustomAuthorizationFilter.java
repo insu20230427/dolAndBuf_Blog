@@ -1,6 +1,5 @@
 package com.insu.blog.security.filter;
 
-import com.insu.blog.dto.response.TokenResponseDto;
 import com.insu.blog.entity.User;
 import com.insu.blog.repository.UserRepository;
 import com.insu.blog.security.jwt.JwtUtil;
@@ -8,7 +7,6 @@ import com.insu.blog.security.service.UserDetailsServiceImpl;
 import com.insu.blog.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -21,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.util.Optional;
 
