@@ -32,6 +32,6 @@ public class ReplyController {
     @PutMapping("/replys/{postId}/{replyId}")
     public ResponseEntity<ApiResponseDto> updateReply(@PathVariable int replyId, @RequestBody ReplyRequestDto replyRequestDto) {
         replyService.updateReply(replyId, replyRequestDto);
-        return ResponseEntity.ok().body(ApiResponseDto.builder().message("댓글 삭제 성공!").build());
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("댓글 수정 성공!").build());
     }
 }

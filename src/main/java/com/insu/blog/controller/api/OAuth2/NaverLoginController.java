@@ -13,9 +13,7 @@ public class NaverLoginController {
     private final NaverService naverService;
     @GetMapping("/api/oauth2/naver/callback")
     public String naver(String code) throws JsonProcessingException {
-
         naverService.processNaverUser(code);
-
         return "redirect:/";
     }
 }

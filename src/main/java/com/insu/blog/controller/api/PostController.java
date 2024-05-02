@@ -42,13 +42,13 @@ public class PostController {
     @PostMapping("/posts/likes/{id}")
     public ResponseEntity<ApiResponseDto> createPostLike(@PathVariable("id") int postId, @AuthenticationPrincipal PrincipalDetails userDetails) {
         postService.createLikes(postId, userDetails.getUser());
-        return ResponseEntity.ok().body(ApiResponseDto.builder().message("좋아요 추가 성공!").build());
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("좋아요 추가 성공!").data(userDetails.getUser().getId()).build());
     }
 
     // 게시물 좋아요 취소
     @DeleteMapping("/posts/likes/{id}")
     public ResponseEntity<ApiResponseDto> deletePostLike(@PathVariable("id") int postId, @AuthenticationPrincipal PrincipalDetails userDetails) {
        postService.deleteLikes(postId, userDetails.getUser());
-       return ResponseEntity.ok().body(ApiResponseDto.builder().message("좋아요 삭제 성공!").build());
+       return ResponseEntity.ok().body(ApiResponseDto.builder().message("좋아요 삭제 성공!").data(userDetails.getUser().getId()).build());
     }
 }
