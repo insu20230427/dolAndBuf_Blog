@@ -78,7 +78,7 @@
             </c:forEach>
         </div>
         <form class="ui reply form">
-            <input style="display: none" id="userId" />
+            <input style="display: none" id="userId" value="${detailPost.user.id}"/>
             <input style="display: none" id="postId" value="${detailPost.id}"/>
             <div class="field">
                 <textarea id="reply-content"></textarea>
