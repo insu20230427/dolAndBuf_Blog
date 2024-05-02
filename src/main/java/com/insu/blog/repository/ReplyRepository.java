@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 
     @Modifying
-    @Query(value = "insert into reply(userId, postId, content, createDate) VALUES(?1,?2,?3,now())", nativeQuery = true)
+    @Query(value = "insert into reply(user_id, post_id, content, createDate) VALUES(?1,?2,?3,now())", nativeQuery = true)
     int msave(int userId, int boardId, String content); // insert, delete, update 시 업뎃 된 행의 갯수를 리턴
 
     @Modifying

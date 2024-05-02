@@ -3,7 +3,6 @@ package com.insu.blog.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-public class Reply {
+public class CommentReply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,21 +28,23 @@ public class Reply {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="post_id")
+    @JoinColumn(name = "reply_id")
+    private Reply reply;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "post_id")
     private Post post;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ColumnDefault("0")
     private Long likeCnt;
 
-    @OneToMany(mappedBy = "reply", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<ReplyLike> replyLikeList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "reply", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<CommentReply> commentReplyList = new ArrayList<>();
+    @OneToMany(mappedBy = "commentReply", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<CommentReplyLike> replyLikeList = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createDate;
