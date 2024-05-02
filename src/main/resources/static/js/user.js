@@ -1,7 +1,3 @@
-console.log("token test");
-const currentTime = new Date();
-const expirationTime = new Date(currentTime.getTime() + 60 * 30 * 1000);
-
 let index = {
 
     init: function () {
@@ -13,10 +9,6 @@ let index = {
         $('#btn-login').on('click', () => {
             this.login();
         })
-
-        // $('#btn-kakao-login').on('click', () => {
-        //     this.kakaoLogin();
-        // })
 
         $('#btn-verify-code-byUsername').on('click', () => {
             this.verifyCode();
@@ -97,12 +89,7 @@ let index = {
             console.log(errorMessage)
             // window.location.href = '/view/auth/signupForm';
         });
-    }
-    ,
-
-// kakaoLogin: function () {
-//     window.location.href = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ee8abaaf81bcb4e83dff921f9a492de6&redirect_uri=http://localhost:8080/api/oauth2/kakao/callback";
-// },
+    },
 
     login: function () {
         let data = {
@@ -121,51 +108,43 @@ let index = {
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             dataType: "json"
-        }).done(function (res, status, xhr) {
+        }).done(function () {
             alert("로그인 되었습니다!")
+            location.href = "/";
+            // if (accessToken) {
+            //     const tokenValue = accessToken.split(' ')[1];
+            //     const [, payloadBase64] = tokenValue.split('.');
+            //
+            //     try {
+            //         // Base64 디코딩 후 JSON 파싱
+            //         const decodedPayload = JSON.parse(atob(payloadBase64)); // payload에서 username과 email 추출
+            //
+            //         // const username = decodedPayload.sub; // 사용자명 추출
+            //         // const issuedAt = decodedPayload.iat; // 토큰 발급 시간 추출
+            //         // const expiration = decodedPayload.exp; // 토큰 만료 시간 추출
+            //         //
+            //         // console.log('username:', username);
+            //         // console.log('email:', decodedPayload.email);
+            //         // console.log('userId:', decodedPayload.userId);
+            //         //
+            //         // console.log('issued At:', new Date(issuedAt * 1000));
+            //         // console.log('expiration:', new Date(expiration * 1000));
+            //
+            //     } catch (error) {
+            //         console.error('토큰 해석 실패:', error.message);
+            //     }
+            // } else {
+            //     console.error('토큰이 없습니다.');
+            // }
 
-            const accessToken = xhr.getResponseHeader("Authorization");
-            Cookies.set('Authorization', decodeURIComponent(accessToken), {expires: expirationTime});
-
-            if (accessToken) {
-                const tokenValue = accessToken.split(' ')[1];
-                const [, payloadBase64] = tokenValue.split('.');
-
-                try {
-                    // Base64 디코딩 후 JSON 파싱
-                    const decodedPayload = JSON.parse(atob(payloadBase64)); // payload에서 username과 email 추출
-
-                    // const username = decodedPayload.sub; // 사용자명 추출
-                    // const issuedAt = decodedPayload.iat; // 토큰 발급 시간 추출
-                    // const expiration = decodedPayload.exp; // 토큰 만료 시간 추출
-                    //
-                    // console.log('username:', username);
-                    // console.log('email:', decodedPayload.email);
-                    // console.log('userId:', decodedPayload.userId);
-                    //
-                    // console.log('issued At:', new Date(issuedAt * 1000));
-                    // console.log('expiration:', new Date(expiration * 1000));
-
-                    location.href = "/";
-                } catch (error) {
-                    console.error('토큰 해석 실패:', error.message);
-                }
-            } else {
-                console.error('토큰이 없습니다.');
-            }
-
-            console.log("res : " + JSON.stringify(res))
-            // location.href = "/";
         }).fail(function (error) {
             const errorMessage = error.responseJSON.message;
-            const errors = error.responseJSON.errors;
 
             $('#username').next('span').text('');
             $('#password').next('span').text('');
             $('#email').next('span').text('');
 
             console.log(errorMessage)
-            // window.location.href = '/view/auth/signupForm';
         });
     },
 

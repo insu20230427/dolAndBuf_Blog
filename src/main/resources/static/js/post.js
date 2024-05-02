@@ -1,5 +1,7 @@
 const tokenByPost = Cookies.get('Authorization');
 
+console.log(tokenByPost)
+
 document.addEventListener('DOMContentLoaded', function () {
     userInfo()
 })
@@ -19,6 +21,18 @@ function userInfo() {
             $('#btn-post-delete').hide();
             $('#btn-post-edit').hide();
         }
+
+        let id = $("#id").text();
+        let userId = res.id;
+        let liked = localStorage.getItem('post_' + id + '_liked' + userId);
+        if (liked === 'true') {
+            $("#btn-post-like").hide();
+            $("#btn-post-like-delete").show();
+        } else {
+            $("#btn-post-like-delete").hide();
+            $("#btn-post-like").show();
+        }
+
     }).fail(function (error) {
         alert(error.responseJSON.message)
     });
@@ -41,17 +55,8 @@ let indexPost = {
         $('#btn-post-like-delete').on('click', () => {
             this.deleteLikePost();
         })
-
-        let id = $("#id").text();
-        let liked = localStorage.getItem('post_' + id + '_liked');
-        if (liked === 'true') {
-            $("#btn-post-like").hide();
-            $("#btn-post-like-delete").show();
-        } else {
-            $("#btn-post-like-delete").hide();
-            $("#btn-post-like").show();
-        }
     },
+
 
     writePost: function () {
         let data = {
@@ -75,7 +80,8 @@ let indexPost = {
         }).fail(function (error) {
             alert(JSON.stringify(error))
         });
-    },
+    }
+    ,
 
     deletePost: function () {
         let id = $("#id").text(); // id값이 id인 input태그의 text값을 가져온다
@@ -85,9 +91,9 @@ let indexPost = {
             type: "DELETE",
             url: "/api/posts/" + id,
             dataType: "json",
-            headers: {
-                'Authorization': tokenByPost
-            }
+            // headers: {
+            //     'Authorization': tokenByPost
+            // }
         }).done(function (res) {
             alert("삭제가 완료되었습니다.")
             console.log("res : " + JSON.stringify(res))
@@ -96,7 +102,8 @@ let indexPost = {
             console.log(JSON.stringify(error))
             alert(JSON.stringify(error));
         });
-    },
+    }
+    ,
 
     updatePost: function () {
         let id = $('#id').val(); // id값이 id인 input태그의 value값을 가져온다.
@@ -112,9 +119,9 @@ let indexPost = {
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            headers: {
-                'Authorization': tokenByPost
-            }
+            // headers: {
+            //     'Authorization': tokenByPost
+            // }
         }).done(function (res) {
             alert("글 수정이 완료되었습니다.")
             console.log("res : " + JSON.stringify(res))
@@ -122,7 +129,8 @@ let indexPost = {
         }).fail(function (error) {
             console.log("error : " + JSON.stringify(error));
         });
-    },
+    }
+    ,
 
     addLikePost: function () {
         let id = $("#id").text();
@@ -134,12 +142,15 @@ let indexPost = {
                 'Authorization': tokenByPost
             }
         }).done(function (res) {
-            localStorage.setItem('post_' + id + '_liked', true);
+            const userId = res.data;
+            console.log(res)
+            localStorage.setItem('post_' + id + '_liked' + userId, true);
             location.href = `/view/posts/${id}/detailForm`;
         }).fail(function (error) {
             console.log(error)
         });
-    },
+    }
+    ,
 
     deleteLikePost: function () {
         let id = $("#id").text();
@@ -151,7 +162,9 @@ let indexPost = {
                 'Authorization': tokenByPost
             }
         }).done(function (res) {
-            localStorage.setItem('post_' + id + '_liked', false);
+            const userId = res.data;
+            console.log(res)
+            localStorage.setItem('post_' + id + '_liked' + userId, false);
             location.href = `/view/posts/${id}/detailForm`;
         }).fail(function (error) {
             console.log(error)

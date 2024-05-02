@@ -1,27 +1,27 @@
 const tokenByReply = Cookies.get('Authorization');
 
-document.addEventListener('DOMContentLoaded', function () {
-    userInfo()
-})
-
-function userInfo() {
-    $.ajax({
-        type: "GET",
-        url: "/view/users/info",
-        headers: {
-            'Authorization': tokenByReply
-        },
-    }).done(function (res) {
-        const trimmedUsername = $('#userId').var();
-
-        if (trimmedUsername !== res.username) {
-            $('#btn-post-delete').hide();
-            $('#btn-post-edit').hide();
-        }
-    }).fail(function (error) {
-        alert(error.responseJSON.message)
-    });
-}
+// document.addEventListener('DOMContentLoaded', function () {
+//     userInfo()
+// })
+//
+// function userInfo() {
+//     $.ajax({
+//         type: "GET",
+//         url: "/view/users/info",
+//         headers: {
+//             'Authorization': tokenByReply
+//         },
+//     }).done(function (res) {
+//         const trimmedUsername = $('#userId').var();
+//
+//         if (trimmedUsername !== res.username) {
+//             $('#btn-post-delete').hide();
+//             $('#btn-post-edit').hide();
+//         }
+//     }).fail(function (error) {
+//         alert(error.responseJSON.message)
+//     });
+// }
 
 
 let indexReply = {
@@ -61,15 +61,15 @@ let indexReply = {
     updateReply: function (postId, replyId) {
 
         let $replyItem = $(this).closest('li'); // 수정한 댓글 항목
-        let $replyContent = $replyItem.find('.reply-content'); // 댓글 내용 엘리먼트
+        // let $replyContent = $('#reply-update-textarea');
 
         let data = {
             userId: $('#userId').val(),
             postId: $('#postId').val(),
-            content: $('#reply-update-content').text(),
+            content: $('#reply-update-textarea').val()
         }
 
-        console.log(data.content);
+        console.log("content : " + data.content)
 
         $.ajax({
             type: "PUT",
@@ -79,8 +79,6 @@ let indexReply = {
             dataType: "json"
         }).done(function (res) {
 
-            // 댓글 내용 텍스트로 변경
-            $replyContent.text(data.content);
 
             let $updateBtn = $replyItem.find('#btn-update-reply'); // 수정 버튼
             let $updateSubmitBtn = $replyItem.find('#btn-update-submit'); // 수정 완료 버튼
@@ -91,7 +89,6 @@ let indexReply = {
 
             alert("댓글 수정이 완료되었습니다.")
             console.log("res : " + JSON.stringify(res))
-            console.log("content" + data.content)
             location.href = `/view/posts/${postId}/detailForm`;
         }).fail(function (error) {
             alert(JSON.stringify(error))
@@ -108,10 +105,14 @@ let indexReply = {
         let $updateBtn = $replyItem.find('#btn-update-form'); // 수정 버튼
         let $updateSubmitBtn = $replyItem.find('#btn-update-submit'); // 수정 완료 버튼
 
-        console.log("updateSubmitBtn : " + $updateSubmitBtn)
-
         // 댓글 내용을 수정할 수 있는 텍스트 영역 생성
-        $replyContent.wrap('<form class="ui reply form"><div class="field"> <textarea style="width: 610px; height: 100px; margin-bottom: 10px"></textarea></div></form>');
+        $replyContent.replaceWith(`
+        <form class="ui reply form">
+            <div class="field" id="update-reply-content">
+                <textarea id="reply-update-textarea" style="width: 610px; height: 100px; margin-bottom: 10px"></textarea>
+            </div>
+        </form>
+    `);
         // 버튼 상태 변경
         $updateBtn.hide();
         $updateSubmitBtn.show();
