@@ -17,9 +17,9 @@ function userInfo() {
         const trimmedUsername = $('#username').text().replace('작성자 : ', '');
         console.log(res.username);
         console.log(trimmedUsername)
-        if (trimmedUsername !== res.username) {
-            $('#btn-post-delete').hide();
-            $('#btn-post-edit').hide();
+        if (trimmedUsername === res.username) {
+            $('#btn-post-delete').on();
+            $('#btn-post-edit').on();
         }
 
         let id = $("#id").text();
