@@ -95,7 +95,6 @@ public class PostService {
         }
     }
 
-
     // 좋아요 사용자 검증
     private void likesValid(PostLike postLike, User user) {
         int postLikedUserId = postLike.getUser().getId();
