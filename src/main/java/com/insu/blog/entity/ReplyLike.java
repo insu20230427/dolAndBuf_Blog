@@ -10,27 +10,28 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-public class PostLike {
+public class ReplyLike {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // 연관관계 설정
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "reply_id")
+    private Reply reply;
 
     @Column
     private boolean likes;
 
-    public PostLike(boolean likes, Post post, User user) {
+    public ReplyLike(boolean likes, Reply reply, User user) {
         this.likes = likes;
-        this.post = post;
+        this.reply = reply;
         this.user = user;
     }
 }

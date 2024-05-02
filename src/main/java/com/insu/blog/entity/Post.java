@@ -44,12 +44,10 @@ public class Post {
     // Entity의 양방향관계 시,OneToMany에선 FK를 가진 Field(Many쪽)가 연관관계의 주인이 되어서,
     // Reply의 Post를 업데이트 시, Post로 Reply를 읽어올 수 있음.
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE) // 댓글 보기 버튼이 아닌 바로 보기 = EAGER
-    @JsonIgnoreProperties({"post"}) // Post의 Reply에 한하여, post 호출 무시(= getter 발동 x)
     @OrderBy("id desc")
     private List<Reply> replyList;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-    @JsonIgnoreProperties({"post"})
     private List<PostLike> postLikeList = new ArrayList<>();
 
     @CreationTimestamp

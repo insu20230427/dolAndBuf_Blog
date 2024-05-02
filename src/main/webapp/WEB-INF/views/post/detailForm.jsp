@@ -28,8 +28,8 @@
             </a>
         </div>
         <button class="ui icon button" onclick="history.back()"><i class="arrow left icon"></i></button>
-        <button class="ui icon button" style="display: none" id="btn-post-edit" onclick="window.location.href='/view/posts/${detailPost.id}/updateForm'"><i class="edit icon"></i></button>
-        <button class="ui icon button" style="display: none" id="btn-post-delete"><i class="trash alternate icon"></i></button>
+        <button class="ui icon button" style="display:none" id="btn-post-edit" onclick="window.location.href='/view/posts/${detailPost.id}/updateForm'"><i class="edit icon"></i></button>
+        <button class="ui icon button" style="display:none" id="btn-post-delete"><i class="trash alternate icon"></i></button>
     </div>
     <br/><br/>
     <div>
