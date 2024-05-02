@@ -8,6 +8,7 @@ import com.insu.blog.entity.RoleType;
 import com.insu.blog.entity.User;
 import com.insu.blog.repository.OAuth2Repository;
 import com.insu.blog.security.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -159,9 +163,12 @@ public class KakaoService {
         // AccessToken 생성
         String accessToken = authService.generateTokens(resDto.getUsername());
 
-        // Response 객체의 헤더에 액세스/리프레시 토큰 및, Header KEY 값 추가 및 HttpServletResponse 셋팅
-        servletRes.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        servletRes.setContentType("application/json");
-        servletRes.setCharacterEncoding("UTF-8");
+        String encodedValue = URLEncoder.encode(accessToken, StandardCharsets.UTF_8).replace("+", "%20");
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, encodedValue);
+        cookie.setPath("/");
+        cookie.setMaxAge(1800);
+
+        // 클라이언트로 쿠키 전송
+        servletRes.addCookie(cookie);
     }
 }

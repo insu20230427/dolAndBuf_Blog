@@ -18,6 +18,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthService authService;
@@ -27,7 +30,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         setFilterProcessesUrl("/api/auth/login");
     }
-
     @Override // 로그인 요청 처리 : SecurityContext에 Authentication 설정
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("------attemptAuthentication start------");
@@ -59,8 +61,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         // AccessToken과 RefreshToken 생성
         String accessToken = authService.generateTokens(username);
 
-        // Response 객체의 헤더에 액세스/리프레시 토큰 및, Header KEY 값 추가 및 HttpServletResponse 셋팅
-        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+        String encodedValue = URLEncoder.encode(accessToken, StandardCharsets.UTF_8).replace("+", "%20");
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, encodedValue);
+        cookie.setPath("/");
+        cookie.setMaxAge(1800);
+
+        res.addCookie(cookie);
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
         res.getWriter().write(json);// getWriter().write() -> 바디로 반환

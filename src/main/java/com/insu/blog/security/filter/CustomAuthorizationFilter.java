@@ -7,6 +7,7 @@ import com.insu.blog.security.service.UserDetailsServiceImpl;
 import com.insu.blog.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -19,7 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -55,6 +59,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isPresent()) {
             String refreshTokenValue = redisTemplate.opsForValue().get("refresh_" + optionalUser.get().getUsername());
@@ -65,8 +70,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 // RefreshToken으로 새로운 AccessToken 발급
                 String newAccessToken = authService.refreshToken(optionalUser.get().getUsername());
 
-                // 클라이언트에게 새로운 AccessToken 전송
-                res.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
+                String encodedValue = URLEncoder.encode(newAccessToken, StandardCharsets.UTF_8).replace("+", "%20");
+                Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, encodedValue);
+                cookie.setPath("/");
+                cookie.setMaxAge(1800);
+
+                res.addCookie(cookie);
             }
         }
         filterChain.doFilter(req, res);
