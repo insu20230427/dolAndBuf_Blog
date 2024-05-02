@@ -37,7 +37,7 @@ public class Post {
 
     // 게시글 삭제해도 해당 유저의 게시글이므로 딱히 상관 x
     @ManyToOne(fetch = FetchType.EAGER) // 유저정보는 바로 보여야됨(아이디 or 이름) = EAGER
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user; // user -> User/id -> User
 
     // 게시글 삭제 시 댓글들이 어떤 게시글의 댓글들인지 알 수 없으므로 CascoadeType을 REMOVE를 줘서 강제삭제
