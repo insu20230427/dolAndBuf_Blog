@@ -11,7 +11,7 @@
             <input type="text" value="" class="form-control" id="username" readonly>
         </div>
 
-        <div id="oauth2-false">
+        <div id="oauth2-false" style="display: none">
             <div class="form-group">
                 <label>비밀번호</label>
                 <input type="password" class="form-control" id="update-password" placeholder="비밀번호를 입력하세요">

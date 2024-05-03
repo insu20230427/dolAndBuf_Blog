@@ -52,14 +52,12 @@
             <c:forEach var="reply" items="${detailPost.replyList}">
                 <li id="reply-${reply.id}" class="list-group-item d-flex justify-content-between">
                     <div class="content">
-                        <a class="author">${reply.user.username}</a>
+                        <a class="author" id="reply-username">${reply.user.username}</a>
                         <div class="metadata">
                             <span class="date">${reply.createDate}</span>
                         </div>
                         <div class="text reply-content" id="reply-update-content">${reply.content}</div>
                         <div class="actions">
-                                <%--                            <c:choose>--%>
-                                <%--                                <c:when test="${not empty principal.user.id}">--%>
                             <a onclick="indexReply.updateReplyForm(${reply.id})" class="reply"
                                id="btn-update-form">수정</a>
                             <a onclick="indexReply.updateReply(${detailPost.id}, ${reply.id})"
@@ -68,17 +66,13 @@
                             <a onclick="indexReply.deleteReply(${detailPost.id}, ${reply.id})"
                                class="reply" id="btn-delete-reply">삭제
                             </a>
-                                <%--                                </c:when>--%>
-                                <%--                                <c:otherwise>--%>
-                                <%--                                </c:otherwise>--%>
-                                <%--                            </c:choose>--%>
                         </div>
                     </div>
                 </li>
             </c:forEach>
         </div>
         <form class="ui reply form">
-            <input style="display: none" id="userId" value="${detailPost.user.id}"/>
+            <input style="display: none" id="userId"/>
             <input style="display: none" id="postId" value="${detailPost.id}"/>
             <div class="field">
                 <textarea id="reply-content"></textarea>
