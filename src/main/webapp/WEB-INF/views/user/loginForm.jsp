@@ -24,9 +24,9 @@
     <a href="https://nid.naver.com/oauth2.0/authorize?&response_type=code&client_id=INlvRIKGwlO9MzaRzyrE&redirect_uri=http://localhost:8080/api/oauth2/naver/callback">
         <img src="/image/naver_login_button.png" style="height: 38px; width: 90px">
     </a>
-<%--    <a href="/oauth2/authorization/google">--%>
-<%--        <img src="/image/google_login_button.png" style="height: 44px">--%>
-<%--    </a>--%>
+    <a href="/oauth2/authorization/google">
+        <img src="/image/google_login_button.png" style="height: 44px">
+    </a>
     <br/>
     <div><a href="signupForm">아직 회원가입을 하지 않으셨나요?</a></div>
     <div><a href="find-usernameForm">아이디 찾기</a></div>

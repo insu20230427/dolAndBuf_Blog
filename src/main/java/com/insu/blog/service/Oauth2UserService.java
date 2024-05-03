@@ -5,7 +5,10 @@ import com.insu.blog.entity.User;
 import com.insu.blog.provider.GoogleUserInfo;
 import com.insu.blog.provider.OAuth2UserInfoInterface;
 import com.insu.blog.repository.OAuth2Repository;
+import com.insu.blog.security.jwt.JwtUtil;
 import com.insu.blog.security.service.PrincipalDetails;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,12 +18,17 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class Oauth2UserService extends DefaultOAuth2UserService {
 
     private final OAuth2Repository oAuth2Repository;
+    private final AuthService authService;
+    private final HttpServletResponse servletRes;
 
     @Value("${insu.key}")
     private String keyPassword;
@@ -63,6 +71,17 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
             }
             oAuth2Repository.save(user);
         }
+
+        // AccessToken 생성
+        String accessToken = authService.generateTokens(username);
+
+        String encodedValue = URLEncoder.encode(accessToken, StandardCharsets.UTF_8).replace("+", "%20");
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, encodedValue);
+        cookie.setPath("/");
+        cookie.setMaxAge(1800);
+
+        // 클라이언트로 쿠키 전송
+        servletRes.addCookie(cookie);
 
         return new PrincipalDetails(user, oAuth2User.getAttributes());
     }
