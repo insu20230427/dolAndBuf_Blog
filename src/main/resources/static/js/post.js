@@ -1,5 +1,4 @@
 const tokenByPost = Cookies.get('Authorization');
-
 console.log(tokenByPost)
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -14,6 +13,8 @@ function userInfo() {
             'Authorization': tokenByPost
         },
     }).done(function (res) {
+        $('#userId').val(res.id);
+
         const trimmedUsername = $('#username').text().replace('작성자 : ', '');
         console.log(res.username);
         console.log(trimmedUsername)
@@ -34,7 +35,10 @@ function userInfo() {
         }
 
     }).fail(function (error) {
-        alert(error.responseJSON.message)
+        swal({
+            text: error.responseJSON.message,
+            icon: "error"
+        })
     });
 }
 
@@ -73,15 +77,23 @@ let indexPost = {
             headers: {
                 'Authorization': tokenByPost
             }
-        }).done(function (res) {
-            alert("글쓰기가 완료되었습니다.")
-            console.log("res : " + JSON.stringify(res))
-            location.href = "/";
-        }).fail(function (error) {
-            alert(JSON.stringify(error))
+        }).done(function () {
+            swal({
+                text: "게시글이 작성되었습니다!",
+                icon: "success",
+            }).then(() => {
+                // 2초 후에 페이지를 이동합니다.
+                setTimeout(() => {
+                    location.href = "/";
+                }, 50);
+            });
+        }).fail(function () {
+            swal({
+                text: "게시글 작성을 실패했습니다. 다시 작성해주세요!",
+                icon: "error",
+            })
         });
-    }
-    ,
+    },
 
     deletePost: function () {
         let id = $("#id").text(); // id값이 id인 input태그의 text값을 가져온다
@@ -91,19 +103,24 @@ let indexPost = {
             type: "DELETE",
             url: "/api/posts/" + id,
             dataType: "json",
-            // headers: {
-            //     'Authorization': tokenByPost
-            // }
-        }).done(function (res) {
-            alert("삭제가 완료되었습니다.")
-            console.log("res : " + JSON.stringify(res))
-            location.href = "/";
+        }).done(function () {
+            swal({
+                text: "게시글이 삭제가 완료되었습니다!",
+                icon: "success",
+            }).then(() => {
+                // 2초 후에 페이지를 이동합니다.
+                setTimeout(() => {
+                    location.href = "/";
+                }, 50);
+            });
         }).fail(function (error) {
-            console.log(JSON.stringify(error))
-            alert(JSON.stringify(error));
+            swal({
+                text: "게시글 삭제를 실패했습니다. 다시 작성해주세요!",
+                icon: "error",
+            })
+            console.log("error : " + JSON.stringify(error));
         });
-    }
-    ,
+    },
 
     updatePost: function () {
         let id = $('#id').val(); // id값이 id인 input태그의 value값을 가져온다.
@@ -122,15 +139,24 @@ let indexPost = {
             // headers: {
             //     'Authorization': tokenByPost
             // }
-        }).done(function (res) {
-            alert("글 수정이 완료되었습니다.")
-            console.log("res : " + JSON.stringify(res))
-            location.href = "/";
+        }).done(function () {
+            swal({
+                text: "게시글 수정을 성공했습니다!",
+                icon: "success",
+            }).then(() => {
+                // 2초 후에 페이지를 이동합니다.
+                setTimeout(() => {
+                    location.href = "/";
+                }, 50);
+            });
         }).fail(function (error) {
+            swal({
+                text: "게시글 수정을 실패했습니다. 다시 이용 부탁드립니다.",
+                icon: "error",
+            })
             console.log("error : " + JSON.stringify(error));
         });
-    }
-    ,
+    },
 
     addLikePost: function () {
         let id = $("#id").text();
@@ -147,10 +173,13 @@ let indexPost = {
             localStorage.setItem('post_' + id + '_liked' + userId, true);
             location.href = `/view/posts/${id}/detailForm`;
         }).fail(function (error) {
-            console.log(error)
+            swal({
+                text: "좋아요 실패. 좋아요를 다시 시도해주세요.",
+                icon: "error",
+            })
+            console.log("error : " + error)
         });
-    }
-    ,
+    },
 
     deleteLikePost: function () {
         let id = $("#id").text();
@@ -167,7 +196,11 @@ let indexPost = {
             localStorage.setItem('post_' + id + '_liked' + userId, false);
             location.href = `/view/posts/${id}/detailForm`;
         }).fail(function (error) {
-            console.log(error)
+            swal({
+                text: "좋아요 삭제 실패. 좋아요 삭제를 다시 시도해주세요.",
+                icon: "warning",
+            })
+            console.log("error : " + error)
         });
     }
 }

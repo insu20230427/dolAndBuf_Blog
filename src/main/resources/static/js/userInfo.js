@@ -15,14 +15,15 @@ function userInfo() {
         $('#id').val(res.id);
         $('#username').val(res.username);
         if (res.oauth == null) {
+            $('#oauth2-false').show();
             $('#update-email').val(res.email);
         } else {
             $('#btn-oauth2-email').val(res.email);
             $('#oauth2-false').hide();
-            $('#oauth2-true').on();
+            $('#oauth2-true').show();
         }
     }).fail(function (error) {
-        alert(error.responseJSON.message)
+        console.log(error.responseJSON.message)
     });
 }
 
@@ -36,7 +37,6 @@ function updateUser() {
         email: $('#update-email').val(),
         password: $('#update-password').val()
     };
-    console.log("data 잘 받아옴 : " + JSON.stringify(data));
 
     $.ajax({
         type: "PUT",
@@ -47,9 +47,13 @@ function updateUser() {
             'Authorization': tokenForUserInfo
         }
     }).done(function (res) {
-        alert("회원수정이 완료되었습니다.")
-        console.log("res : " + JSON.stringify(res))
-        location.href = "/";
+        swal({
+            text: "회원 수정이 완료 되었습니다.!", icon: "success",
+        }).then(() => {
+            setTimeout(() => {
+                location.href = "/";
+            }, 50);
+        });
     }).fail(function (error) {
         const errorMessage = error.responseJSON.message;
         const errors = error.responseJSON.errors;
