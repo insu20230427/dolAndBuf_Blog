@@ -46,7 +46,7 @@
                    style="text-align: center !important; display: flex !important;">글쓰기</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="user-info" href="http://localhost:8080/view/users/infoForm">회원정보</a>
+                <a class="nav-link" id="user-info" href="/view/users/infoForm">회원정보</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link"  href="javascript:logout()">로그아웃</a>

@@ -21,7 +21,7 @@
     <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ee8abaaf81bcb4e83dff921f9a492de6&redirect_uri=http://localhost:8080/api/oauth2/kakao/callback">
         <img src="/image/kakao_login_button.png" style="height: 38px">
     </a>
-    <a href="https://nid.naver.com/oauth2.0/authorize?&response_type=code&client_id=QP_CM_KT5kXHb44_BWpl&redirect_uri=http://localhost:8080/api/oauth2/naver/callback">
+    <a href="https://nid.naver.com/oauth2.0/authorize?&response_type=code&client_id=INlvRIKGwlO9MzaRzyrE&redirect_uri=http://localhost:8080/api/oauth2/naver/callback">
         <img src="/image/naver_login_button.png" style="height: 38px; width: 90px">
     </a>
 <%--    <a href="/oauth2/authorization/google">--%>
