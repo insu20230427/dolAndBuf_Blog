@@ -6,9 +6,15 @@ import com.insu.blog.security.service.PrincipalDetails;
 import com.insu.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,6 +22,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class PostController {
     private final PostService postService;
+
+
+    // 게시글 조회
+    // 메인 index(전체 게시글 조회)
+    @GetMapping("/posts")
+    public ResponseEntity<ApiResponseDto> index(@PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> posts =  postService.findAllPagedPosts(pageable);
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 조회 성공!").data(posts).build());
+    }
 
     // 게시글 생성
     @PostMapping("/posts")
