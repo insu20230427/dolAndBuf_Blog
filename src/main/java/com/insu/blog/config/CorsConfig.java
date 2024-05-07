@@ -14,7 +14,7 @@ public class CorsConfig { // cross-origin
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("*"); // 모든 ip에 대한 허용
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedHeader("*"); // 얘는 모든 헤더 요청에 관한 허용
         configuration.addAllowedMethod("*"); // 얘는 모든 http method방식에 대한 허용
         source.registerCorsConfiguration("/api/**", configuration);
