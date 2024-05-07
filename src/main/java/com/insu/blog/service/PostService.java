@@ -25,6 +25,7 @@ public class PostService {
     public void writePost(Post post, User user) {
         post.setCount(0);
         post.setUser(user);
+        post.setContent(post.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
         postRepository.save(post);
     }
 
@@ -38,8 +39,7 @@ public class PostService {
     @Transactional
     public void updatePost(int boardId, Post post) {
         Post updatePost = postRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
-
-        updatePost.setContent(post.getContent());
+        post.setContent(post.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
         updatePost.setTitle(post.getTitle());
     }
 
