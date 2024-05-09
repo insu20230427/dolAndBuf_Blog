@@ -39,7 +39,7 @@ public class PostService {
     @Transactional
     public void updatePost(int boardId, Post post) {
         Post updatePost = postRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
-        post.setContent(post.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
+        updatePost.setContent(post.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
         updatePost.setTitle(post.getTitle());
     }
 
@@ -51,8 +51,8 @@ public class PostService {
 
     // 상세 게시글 조회
     @Transactional(readOnly = true)
-    public Post showPostDetail(int boardId) {
-        return postRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
+    public Post showPostDetail(int postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
     }
 
 

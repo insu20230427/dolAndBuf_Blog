@@ -5,6 +5,7 @@ import com.insu.blog.dto.request.UpdateUserRequestDto;
 import com.insu.blog.entity.RoleType;
 import com.insu.blog.entity.User;
 import com.insu.blog.repository.UserRepository;
+import com.insu.blog.security.jwt.JwtUtil;
 import com.insu.blog.security.service.PrincipalDetails;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.Cookie;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final RedisTemplate<String, Object> redisTemplate;
     private final HttpServletResponse servletRes;
+    private final AuthService authService;
 
     // 회원 가입
     @Transactional
@@ -52,7 +56,9 @@ public class UserService {
         User updateUser = userRepository.findById(principalDetails.getUser().getId()).orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패")
         );
         if( updateUser.getOauth() == null || updateUser.getOauth().equals("")) {
-            updateUser.setPassword(encoder.encode(updateDto.getPassword()));
+            if(StringUtils.isNotBlank(updateDto.getPassword())) {
+                updateUser.setPassword(encoder.encode(updateDto.getPassword()));
+            }
             updateUser.setEmail(updateDto.getEmail());
         }
     }
@@ -60,10 +66,30 @@ public class UserService {
     // 회원 수정 시 인증 객체 생성
     public void authenticationUser(UpdateUserRequestDto updateDto, PrincipalDetails principalDetails) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(principalDetails.getUser().getUsername(), updateDto.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if(StringUtils.isNotBlank(updateDto.getPassword())) {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(principalDetails.getUser().getUsername(), updateDto.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(principalDetails.getUser().getUsername(), null, principalDetails.getAuthorities())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        // AccessToken과 RefreshToken 생성
+        String accessToken = authService.generateTokens(updateDto.getUsername());
+
+        String encodedValue = URLEncoder.encode(accessToken, StandardCharsets.UTF_8).replace("+", "%20");
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, encodedValue);
+        cookie.setPath("/");
+        cookie.setMaxAge(1800);
+
+        servletRes.addCookie(cookie);
+        servletRes.setContentType("application/json");
+        servletRes.setCharacterEncoding("UTF-8");
+
     }
 
     // 로그아웃
