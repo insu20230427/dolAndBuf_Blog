@@ -2,14 +2,14 @@ document.addEventListener('DOMContentLoaded', function () {
     userInfo()
 })
 
-const tokenForUserInfo = Cookies.get("Authorization");
+const token = Cookies.get("Authorization");
 
 function userInfo() {
     $.ajax({
         type: "GET",
         url: "/view/users/info",
         headers: {
-            'Authorization': tokenForUserInfo
+            'Authorization': token
         },
     }).done(function (res) {
         $('#id').val(res.id);
@@ -44,7 +44,7 @@ function updateUser() {
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
         headers: {
-            'Authorization': tokenForUserInfo
+            'Authorization': token
         }
     }).done(function (res) {
         swal({
