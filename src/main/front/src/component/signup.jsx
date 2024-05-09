@@ -6,6 +6,7 @@ import Footer from "./footer";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Container, Form, Button} from 'react-bootstrap';
 import {useNavigate} from "react-router-dom";
+import {Label} from "semantic-ui-react";
 
 const Signup = () => {
     const [username, setUsername] = useState('');
@@ -67,7 +68,7 @@ const Signup = () => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
-                        {usernameError && <span style={{ color: 'red', fontSize: 'small' }}>{usernameError}</span>}
+                        {usernameError && <Label basic color='red' pointing>{usernameError}</Label>}
                     </Form.Group>
                     <br />
                     <Form.Group controlId="password">
@@ -78,7 +79,7 @@ const Signup = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                        {passwordError && <span style={{ color: 'red', fontSize: 'small' }}>{passwordError}</span>}
+                        {passwordError && <Label basic color='red' pointing>{passwordError}</Label>}
                     </Form.Group>
                     <br />
                     <Form.Group controlId="email">
@@ -89,7 +90,7 @@ const Signup = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        {emailError && <span style={{ color: 'red', fontSize: 'small' }}>{emailError}</span>}
+                        {emailError && <Label basic color='red' pointing>{emailError}</Label>}
                     </Form.Group>
                 </Form>
                 <br />
