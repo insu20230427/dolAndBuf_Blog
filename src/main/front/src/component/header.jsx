@@ -52,7 +52,7 @@ export default function Header() {
                     {isLoggedIn ? (
                         <>
                             <Nav.Link as={Link} to="/write">글쓰기</Nav.Link>
-                            <Nav.Link as={Link} to="/info">회원정보</Nav.Link>
+                            <Nav.Link as={Link} to="/user">회원정보</Nav.Link>
                             <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                         </>
                     ) : (

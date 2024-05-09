@@ -58,7 +58,6 @@ const Index = () => {
                                             className="card"
                                             onClick={() => {
                                                 navigate(`/detail-post/${post.id}`, {
-                                                    state: { detailPost: post }
                                                 });
                                             }}
                                             style={{cursor: 'pointer', height: '250px'}}

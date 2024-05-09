@@ -7,7 +7,8 @@ import 'react-quill/dist/quill.snow.css'; // Quill 에디터 스타일
 import ReactQuill from 'react-quill';
 import Cookies from "js-cookie";
 import Header from "./header";
-import Footer from "./footer"; // Quill 에디터
+import Footer from "./footer";
+import Swal from "sweetalert2"; // Quill 에디터
 
 const WritePost = () => {
     const navigate = useNavigate();
@@ -33,12 +34,19 @@ const WritePost = () => {
             });
 
             if (response.status === 200) {
-                alert('게시글이 작성되었습니다!');
-                navigate('/');
+                Swal.fire({
+                    icon: 'success',
+                    text: '게시글 작성 성공.'
+                }).then(() => {
+                    navigate('/');
+                })
             }
         } catch (error) {
             console.error('게시글 작성 실패:', error);
-            alert('게시글 작성을 실패했습니다. 다시 작성해주세요!');
+            await Swal.fire({
+                icon: 'error',
+                text: '게시글 작성 실패.'
+            })
         }
     };
 
