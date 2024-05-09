@@ -32,6 +32,13 @@ public class PostController {
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 조회 성공!").data(posts).build());
     }
 
+    // 게시글 단일 조회
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<ApiResponseDto> getPostById(@PathVariable("postId") String postId) {
+        Post post = postService.showPostDetail(Integer.parseInt(postId));
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 조회 성공!").data(post).build());
+    }
+
     // 게시글 생성
     @PostMapping("/posts")
     public ResponseEntity<ApiResponseDto> writePost(@RequestBody Post post, @AuthenticationPrincipal PrincipalDetails userDetails) {

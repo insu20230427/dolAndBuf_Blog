@@ -30,7 +30,7 @@ public class UserController {
 
     // 회원 수정
     @PutMapping("/users")
-    public ResponseEntity<ApiResponseDto> updateUser(@Valid @RequestBody UpdateUserRequestDto updateDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<ApiResponseDto> updateUser(@Valid @RequestBody UpdateUserRequestDto updateDto, @AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
         userService.updateUser(updateDto, principalDetails);
         userService.authenticationUser(updateDto, principalDetails);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("회원정보 수정 성공!").build());

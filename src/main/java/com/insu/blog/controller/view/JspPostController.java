@@ -3,9 +3,6 @@ package com.insu.blog.controller.view;
 import com.insu.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +15,6 @@ public class JspPostController {
 
     private final PostService postService;
 
-    // 메인 index(전체 게시글 조회)
-    @GetMapping({"", "/"})
-    public String index(Model model, @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        model.addAttribute("posts", postService.findAllPagedPosts(pageable));
-        log.info("posts : " + postService.findAllPagedPosts(pageable).getContent());
-        return "index";
-    }
 
     // 글 작성 폼
     @GetMapping("/view/posts/writeForm")
