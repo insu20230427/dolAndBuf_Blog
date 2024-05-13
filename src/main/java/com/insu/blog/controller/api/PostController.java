@@ -1,5 +1,6 @@
 package com.insu.blog.controller.api;
 
+import com.insu.blog.dto.request.UpdatePostReqDto;
 import com.insu.blog.dto.response.ApiResponseDto;
 import com.insu.blog.entity.Post;
 import com.insu.blog.security.service.PrincipalDetails;
@@ -55,8 +56,8 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("/posts/{id}")
-    public ResponseEntity<ApiResponseDto> updatePost(@PathVariable("id") int id, @RequestBody Post post) {
-        postService.updatePost(id, post);
+    public ResponseEntity<ApiResponseDto> updatePost(@PathVariable("id") int id, @RequestBody UpdatePostReqDto updatePostReqDto) {
+        postService.updatePost(id, updatePostReqDto);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 수정 성공!").build());
     }
 
