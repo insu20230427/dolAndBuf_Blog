@@ -21,7 +21,7 @@ function App() {
                         <Route path="/write" element={<WritePost/>}/>
                         <Route path="/detail-post/:id" element={<DetailPost/>}/>
                         <Route path="/user" element={<User/>}/>
-                        <Route path="/update-post" element={<UpdatePost/>}/>
+                        <Route path="/update-post/:id" element={<UpdatePost/>}/>
                     </Routes>
                 </BrowserRouter>
             </div>
