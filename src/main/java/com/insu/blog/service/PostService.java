@@ -1,10 +1,12 @@
 package com.insu.blog.service;
 
+import com.insu.blog.dto.request.UpdatePostReqDto;
 import com.insu.blog.entity.Post;
 import com.insu.blog.entity.PostLike;
 import com.insu.blog.entity.User;
 import com.insu.blog.repository.PostLikeRepository;
 import com.insu.blog.repository.PostRepository;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,16 +33,20 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(int boardId) {
-        postRepository.deleteById(boardId);
+    public void deletePost(int postId) {
+        postRepository.deleteById(postId);
     }
 
     // 게시글 수정
     @Transactional
-    public void updatePost(int boardId, Post post) {
-        Post updatePost = postRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
-        updatePost.setContent(post.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
-        updatePost.setTitle(post.getTitle());
+    public void updatePost(int postId, UpdatePostReqDto updatePostReqDto) {
+        Post updatePost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
+        updatePost.setContent(updatePostReqDto.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
+        if(StringUtils.isNotBlank(updatePostReqDto.getTitle())) {
+            updatePost.setTitle(updatePostReqDto.getTitle());
+        }
+        System.out.println("content : " + updatePostReqDto.getContent());
+        System.out.println("title : " + updatePostReqDto.getTitle());
     }
 
     // 페이징된 글 전체 조회
