@@ -256,7 +256,9 @@ const DetailPost = () => {
                     </div>
                     <div className="item">
                         <div className="content">
-                            <div className="header">작성자 : {detailPost.user.username}</div>
+                            {detailPost.user && (  // detailPost.user가 존재하는 경우에만 렌더링
+                                <div className="header">작성자 : {detailPost.user.username}</div>
+                            )}
                         </div>
                     </div>
                     <div className="ui labeled button" tabIndex="0">
@@ -289,20 +291,21 @@ const DetailPost = () => {
                     }}>
                         <Icon name="arrow left"/>
                     </Button>
-                    <Button icon
-                            style={{display: 'none'}}
-                            onClick={() => {
-                                navigate(`/update-post`, {
-                                    state: {detailPost: detailPost}
-                                });
-                            }}
-                    >
-                        <Icon name="edit"/>
-                    </Button>
-                    <Button icon
-                            onClick={handleDeletePost}>
-                        <Icon name="trash alternate"/>
-                    </Button>
+                    {userId && detailPost.user && String(userId) === String(detailPost.user.id) && (
+                       <>
+                        <Button icon
+                                onClick={() => {
+                                    navigate(`/update-post/${id}`, {
+                                    });
+                                }}
+                        >
+                            <Icon name="cut"/>
+                        </Button>
+                        <Button icon onClick={handleDeletePost}>
+                            <Icon name="trash alternate"/>
+                        </Button>
+                       </>
+                    )}
                 </div>
                 <br/><br/>
                 <h3>{detailPost.title}</h3>
