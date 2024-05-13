@@ -1,17 +1,19 @@
 package com.insu.blog.service;
 
-import com.insu.blog.entity.Post;
-import com.insu.blog.entity.PostLike;
-import com.insu.blog.entity.User;
-import com.insu.blog.repository.PostLikeRepository;
-import com.insu.blog.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import com.insu.blog.entity.Post;
+import com.insu.blog.entity.PostLike;
+import com.insu.blog.entity.User;
+import com.insu.blog.repository.PostLikeRepository;
+import com.insu.blog.repository.PostRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -55,13 +57,13 @@ public class PostService {
         return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
     }
 
-
-    //게시글 좋아요
+    // 게시글 좋아요
     public void createLikes(int postId, User user) {
 
         Optional<PostLike> existingLikesOptional = postLikeRepository.findByPostIdAndUserId(postId, user.getId());
         if (!existingLikesOptional.isPresent()) { // 좋아요를 한번도 누르지 않은 사람
-            Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다."));
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다."));
 
             PostLike newLikes = new PostLike(true, post, user);
             post.setLikeCnt(post.getLikeCnt() + 1);
@@ -79,10 +81,11 @@ public class PostService {
         }
     }
 
-    //게시글 좋아요 취소
+    // 게시글 좋아요 취소
     public void deleteLikes(int postId, User user) {
 
-        PostLike postLike = postLikeRepository.findByPostIdAndUserId(postId, user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 게시글 좋아요가 존재하지 않습니다."));
+        PostLike postLike = postLikeRepository.findByPostIdAndUserId(postId, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글 좋아요가 존재하지 않습니다."));
 
         likesValid(postLike, user);
 
@@ -102,5 +105,20 @@ public class PostService {
         if (postLikedUserId != loginId) {
             throw new IllegalArgumentException("잘못된 접근입니다.");
         }
+    }
+
+    // 제목 또는 내용으로 검색
+    public Page<Post> searchPostsByTitleOrContent(String keyword, Pageable pageable) {
+        return postRepository.findByTitleOrContent(keyword, pageable);
+    }
+
+    // 제목으로만 검색
+    public Page<Post> searchPostsByTitle(String keyword, Pageable pageable) {
+        return postRepository.findByTitle(keyword, pageable);
+    }
+
+    // 내용으로만 검색
+    public Page<Post> searchPostsByContent(String keyword, Pageable pageable) {
+        return postRepository.findByContent(keyword, pageable);
     }
 }
