@@ -1,12 +1,12 @@
-import React, {useState, useEffect} from 'react';
-import Header from './header';
-import Footer from './footer';
-import {Pagination} from 'react-bootstrap';
-import 'semantic-ui-css/semantic.min.css';
-import {GridRow, GridColumn, Grid, Segment, Icon} from 'semantic-ui-react'
-import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
-import {useNavigate} from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useEffect, useState } from 'react';
+import { Pagination } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import 'semantic-ui-css/semantic.min.css';
+import { Grid, GridColumn, GridRow, Icon, Segment } from 'semantic-ui-react';
+import Footer from './footer';
+import Header from './header';
 
 
 const Index = () => {
@@ -35,6 +35,12 @@ const Index = () => {
 
             fetchPosts(currentPage); // 컴포넌트가 마운트되면 데이터를 가져옴
         }, [currentPage]);
+
+        useEffect(() => {
+            // 페이지 로드 시 로컬 스토리지에서 검색 관련 항목 삭제
+            localStorage.removeItem('searchType');
+            localStorage.removeItem('searchKeyword');
+        }, []);
 
         const handlePageClick = (pageNumber) => {
             setCurrentPage(pageNumber); // 페이지 변경 시 현재 페이지 업데이트

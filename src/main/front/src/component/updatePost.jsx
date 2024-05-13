@@ -1,23 +1,19 @@
-import React, {useEffect, useState} from "react";
 import axios from "axios";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
-import Header from "./header";
-import {Form} from "react-bootstrap";
-import ReactQuill from "react-quill";
-import {Button, Icon} from "semantic-ui-react";
-import Footer from "./footer";
-import Swal from 'sweetalert2';
 import Cookies from "js-cookie";
+import React, { useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
+import ReactQuill from "react-quill";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button, Icon } from "semantic-ui-react";
+import Swal from 'sweetalert2';
+import Footer from "./footer";
+import Header from "./header";
 
 export default function UpdatePost() {
-    const location = useLocation();
-    const {detailPost} = location.state || {};
+    const [detailPost, setDetailPost] = useState({});
     const navigate = useNavigate();
-    const [title, setTitle] = useState(detailPost?.title || '');
-    const [content, setContent] = useState(detailPost?.content || '');
     const {id} = useParams();
-    const [postUsername, setPostUsername] = useState(detailPost?.user.username || '')
-    const [username, setUsername] = useState('')
+    const [username, setUsername] = useState('');
 
     useEffect(() => {
         const storedToken = Cookies.get('Authorization');
@@ -38,22 +34,47 @@ export default function UpdatePost() {
 
             setUsername(decodedPayload.sub)
         }
+
+        const fetchPost = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/posts/${id}`);
+                setDetailPost(response.data.data);
+            } catch (error) {
+                console.error('포스트 정보를 가져오는 도중 오류 발생:', error);
+            }
+        };
+
+        fetchPost();
+
     }, []);
 
-
-    if (!title && !content && !id) {
-        return alert("loading...");
-    }
+    // if (!title && !content && !id) {
+    //     return alert("loading...");
+    // }
 
     const containerStyle = {
         height: '87vh'
     }
 
+    const setTitle = (e) => {
+        setDetailPost({
+            ...detailPost,
+            title: e.target.value
+        });
+    }
+    
+    const setContent = (value) => {
+        setDetailPost(({
+            ...detailPost,
+            content: value
+        }));
+    }
+
     const handleUpdate = async () => {
         try {
             axios.put(`http://localhost:8080/api/posts/${id}`, {
-                title: title,
-                content: content
+                title: detailPost.title,
+                content: detailPost.content
             })
                 .then(() => {
                     Swal.fire({
@@ -106,18 +127,20 @@ export default function UpdatePost() {
                     <Form.Group>
                         <Form.Control
                             type="text"
-                            placeholder="Enter title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            value={detailPost.title}
+                            onChange={(e) => {
+                                setDetailPost({
+                                    ...detailPost,
+                                    title: e.target.value
+                                })}}
                         />
                     </Form.Group>
                     <br/>
                     <Form.Group>
                         <ReactQuill
                             theme="snow"
-                            value={content}
+                            value={detailPost.content}
                             onChange={setContent}
-                            placeholder="Write your content here..."
                             style={{height: '700px'}}
                         />
                     </Form.Group>
@@ -126,7 +149,7 @@ export default function UpdatePost() {
                         <Button icon onClick={() => navigate('/')}>
                             <Icon name="arrow left"/>
                         </Button>
-                        {postUsername === username && (
+                        {detailPost.user && detailPost.user.username === username && (
                             <>
                                 <Button type="button" onClick={handleUpdate}>
                                     수정
