@@ -1,11 +1,11 @@
+import Header from "./header";
+import {Button, Comment, Divider, Form, Icon, Label} from "semantic-ui-react";
+import Footer from "./footer";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button, Comment, Divider, Form, Icon, Label } from "semantic-ui-react";
 import Swal from "sweetalert2";
-import Footer from "./footer";
-import Header from "./header";
 
 const DetailPost = () => {
 
@@ -256,7 +256,9 @@ const DetailPost = () => {
                     </div>
                     <div className="item">
                         <div className="content">
-                            <div className="header">작성자 : {detailPost.user && detailPost.user.username}</div>
+                            {detailPost.user && (  // detailPost.user가 존재하는 경우에만 렌더링
+                                <div className="header">작성자 : {detailPost.user.username}</div>
+                            )}
                         </div>
                     </div>
                     <div className="ui labeled button" tabIndex="0">
@@ -289,17 +291,21 @@ const DetailPost = () => {
                     }}>
                         <Icon name="arrow left"/>
                     </Button>
-                    <Button icon
-                            onClick={() => {
-                                navigate(`/update-post/${id}`);
-                            }}
-                    >
-                        <Icon name="edit"/>
-                    </Button>
-                    <Button icon
-                            onClick={handleDeletePost}>
-                        <Icon name="trash alternate"/>
-                    </Button>
+                    {userId && detailPost.user && String(userId) === String(detailPost.user.id) && (
+                       <>
+                        <Button icon
+                                onClick={() => {
+                                    navigate(`/update-post/${id}`, {
+                                    });
+                                }}
+                        >
+                            <Icon name="cut"/>
+                        </Button>
+                        <Button icon onClick={handleDeletePost}>
+                            <Icon name="trash alternate"/>
+                        </Button>
+                       </>
+                    )}
                 </div>
                 <br/><br/>
                 <h3>{detailPost.title}</h3>
@@ -316,7 +322,7 @@ const DetailPost = () => {
                     {replies.map((reply) => (
                         <Comment key={reply.id}>
                             <Comment.Content>
-                                <Comment.Author>{reply.user && reply.user.username}</Comment.Author>
+                                <Comment.Author>{reply.user.username}</Comment.Author>
                                 <Comment.Metadata>
                                     <div className="date">{reply.createDate}</div>
                                 </Comment.Metadata>

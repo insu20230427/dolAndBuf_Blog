@@ -1,19 +1,19 @@
+import React, {useEffect, useState} from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
-import ReactQuill from "react-quill";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button, Icon } from "semantic-ui-react";
-import Swal from 'sweetalert2';
-import Footer from "./footer";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import Header from "./header";
+import {Form} from "react-bootstrap";
+import ReactQuill from "react-quill";
+import {Button, Icon} from "semantic-ui-react";
+import Footer from "./footer";
+import Swal from 'sweetalert2';
+import Cookies from "js-cookie";
 
 export default function UpdatePost() {
     const [detailPost, setDetailPost] = useState({});
     const navigate = useNavigate();
     const {id} = useParams();
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState('')
 
     useEffect(() => {
         const storedToken = Cookies.get('Authorization');
@@ -34,47 +34,34 @@ export default function UpdatePost() {
 
             setUsername(decodedPayload.sub)
         }
-
-        const fetchPost = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/posts/${id}`);
-                setDetailPost(response.data.data);
-            } catch (error) {
-                console.error('포스트 정보를 가져오는 도중 오류 발생:', error);
-            }
-        };
-
-        fetchPost();
-
+        fetchPosts();
     }, []);
 
-    // if (!title && !content && !id) {
-    //     return alert("loading...");
-    // }
+    const fetchPosts = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/posts/${id}`);
+            console.log(response.data.data.user.username)
+            console.log(username)
+            setDetailPost(response.data.data);
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+        }
+    };
+
+
+    if (!detailPost.title && !detailPost.content && !id) {
+        return alert("loading...");
+    }
 
     const containerStyle = {
         height: '87vh'
     }
 
-    const setTitle = (e) => {
-        setDetailPost({
-            ...detailPost,
-            title: e.target.value
-        });
-    }
-    
-    const setContent = (value) => {
-        setDetailPost(({
-            ...detailPost,
-            content: value
-        }));
-    }
-
     const handleUpdate = async () => {
         try {
             axios.put(`http://localhost:8080/api/posts/${id}`, {
-                title: detailPost.title,
-                content: detailPost.content
+                content: detailPost.content,
+                title: detailPost.title
             })
                 .then(() => {
                     Swal.fire({
@@ -128,11 +115,10 @@ export default function UpdatePost() {
                         <Form.Control
                             type="text"
                             value={detailPost.title}
-                            onChange={(e) => {
-                                setDetailPost({
-                                    ...detailPost,
-                                    title: e.target.value
-                                })}}
+                            onChange={(e) => setDetailPost({
+                                ...detailPost,
+                                title: e.target.value
+                            })}
                         />
                     </Form.Group>
                     <br/>
@@ -140,7 +126,10 @@ export default function UpdatePost() {
                         <ReactQuill
                             theme="snow"
                             value={detailPost.content}
-                            onChange={setContent}
+                            onChange={(value) => setDetailPost({
+                                ...detailPost,
+                                content: value
+                            })}
                             style={{height: '700px'}}
                         />
                     </Form.Group>
@@ -149,16 +138,16 @@ export default function UpdatePost() {
                         <Button icon onClick={() => navigate('/')}>
                             <Icon name="arrow left"/>
                         </Button>
-                        {detailPost.user && detailPost.user.username === username && (
-                            <>
-                                <Button type="button" onClick={handleUpdate}>
-                                    수정
-                                </Button>
-                                <Button type="button" onClick={handleDelete}>
-                                    삭제
-                                </Button>
-                            </>
-                        )}
+                        <Button icon
+                                type="button"
+                                onClick={handleUpdate}>
+                            <Icon name="cut"/>
+                        </Button>
+                        <Button icon
+                                type="button"
+                                onClick={handleDelete}>
+                            <Icon name="trash alternate"/>
+                        </Button>
                     </div>
                 </Form>
             </div>

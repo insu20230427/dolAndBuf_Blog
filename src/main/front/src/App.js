@@ -1,12 +1,13 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import Index from "./component";
-import DetailPost from "./component/detailPost";
 import Login from "./component/login";
-import SearchPost from './component/searchPost';
 import Signup from "./component/signup";
-import UpdatePost from "./component/updatePost";
-import User from "./component/user";
 import WritePost from "./component/writePost";
+import User from "./component/user";
+import UpdatePost from "./component/updatePost";
+import DetailPost from "./component/detailPost";
+import {Header} from "semantic-ui-react";
+import Footer from "./component/footer";
 
 function App() {
     return (
