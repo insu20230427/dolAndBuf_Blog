@@ -72,6 +72,8 @@ dependencies {
 
     // stomp
     implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3-1'
+
+    implementation 'org.webjars:sockjs-client:1.5.1'
 }
 
 tasks.named('test') {
