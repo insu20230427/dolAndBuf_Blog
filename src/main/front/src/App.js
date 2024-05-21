@@ -6,8 +6,8 @@ import WritePost from "./component/writePost";
 import User from "./component/user";
 import UpdatePost from "./component/updatePost";
 import DetailPost from "./component/detailPost";
-import {Header} from "semantic-ui-react";
-import Footer from "./component/footer";
+import ChatApp from './component/chatApp';
+import Chat from './component/chat';
 
 function App() {
     return (
@@ -22,6 +22,8 @@ function App() {
                         <Route path="/detail-post/:id" element={<DetailPost/>}/>
                         <Route path="/user" element={<User/>}/>
                         <Route path="/update-post/:id" element={<UpdatePost/>}/>
+                        <Route path="/chat" element={<ChatApp/>}/>
+                        <Route path="/room/:roomId/:chatRoomName" element={<Chat/>}/>
                     </Routes>
                 </BrowserRouter>
             </div>
