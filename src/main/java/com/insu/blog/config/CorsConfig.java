@@ -17,7 +17,7 @@ public class CorsConfig { // cross-origin
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedHeader("*"); // 얘는 모든 헤더 요청에 관한 허용
         configuration.addAllowedMethod("*"); // 얘는 모든 http method방식에 대한 허용
-        source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);
 
         return new CorsFilter(source);
     }
