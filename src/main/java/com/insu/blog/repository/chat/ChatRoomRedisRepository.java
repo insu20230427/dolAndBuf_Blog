@@ -15,7 +15,7 @@ public class ChatRoomRedisRepository {
     public static final String ENTER_INFO = "ENTER_INFO";
 
     @Resource(name = "redisTemplate")
-    private HashOperations<String, String, String> hashOpsEnterInfo;
+    private final HashOperations<String, String, String> hashOpsEnterInfo;
 
     /*
         유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
