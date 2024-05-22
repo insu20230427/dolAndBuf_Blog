@@ -1,0 +1,32 @@
+.sidebar {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-right: 1px solid #dee2e6;
+}
+
+.sidebar h3 {
+    color: #343a40;
+    margin-bottom: 15px;
+}
+
+.category-list {
+    list-style: none;
+    padding: 0;
+}
+
+.category-list li a {
+    text-decoration: none;
+    color: #495057;
+    display: block;
+    padding: 8px 0;
+    transition: color 0.3s;
+}
+
+.category-list li a:hover {
+    color: #0056b3;
+}
+
+.selected {
+    font-weight: bold;
+    text-decoration: underline;
+}

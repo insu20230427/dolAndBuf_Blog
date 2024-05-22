@@ -3,6 +3,8 @@ import { BlogProvider } from './contexts/blogContext';
 import Layout from './layouts/layout';
 import UserBlog from './pages/blog/userBlog';
 import CategoryPosts from './pages/category/categoryPosts';
+import Chat from './pages/chat/chat';
+import ChatApp from './pages/chat/chatApp';
 import Index from './pages/index';
 import Login from './pages/login/login';
 import DetailPost from './pages/posts/detailPost/detailPost';

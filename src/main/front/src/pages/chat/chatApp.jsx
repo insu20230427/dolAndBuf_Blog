@@ -1,12 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react';
-import { Button, List, Segment, Modal, Form, Input, Grid, Card, Header as SemanticHeader, Icon, Container } from 'semantic-ui-react';
+import { Client } from '@stomp/stompjs';
 import axios from 'axios';
-import SockJS from 'sockjs-client';
-import {Client} from '@stomp/stompjs';
-import Header from './header';
-import Footer from './footer';
 import Cookies from 'js-cookie';
-import {useNavigate} from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button, Card, Container, Form, Grid, Icon, Input, List, Modal, Header as SemanticHeader } from 'semantic-ui-react';
+import SockJS from 'sockjs-client';
 
 const ChatApp = () => {
 
@@ -129,7 +127,6 @@ const ChatApp = () => {
 
     return (
         <>
-            <Header/>
             <br/><br/><br/>
             <Container style={containerStyle}>
                 <SemanticHeader as='h2' textAlign='center'>채팅방 목록</SemanticHeader>
@@ -213,7 +210,6 @@ const ChatApp = () => {
                     </Modal.Content>
                 </Modal>
             </Container>
-            <Footer/>
         </>
     );
 };

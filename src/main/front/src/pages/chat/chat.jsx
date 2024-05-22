@@ -1,21 +1,19 @@
-import { Client } from "@stomp/stompjs";
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import SockJS from "sockjs-client";
-import Header from "./header";
-import Footer from "./footer";
-import Cookies from "js-cookie";
-import axios from "axios";
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import './chat.css';
 import {
-    MainContainer,
     ChatContainer,
-    MessageList,
+    MainContainer,
     Message,
     MessageInput,
+    MessageList,
 } from "@chatscope/chat-ui-kit-react";
+import { Client } from "@stomp/stompjs";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Button } from "semantic-ui-react";
+import SockJS from "sockjs-client";
+import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import './chat.css';
 
 function Chat() {
     const { roomId, chatRoomName } = useParams();
@@ -163,7 +161,6 @@ function Chat() {
 
     return (
         <>
-            <Header />
             <div className="chat-container" style={containerStyle}>
                 <div className="chat-header">
                     <h2>{roomName}</h2>
@@ -197,7 +194,6 @@ function Chat() {
                     </MainContainer>
                 </div>
             </div>
-            <Footer />
         </>
     )
 }

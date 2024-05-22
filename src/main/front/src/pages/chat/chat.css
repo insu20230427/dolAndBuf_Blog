@@ -1,9 +1,9 @@
 .message-outgoing {
-    text-align: right;
+   text-align: right;
    padding: 10px;
    border-radius: 10px;
    margin: 5px;
-} 
+}
 
 .message-incoming {
    text-align: left;
@@ -34,4 +34,3 @@
    padding: 20px;
    background: white;
 }
-
