@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Integer> {
 
-    List<ChatMessage> findAllByChatRoomIdAndCreatedAtGreaterThanEqual(Pageable pageable, int chatRoomId, LocalDateTime enteredTime);
+    List<ChatMessage> findAllByChatRoomIdAndCreatedAtGreaterThanEqual(int chatRoomId, LocalDateTime enteredTime);
 }

@@ -13,7 +13,6 @@ import Signup from './pages/signup/signup';
 import User from './pages/user/user';
 
 function App() {
-    
     return (
         <BrowserRouter>
             <BlogProvider>
@@ -29,6 +28,8 @@ function App() {
                     <Route path="/search-post" element={<SearchPost/>}/>
                     <Route path="/posts/:categoryId" element={<CategoryPosts/>}/>
                     <Route path="/blog/:blogName" element={<UserBlog/>}/>
+                    <Route path="/chat" element={<ChatApp/>}/>
+                    <Route path="/room/:roomId/:chatRoomName" element={<Chat/>}/>
                 </Routes>
             </Layout>
             </BlogProvider>

@@ -2,37 +2,48 @@ package com.insu.blog.config;
 
 import com.insu.blog.service.chat.StompHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-@EnableWebSocketMessageBroker   // 문자 채팅
+@SuppressWarnings("null")
+@Configuration
+@EnableWebSocketMessageBroker // 메세지 브로커(스톰프 메세지 환경 설정 o)
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    // STOMP는 메시지의 형식, 명령어(예: CONNECT, SUBSCRIBE, UNSUBSCRIBE, SEND 등), 헤더, 바디 등을 정의
+    // Websocket은 양방형 통신 채널을 제공
 
     private final StompHandler stompHandler;
+    // private final MessageChannel clientOutboundChannel;
 
-    // pub/sub 메세징 구현
+    // 메세지 구독 및 발행 시 경로
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/sub");  // 메세지 받을 때
-        registry.setApplicationDestinationPrefixes("/pub");   // 메세지 보낼 때
+        registry.enableSimpleBroker("/topic"); // 구독 
+        registry.setApplicationDestinationPrefixes("/app"); // 메세지 보낼때
     }
 
+    // Stomp 엔드포인트 등록
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-stomp")   // Stomp websocket handshake 경로 설정
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
+        registry.addEndpoint("/ws")
+        .setAllowedOriginPatterns("*")
+        .withSockJS();
     }
 
-    // Websocket 앞에서 StompHandler가 token을 체크
+    // 클라이언트로부터 서버로 들어오는 메시지를 처리하기 전에 intercept
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        //필터체인 통과 후 컨트롤러에 가기 전 Message 객체를 가져오기
         registration.interceptors(stompHandler);
     }
-}
 
+    // @Primary
+    // @Bean
+    // public SimpMessagingTemplate simpMessagingTemplate() {
+    //     return new SimpMessagingTemplate(clientOutboundChannel);
+    // }
+}

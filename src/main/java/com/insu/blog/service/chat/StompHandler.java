@@ -11,73 +11,92 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
+@SuppressWarnings("null")
 @Slf4j(topic = "StompHandler")
 @RequiredArgsConstructor
 @Component
 public class StompHandler implements ChannelInterceptor {
 
     private final JwtUtil jwtUtil;
-    private final ChatService chatService;
     private final ChatRoomRedisRepository chatRoomRedisRepository;
 
-    /*
-        Websocket 을 통해 들어온 요청 처리하기 전
-        jwt token 유효성 검증
+    /**
+     * WebSocket 요청을 처리하기 전에 JWT 토큰의 유효성을 검증.
+     * @param message 들어오는 메시지
+     * @param channel 메시지가 연결된 채널
+     * @return 원본 또는 수정된 메시지
      */
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        log.info("preSend 함수 시작");
+        log.info("메시지 처리 전 preSend 이벤트 처리: {}", message);
 
-        // wrap(message)를 통해 Message 객체의 헤더에 접근
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-
-        // 클라이언트가 websocket 연결 요청 시
-        if (StompCommand.CONNECT == accessor.getCommand()) {
-            log.info("StompCommand.CONNECT");
-            String rawToken = accessor.getFirstNativeHeader("Authorization");
-            log.info("rawToken : " + rawToken);     // bearer 들어있음
-
-            String tokenValue = jwtUtil.substringToken(rawToken);
-            log.info("token : " + tokenValue);
-
-            boolean result = jwtUtil.validateToken(tokenValue);
-            log.info("validate 결과 : " + result);
-
-            // 클라이언트가 구독 요청 시
-        } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
-            log.info("StompCommand.SUBSCRIBE");
-
-            // header정보에서 구독 destination정보를 얻고, roomId를 추출
-            String roomId = chatService.getRoomId(Optional.ofNullable(
-                            (String) message.getHeaders()
-                                    .get("simpDestination"))
-                    .orElse("InvalidRoomId")
-            );
-
-            log.info("roomId : " + roomId);
-
-            // 채팅방에 들어온 클라이언트 sessionId를 roomId와 맵핑
-            // (나중에 특정 세션이 어떤 채팅방에 들어가 있는지 알기 위함)
-            String sessionId = (String) message.getHeaders().get("simpSessionId");
-            chatRoomRedisRepository.setUserEnterInfo(sessionId, roomId);
-
-            log.info("SUBSCRIBE 끝");
-
-            // 클라이언트가 disconnect 시도시
-        } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
-
-            // 연결이 종료된 클라이언트 sesssionId로 채팅방 id 확인
-            String sessionId = (String) message.getHeaders().get("simpSessionId");
-            String roomId = chatRoomRedisRepository.getUserEnterRoomId(sessionId);
-
-            // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
-            chatRoomRedisRepository.removeUserEnterInfo(sessionId);
-            log.info("DISCONNECTED {}, {}", sessionId, roomId);
+        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+            String authToken = accessor.getFirstNativeHeader("Authorization");
+            log.info("authToken: {}", authToken);
+            String tokenValue = jwtUtil.substringToken(authToken);
+            validateToken(tokenValue);
         }
 
         return message;
+    }
+
+    /**
+     * JWT 토큰을 검증.
+     */
+    private void validateToken(String tokenValue) {
+        if (!jwtUtil.validateToken(tokenValue)) {
+            throw new IllegalArgumentException("유효하지 않은 JWT 토큰");
+        }
+    }
+
+    /**
+     * 사용자의 구독을 관리.
+     */
+    @Override
+    public void postSend(Message<?> message, MessageChannel channel, boolean sent) {
+        if (sent) {
+            log.info("메시지 처리 후 postSend 이벤트 처리 성공: {}", message);
+        } else {
+            log.error("메시지 처리 후 postSend 이벤트 처리 실패: {}", message);
+        }
+
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
+            manageSubscription(accessor);
+        }
+    }
+
+    /**
+     * 구독 관리 및, 세션 ID와 채팅방 ID를 연결.
+     * @param accessor 메시지 헤더에 접근하기 위한 접근자
+     */
+    private void manageSubscription(StompHeaderAccessor accessor) {
+        String sessionId = accessor.getSessionId();
+        String roomId = accessor.getDestination().substring("/topic/rooms/".length());
+        chatRoomRedisRepository.setUserEnterInfo(sessionId, roomId);
+    }
+
+    /**
+     * 클라이언트의 연결 종료를 처리하며, 세션과 방 ID 매핑을 제거.
+     */
+    @Override
+    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
+        if (sent) {
+            log.info("메시지 전송 완료 후 afterSendCompletion 이벤트 처리 성공: {}", message);
+        } else {
+            log.error("메시지 전송 완료 후 afterSendCompletion 이벤트 처리 실패: {}", message);
+            if (ex != null) {
+                log.error("전송 실패 원인: {}", ex);
+            }
+        }
+    
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+            String sessionId = accessor.getSessionId();
+            chatRoomRedisRepository.removeUserEnterInfo(sessionId);
+            log.info("세션 종료 처리: {}", sessionId);
+        }
     }
 }
 

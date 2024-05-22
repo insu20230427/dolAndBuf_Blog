@@ -35,9 +35,14 @@ public class ChatMessage {
     @Column(nullable = false)
     private Long chatRoomId;
 
+    @ManyToOne
+    @JoinColumn(name = "chatroom_id")
+    private ChatRoom chatRoom;
+
     public ChatMessage(User user, ChatMessageDto chatMessageDto) {
         this.senderId = user.getId();
-        this.senderNickname = user.getNickname();
+//        this.senderNickname = user.getNickname();
+        this.senderNickname = user.getUsername();
         if(chatMessageDto.getMessage() != null) {
             this.message = chatMessageDto.getMessage();
         }

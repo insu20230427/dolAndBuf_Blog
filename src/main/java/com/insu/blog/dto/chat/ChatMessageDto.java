@@ -2,16 +2,13 @@ package com.insu.blog.dto.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.insu.blog.entity.chat.ChatMessage;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class ChatMessageDto {
 
     // 메세지 타입 : 입장, 채팅
