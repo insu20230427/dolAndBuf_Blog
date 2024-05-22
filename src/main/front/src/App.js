@@ -1,32 +1,38 @@
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import Index from "./component";
-import Login from "./component/login";
-import Signup from "./component/signup";
-import WritePost from "./component/writePost";
-import User from "./component/user";
-import UpdatePost from "./component/updatePost";
-import DetailPost from "./component/detailPost";
-import {Header} from "semantic-ui-react";
-import Footer from "./component/footer";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BlogProvider } from './contexts/blogContext';
+import Layout from './layouts/layout';
+import UserBlog from './pages/blog/userBlog';
+import CategoryPosts from './pages/category/categoryPosts';
+import Index from './pages/index';
+import Login from './pages/login/login';
+import DetailPost from './pages/posts/detailPost/detailPost';
+import SearchPost from './pages/posts/searchPost/searchPost';
+import UpdatePost from './pages/posts/updatePost/updatePost';
+import WritePost from './pages/posts/writePost/writePost';
+import Signup from './pages/signup/signup';
+import User from './pages/user/user';
 
 function App() {
+    
     return (
-        <>
-            <div className="App">
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/signup" element={<Signup/>}/>
-                        <Route path="/" element={<Index/>}/>
-                        <Route path="/login" element={<Login/>}/>
-                        <Route path="/write" element={<WritePost/>}/>
-                        <Route path="/detail-post/:id" element={<DetailPost/>}/>
-                        <Route path="/user" element={<User/>}/>
-                        <Route path="/update-post/:id" element={<UpdatePost/>}/>
-                        <Route path="/searchPost" element={<SearchPost />}/>
-                    </Routes>
-                </BrowserRouter>
-            </div>
-        </>
+        <BrowserRouter>
+            <BlogProvider>
+            <Layout>
+                <Routes>
+                    <Route path="/" exact element={<Index/>}/>
+                    <Route path="/signup" element={<Signup/>}/>
+                    <Route path="/login" element={<Login/>}/>
+                    <Route path="/user" element={<User/>}/>
+                    <Route path="/detail-post/:id" element={<DetailPost/>}/>
+                    <Route path="/write" element={<WritePost/>}/>
+                    <Route path="/update-post/:id" element={<UpdatePost/>}/>
+                    <Route path="/search-post" element={<SearchPost/>}/>
+                    <Route path="/posts/:categoryId" element={<CategoryPosts/>}/>
+                    <Route path="/blog/:blogName" element={<UserBlog/>}/>
+                </Routes>
+            </Layout>
+            </BlogProvider>
+        </BrowserRouter>
     );
 }
 
