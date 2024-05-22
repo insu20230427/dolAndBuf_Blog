@@ -17,4 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p FROM Post p WHERE p.content LIKE %?1%")
     Page<Post> findByContent(String keyword, Pageable pageable);
+
+    Page<Post> findByCategoryId(int categoryId, Pageable pageable);
 }

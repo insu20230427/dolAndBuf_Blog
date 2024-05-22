@@ -1,34 +1,50 @@
 package com.insu.blog.controller.api;
 
-import com.insu.blog.dto.response.ApiResponseDto;
-import com.insu.blog.entity.Post;
-import com.insu.blog.security.service.PrincipalDetails;
-import com.insu.blog.service.PostService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.insu.blog.dto.request.CategoryRequestDto;
+import com.insu.blog.dto.request.UpdatePostReqDto;
+import com.insu.blog.dto.response.ApiResponseDto;
+import com.insu.blog.entity.Category;
+import com.insu.blog.entity.Post;
+import com.insu.blog.security.service.PrincipalDetails;
+import com.insu.blog.service.CategoryService;
+import com.insu.blog.service.PostService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class PostController {
-    private final PostService postService;
 
+    private final PostService postService;
+    private final CategoryService categoryService;
 
     // 게시글 조회
     // 메인 index(전체 게시글 조회)
     @GetMapping("/posts")
-    public ResponseEntity<ApiResponseDto> index(@PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Post> posts =  postService.findAllPagedPosts(pageable);
+    public ResponseEntity<ApiResponseDto> index(
+            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> posts = postService.findAllPagedPosts(pageable);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 조회 성공!").data(posts).build());
     }
 
@@ -41,7 +57,8 @@ public class PostController {
 
     // 게시글 생성
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponseDto> writePost(@RequestBody Post post, @AuthenticationPrincipal PrincipalDetails userDetails) {
+    public ResponseEntity<ApiResponseDto> writePost(@RequestBody Post post,
+            @AuthenticationPrincipal PrincipalDetails userDetails) {
         postService.writePost(post, userDetails.getUser());
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 작성 성공!").build());
     }
@@ -55,16 +72,19 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("/posts/{id}")
-    public ResponseEntity<ApiResponseDto> updatePost(@PathVariable("id") int id, @RequestBody UpdatePostReqDto updatePostReqDto) {
+    public ResponseEntity<ApiResponseDto> updatePost(@PathVariable("id") int id,
+            @RequestBody UpdatePostReqDto updatePostReqDto) {
         postService.updatePost(id, updatePostReqDto);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 수정 성공!").build());
     }
 
     // 게시물 좋아요 추가
     @PostMapping("/posts/likes/{id}")
-    public ResponseEntity<ApiResponseDto> createPostLike(@PathVariable("id") int postId, @AuthenticationPrincipal PrincipalDetails userDetails) {
+    public ResponseEntity<ApiResponseDto> createPostLike(@PathVariable("id") int postId,
+            @AuthenticationPrincipal PrincipalDetails userDetails) {
         postService.createLikes(postId, userDetails.getUser());
-        return ResponseEntity.ok().body(ApiResponseDto.builder().message("좋아요 추가 성공!").data(userDetails.getUser().getId()).build());
+        return ResponseEntity.ok()
+                .body(ApiResponseDto.builder().message("좋아요 추가 성공!").data(userDetails.getUser().getId()).build());
     }
 
     // 게시물 좋아요 취소
@@ -76,6 +96,7 @@ public class PostController {
                 .body(ApiResponseDto.builder().message("좋아요 삭제 성공!").data(userDetails.getUser().getId()).build());
     }
 
+    // 게시글 검색
     @GetMapping("/posts/search")
     public ResponseEntity<ApiResponseDto> searchPosts(
             @RequestParam("type") int type,
@@ -99,4 +120,53 @@ public class PostController {
 
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("검색 성공!").data(posts).build());
     }
+
+    // 카테고리 조회
+    // @GetMapping("/categories")
+    // public ResponseEntity<ApiResponseDto> getAllCategories() {
+    // return ResponseEntity.ok().body(
+    // ApiResponseDto.builder().message("카테고리 조회 성공!")
+    // .data(categoryService.getAllCategories()).build());
+    // }
+
+    // 카테고리 조회
+    @GetMapping("/categories/{userId}")
+    public ResponseEntity<ApiResponseDto> getCategoriesByUserId(@PathVariable int userId) {
+        List<Category> categories = categoryService.getCategoriesByUserId(userId);
+        return ResponseEntity.ok().body(
+                ApiResponseDto.builder().message("카테고리 조회 성공!").data(categories).build());
+    }
+
+    // 카테고리 ID에 따른 포스트 페이징 조회
+    @GetMapping("/{categoryId}/posts")
+    public ResponseEntity<ApiResponseDto> getPostsByCategoryId(
+            @PathVariable int categoryId,
+            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> posts = categoryService.getPostsByCategoryId(categoryId, pageable);
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("카테고리 게시글 조회 성공!").data(posts).build());
+    }
+
+    // 카테고리 생성
+    @PostMapping("/categories")
+    public ResponseEntity<ApiResponseDto> createCategory(@RequestBody Category category,
+            @AuthenticationPrincipal PrincipalDetails userDetails) {
+        categoryService.createCategory(category);
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("카테고리 생성 성공!").build());
+    }
+
+    // 카테고리 수정
+    @PutMapping("/categories/{categoryId}")
+    public ResponseEntity<ApiResponseDto> updateCategory(@PathVariable("categoryId") int categoryId,
+            @RequestBody CategoryRequestDto category) {
+        categoryService.updateCategory(categoryId, category);
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("카테고리 수정 성공!").build());
+    }
+
+    // 카테고리 삭제
+    @DeleteMapping("/categories/{categoryId}")
+    public ResponseEntity<ApiResponseDto> deleteCategory(@PathVariable("categoryId") int categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("카테고리 삭제 성공!").build());
+    }
+
 }

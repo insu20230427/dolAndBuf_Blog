@@ -1,13 +1,5 @@
 package com.insu.blog.config;
 
-import com.insu.blog.repository.UserRepository;
-import com.insu.blog.security.filter.CustomAuthenticationFilter;
-import com.insu.blog.security.filter.CustomAuthorizationFilter;
-import com.insu.blog.security.jwt.JwtUtil;
-import com.insu.blog.security.service.UserDetailsServiceImpl;
-import com.insu.blog.service.AuthService;
-import com.insu.blog.service.Oauth2UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,6 +14,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
+
+import com.insu.blog.repository.UserRepository;
+import com.insu.blog.security.filter.CustomAuthenticationFilter;
+import com.insu.blog.security.filter.CustomAuthorizationFilter;
+import com.insu.blog.security.jwt.JwtUtil;
+import com.insu.blog.security.service.UserDetailsServiceImpl;
+import com.insu.blog.service.AuthService;
+import com.insu.blog.service.Oauth2UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Configuration
@@ -46,22 +48,23 @@ public class SecurityConfig {
 
     // AuthenticationManager 의존성 주입
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean // Spring Security 설정
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // CustomAuthorizationFilter -> CustomAuthenticationFilter -> UsernamePasswordAuthenticationFilter 순으로 필터 작동
+        // CustomAuthorizationFilter -> CustomAuthenticationFilter ->
+        // UsernamePasswordAuthenticationFilter 순으로 필터 작동
         http.addFilterBefore(customAuthorizationFilter(), CustomAuthenticationFilter.class);
         http.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilter(corsFilter);
 
         // 비활성화
-        http.sessionManagement(sessionManagement ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
+        http.sessionManagement(
+                sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.csrf(AbstractHttpConfigurer::disable); // 토큰 사용할거라 csrf disable
         http.formLogin(AbstractHttpConfigurer::disable); // security에서 지원하는 formLogin disable
         http.httpBasic(AbstractHttpConfigurer::disable); // JWT를 통해 암호화해서 보낼거라 disable
@@ -80,22 +83,22 @@ public class SecurityConfig {
                 .loginPage("/view/auth/loginForm")
                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                         .userService(oauth2UserService) // userInfo를 가져올 서비스를 지정(해당 서비스의 loadUser()를 통해 가져옴)
-                )
-        );
+                ));
 
-//        http.formLogin(formLogin -> formLogin
-//                .loginPage("/view/auth/loginForm") // 인증이 필요한 URL에 접근하면 이 경로로 리다이렉트
-//                .loginProcessingUrl("/api/auth/login") // 해당 경로로 로그인 요청 시, 스프링 시큐리티가 가로채서 로그인을 하게 됨
-//                .defaultSuccessUrl("/")
-//        );
+        // http.formLogin(formLogin -> formLogin
+        // .loginPage("/view/auth/loginForm") // 인증이 필요한 URL에 접근하면 이 경로로 리다이렉트
+        // .loginProcessingUrl("/api/auth/login") // 해당 경로로 로그인 요청 시, 스프링 시큐리티가 가로채서
+        // 로그인을 하게 됨
+        // .defaultSuccessUrl("/")
+        // );
 
-//        http.logout(logout -> logout
-//                .logoutUrl("/logout")
-//                .logoutSuccessHandler((request, response, authentication) -> {
-//                    response.sendRedirect("/view/auth/loginForm");
-//                })
-//                .deleteCookies("remember-me")
-//        );
+        // http.logout(logout -> logout
+        // .logoutUrl("/logout")
+        // .logoutSuccessHandler((request, response, authentication) -> {
+        // response.sendRedirect("/view/auth/loginForm");
+        // })
+        // .deleteCookies("remember-me")
+        // );
 
         return http.build();
     }
@@ -111,8 +114,3 @@ public class SecurityConfig {
         return new CustomAuthorizationFilter(jwtUtil, authService, userDetailsService, redisTemplate, userRepository);
     }
 }
-
-
-
-
-
