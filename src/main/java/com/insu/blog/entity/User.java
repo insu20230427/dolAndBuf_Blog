@@ -1,9 +1,21 @@
 package com.insu.blog.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -41,6 +53,9 @@ public class User {
 
     private String providerId;
 
+    @Column(unique = true, length = 100)
+    private String blogName; // User 블로그이름 추가
+
     @CreationTimestamp
     private LocalDateTime createDate;
 
@@ -48,6 +63,7 @@ public class User {
         this.username = kakaoUsername;
         this.password = garbagePassword;
         this.oauth = oauth;
+        this.blogName = username;
     }
 
     public User(String naverUsername, String garbagePassword, String email, String oauth) {
@@ -55,6 +71,7 @@ public class User {
         this.password = garbagePassword;
         this.email = email;
         this.oauth = oauth;
+        this.blogName = username;
     }
 
     public User(String username, String password, String email, RoleType role) {
@@ -62,6 +79,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.role = role;
+        this.blogName = username;
     }
 
     @Builder
@@ -72,5 +90,6 @@ public class User {
         this.role = role;
         this.provider = provider;
         this.providerId = providerId;
+        this.blogName = (blogName == null) ? username : blogName; // blogName이 null이면 username을 기본값으로 설정
     }
 }
