@@ -2,6 +2,7 @@ package com.insu.blog.controller.api;
 
 import java.util.List;
 
+import com.insu.blog.service.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,7 +25,6 @@ import com.insu.blog.dto.response.ApiResponseDto;
 import com.insu.blog.entity.Category;
 import com.insu.blog.entity.Post;
 import com.insu.blog.security.service.PrincipalDetails;
-import com.insu.blog.service.CategoryService;
 import com.insu.blog.service.PostService;
 
 import lombok.RequiredArgsConstructor;
