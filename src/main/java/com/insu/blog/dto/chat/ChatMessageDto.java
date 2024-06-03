@@ -27,7 +27,6 @@ public class ChatMessageDto {
 
     public ChatMessageDto(ChatMessage chatMessage) {
         this.type = MessageType.TALK;
-        this.roomId = chatMessage.getChatRoomId();
         this.sender = chatMessage.getSenderNickname();
         if(chatMessage.getMessage() != null) {
             this.message = chatMessage.getMessage();
