@@ -1,8 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button, Comment, Divider, Form, Icon, Label } from "semantic-ui-react";
+import React, {useEffect, useState} from "react";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import {Button, Comment, Divider, Form, Icon, Label} from "semantic-ui-react";
 import Swal from "sweetalert2";
 
 const DetailPost = () => {
@@ -20,27 +20,21 @@ const DetailPost = () => {
     const [replies, setReplies] = useState([]);
     const [replyUpdateContent, setReplyUpdateContent] = useState('');
     const [isEditing, setIsEditing] = useState(false);
-
-    console.log(detailPost);
+    const [subReplies, setSubReplies] = useState({});
+    const [subReplyContent, setSubReplyContent] = useState('');
+    const [subReplyEditId, setSubReplyEditId] = useState(null);
+    const [subReplyUpdateContent, setSubReplyUpdateContent] = useState('');
+    const [showSubReplyFormId, setShowSubReplyFormId] = useState(null);
+    const [showSubRepliesId, setShowSubRepliesId] = useState(null);
 
     useEffect(() => {
         const storedToken = Cookies.get('Authorization');
         if (storedToken) {
-            // "Bearer " 부분 제거 후 토큰만 추출
             const jwtToken = storedToken.split(' ')[1];
-
-            // 토큰을 "."으로 분리하여 배열로 만듦
             const parts = jwtToken.split('.');
-
-            // Payload 부분 추출 (인덱스 1)
             const payload = parts[1];
-
-            // Base64 디코딩 후 JSON 파싱
             const decodedPayload = JSON.parse(atob(payload));
-
-            console.log(decodedPayload)
-
-            setUserId(decodedPayload.userId)
+            setUserId(decodedPayload.userId);
         }
 
         fetchPosts();
@@ -50,7 +44,6 @@ const DetailPost = () => {
     const fetchPosts = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/posts/${id}`);
-            console.log(response.data.data)
             setDetailPost(response.data.data);
         } catch (error) {
             console.error('Error fetching posts:', error);
@@ -61,11 +54,35 @@ const DetailPost = () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/replys/${id}`);
             if (response.status === 200) {
-                setReplies(response.data.data);
-                console.log(response.data.data)
+                const repliesData = response.data.data;
+                setReplies(repliesData);
+
+                // Fetch subReplies for each reply
+                const subRepliesPromises = repliesData.map(async (reply) => {
+                    const subRepliesResponse = await fetchSubReplies(reply.id);
+                    return {[reply.id]: subRepliesResponse};
+                });
+
+                const subRepliesData = await Promise.all(subRepliesPromises);
+                const combinedSubReplies = Object.assign({}, ...subRepliesData);
+                setSubReplies(combinedSubReplies);
             }
         } catch (error) {
             console.error('댓글 가져오기 실패:', error);
+        }
+    };
+
+    const fetchSubReplies = async (replyId) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/comments/${id}/${replyId}`);
+            if (response.status === 200) {
+                return response.data.data;
+            } else {
+                throw new Error('대댓글 가져오기에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error(`대댓글 가져오기 실패: ${error}`);
+            return [];
         }
     };
 
@@ -85,44 +102,6 @@ const DetailPost = () => {
                 text: '게시글 삭제 실패.'
             })
         }
-    };
-
-    const addLikePost = async () => {
-        try {
-            const response = await axios.post(`http://localhost:8080/api/posts/likes/${id}`, {}, {
-                headers: {
-                    'Authorization': Cookies.get('Authorization')
-                }
-            });
-            const userId = response.data.data;
-            localStorage.setItem(`post_${id}_liked_${userId}`, 'true');
-            fetchPosts();
-        } catch (error) {
-            console.error('좋아요 실패:', error);
-            await Swal.fire({
-                icon: 'warning',
-                text: '좋아요 실패.'
-            })
-        }
-    };
-
-    const deleteLikePost = async () => {
-        try {
-            const response = await axios.delete(`http://localhost:8080/api/posts/likes/${id}`, {
-                headers: {
-                    'Authorization': Cookies.get('Authorization')
-                }
-            });
-            const userId = response.data.data;
-            localStorage.setItem(`post_${id}_liked_${userId}`, 'false');
-        } catch (error) {
-            console.error('좋아요 삭제 실패:', error);
-            await Swal.fire({
-                icon: 'warning',
-                text: '좋아요 삭제 실패.'
-            })
-        }
-        fetchPosts();
     };
 
     const handleWriteReply = async () => {
@@ -149,9 +128,9 @@ const DetailPost = () => {
                 await Swal.fire({
                     text: '댓글 등록 성공.',
                     icon: 'success'
-                })
-                fetchReplies();
-                fetchPosts();
+                });
+                await fetchReplies();
+                await fetchPosts();
             } else {
                 throw new Error('댓글 등록에 실패했습니다.');
             }
@@ -165,25 +144,16 @@ const DetailPost = () => {
     };
 
     const handleUpdateReplyForm = (replyId) => {
-        // 수정할 댓글 항목을 찾기
-        const updatedReply = detailPost.replyList.find(reply => reply.id === replyId);
-
-        // 댓글 수정 폼을 보여주고 해당 댓글의 내용을 replyContent state에 설정
+        const updatedReply = replies.find(reply => reply.id === replyId);
         setReplyContent(updatedReply.content);
-
-        // 수정 버튼과 수정 완료 버튼 보이도록 상태 변경
-        setEditReplyId(replyId); // 이전에 수정한 댓글 ID 저장
-
+        setEditReplyId(replyId);
         setIsEditing(true);
-
-        fetchReplies();
     };
 
     const handleUpdateReply = async (replyId) => {
         try {
             const response = await axios.put(`http://localhost:8080/api/replys/${id}/${replyId}`, {
                 userId: userId,
-                postId: id,
                 content: replyUpdateContent
             }, {
                 headers: {
@@ -197,12 +167,9 @@ const DetailPost = () => {
                     text: '댓글이 수정되었습니다.',
                     icon: 'success'
                 });
-                // 댓글 수정 폼 닫기
                 setEditReplyId(null);
-
                 setIsEditing(false);
-
-                fetchReplies();
+                await fetchReplies();
             } else {
                 throw new Error('댓글 수정에 실패했습니다.');
             }
@@ -228,7 +195,7 @@ const DetailPost = () => {
                     text: '댓글이 삭제되었습니다.',
                     icon: 'success'
                 });
-                fetchReplies();
+                await fetchReplies();
             } else {
                 throw new Error('댓글 삭제에 실패했습니다.');
             }
@@ -241,23 +208,199 @@ const DetailPost = () => {
         }
     };
 
+    const handleWriteSubReply = async (parentReplyId) => {
+        if (!userId) {
+            await Swal.fire({
+                text: '로그인 후 대댓글을 작성할 수 있습니다.',
+                icon: 'error'
+            });
+            return;
+        }
+        try {
+            const response = await axios.post(`http://localhost:8080/api/comments/${id}/${parentReplyId}`,
+                {
+                    userId: parseInt(userId, 10),
+                    content: subReplyContent
+                }, {
+                    headers: {
+                        'Authorization': Cookies.get('Authorization')
+                    }
+                });
+            if (response.status === 200) {
+                setSubReplyContent('');
+                await Swal.fire({
+                    text: '대댓글 등록 성공.',
+                    icon: 'success'
+                });
+                await fetchReplies();
+            } else {
+                throw new Error('대댓글 등록에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('대댓글 등록 중 오류가 발생했습니다:', error);
+            await Swal.fire({
+                text: '대댓글 등록에 실패했습니다. 다시 시도해주세요.',
+                icon: 'error'
+            });
+        }
+    };
+
+    const handleShowSubReplies = (replyId) => {
+        setShowSubRepliesId(replyId === showSubRepliesId ? null : replyId);
+    };
+
+    const handleUpdateSubReplyForm = (subReplyId, replyId) => {
+        // 현재 수정 중인 대댓글 ID 설정
+        setSubReplyEditId(subReplyId);
+
+        // 해당 replyId의 대댓글 목록에서 subReplyId에 맞는 대댓글을 찾음
+        const subReplyToEdit = subReplies[replyId]?.find(subReply => subReply.id === subReplyId);
+
+        if (subReplyToEdit) {
+            setSubReplyUpdateContent(subReplyToEdit.content);
+        } else {
+            console.error('대댓글을 찾을 수 없습니다.');
+        }
+    };
+    const handleUpdateSubReply = async (subReplyId) => {
+        try {
+            const response = await axios.put(`http://localhost:8080/api/comments/${id}/${editReplyId}/${subReplyId}`, {
+                userId: userId,
+                content: subReplyUpdateContent
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': Cookies.get('Authorization')
+                }
+            });
+
+            if (response.status === 200) {
+                await Swal.fire({
+                    text: '대댓글이 수정되었습니다.',
+                    icon: 'success'
+                });
+                setSubReplyEditId(null);
+                await fetchReplies();
+            } else {
+                throw new Error('대댓글 수정에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('대댓글 수정 중 오류가 발생했습니다:', error);
+            await Swal.fire({
+                text: '대댓글 수정에 실패했습니다. 다시 시도해주세요.',
+                icon: 'error'
+            });
+        }
+    };
+
+    const handleDeleteSubReply = async (subReplyId) => {
+        try {
+            const response = await axios.delete(`http://localhost:8080/api/comments/${id}/${editReplyId}/${subReplyId}`, {
+                headers: {
+                    'Authorization': Cookies.get('Authorization')
+                }
+            });
+
+            if (response.status === 200) {
+                await Swal.fire({
+                    text: '대댓글이 삭제되었습니다.',
+                    icon: 'success'
+                });
+                await fetchReplies();
+            } else {
+                throw new Error('대댓글 삭제에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('대댓글 삭제 중 오류가 발생했습니다:', error);
+            await Swal.fire({
+                text: '대댓글 삭제에 실패했습니다. 다시 시도해주세요.',
+                icon: 'error'
+            });
+        }
+    };
+
+    const addLikePost = async () => {
+        try {
+            const response = await axios.post(`http://localhost:8080/api/posts/likes/${id}`, {}, {
+                headers: {
+                    'Authorization': Cookies.get('Authorization')
+                }
+            });
+            const userId = response.data.data;
+            localStorage.setItem(`post_${id}_liked_${userId}`, 'true');
+            await fetchPosts();
+        } catch (error) {
+            console.error('좋아요 실패:', error);
+            await Swal.fire({
+                icon: 'warning',
+                text: '좋아요 실패.'
+            })
+        }
+    };
+
+    const deleteLikePost = async () => {
+        try {
+            const response = await axios.delete(`http://localhost:8080/api/posts/likes/${id}`, {
+                headers: {
+                    'Authorization': Cookies.get('Authorization')
+                }
+            });
+            const userId = response.data.data;
+            localStorage.setItem(`post_${id}_liked_${userId}`, 'false');
+        } catch (error) {
+            console.error('댓글 좋아요 삭제 실패:', error);
+            await Swal.fire({
+                icon: 'warning',
+                text: '댓글 좋아요 삭제 실패.'
+            })
+        }
+        await fetchPosts();
+    };
+
+    const addLikeReply = async (replyId) => {
+        try {
+            const response = await axios.post(`http://localhost:8080/api/replys/likes/${replyId}`, {}, {
+                headers: {
+                    'Authorization': Cookies.get('Authorization')
+                }
+            });
+            const userId = response.data.data;
+            localStorage.setItem(`reply_${replyId}_liked_${userId}`, 'true');
+            await fetchReplies();
+        } catch (error) {
+            console.error('댓글 좋아요 실패:', error);
+            await Swal.fire({
+                icon: 'warning',
+                text: '댓글 좋아요 실패.'
+            })
+        }
+    };
+
+    const deleteLikeReply = async (replyId) => {
+        try {
+            const response = await axios.delete(`http://localhost:8080/api/replys/likes/${replyId}`, {
+                headers: {
+                    'Authorization': Cookies.get('Authorization')
+                }
+            });
+            const userId = response.data.data;
+            localStorage.setItem(`reply_${replyId}_liked_${userId}`, 'false');
+        } catch (error) {
+            console.error('좋아요 삭제 실패:', error);
+            await Swal.fire({
+                icon: 'warning',
+                text: '좋아요 삭제 실패.'
+            })
+        }
+        await fetchReplies();
+    };
+
+
     return (
         <>
-            <div className="container" style={containerStyle}>
-                <br/>
-                <div className="ui large horizontal divided list">
-                    <div className="item">
-                        <div className="content">
-                            <div className="header">글 번호: <span id="id">{id}</span></div>
-                        </div>
-                    </div>
-                    <div className="item">
-                        <div className="content">
-                            {detailPost.user && (  // detailPost.user가 존재하는 경우에만 렌더링
-                                <div className="header">작성자 : {detailPost.user.username}</div>
-                            )}
-                        </div>
-                    </div>
+            <div className="ui container" style={containerStyle}>
+                <br/><br/><h2>게시글 상세보기</h2>
+                <div>
                     <div className="ui labeled button" tabIndex="0">
                         {localStorage.getItem(`post_${id}_liked_${userId}`) === "true" ? (
                             <>
@@ -289,19 +432,18 @@ const DetailPost = () => {
                         <Icon name="arrow left"/>
                     </Button>
                     {userId && detailPost.user && String(userId) === String(detailPost.user.id) && (
-                       <>
-                        <Button icon
-                                onClick={() => {
-                                    navigate(`/update-post/${id}`, {
-                                    });
-                                }}
-                        >
-                            <Icon name="cut"/>
-                        </Button>
-                        <Button icon onClick={handleDeletePost}>
-                            <Icon name="trash alternate"/>
-                        </Button>
-                       </>
+                        <>
+                            <Button icon
+                                    onClick={() => {
+                                        navigate(`/update-post/${id}`);
+                                    }}
+                            >
+                                <Icon name="cut"/>
+                            </Button>
+                            <Button icon onClick={handleDeletePost}>
+                                <Icon name="trash alternate"/>
+                            </Button>
+                        </>
                     )}
                 </div>
                 <br/><br/>
@@ -320,15 +462,71 @@ const DetailPost = () => {
                         <Comment key={reply.id}>
                             <Comment.Content>
                                 <Comment.Author>
-                                    <Link to={`/blog/${reply.user.username}`}>
-                                        {reply.user.username}
-                                    </Link>
+                                    <div style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center"
+                                    }}>
+                                        <Link to={`/blog/${reply.user.username}`}>
+                                            {reply.user.username}
+                                        </Link>
+                                        <Comment.Actions>
+                                            {reply.user.id === userId && (
+                                                <>
+                                                    <a onClick={() => handleUpdateReplyForm(reply.id)}
+                                                       className="reply">수정</a>
+                                                    <a onClick={() => handleDeleteReply(reply.id)}
+                                                       className="reply">삭제</a>
+                                                </>
+                                            )}
+                                            <a onClick={() => {
+                                                setShowSubReplyFormId(showSubReplyFormId === reply.id ? null : reply.id); // 대댓글 폼 열기/닫기
+                                                setSubReplies(prevState => ({
+                                                    ...prevState,
+                                                    [reply.id]: !prevState[reply.id] // 대댓글 상태 업데이트
+                                                }));
+                                            }}>대댓글 작성</a>
+                                            <a onClick={() => handleShowSubReplies(reply.id)}>대댓글 보기</a>
+                                            <div className="ui labeled button" tabIndex="0">
+                                                {localStorage.getItem(`reply_${reply.id}_liked_${userId}`) === "true" ? (
+                                                    <>
+                                                        <Button as='div' labelPosition='right'>
+                                                            <Button icon color='red'
+                                                                    onClick={() => deleteLikeReply(reply.id)}>
+                                                                <Icon name='heart'/>
+                                                            </Button>
+                                                            <Label basic color='red' pointing='left'>
+                                                                {reply.likeCnt}
+                                                            </Label>
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Button as='div' labelPosition='right'>
+                                                            <Button icon onClick={() => addLikeReply(reply.id)}>
+                                                                <Icon name='heart'/>
+                                                            </Button>
+                                                            <Label basic pointing='left'>
+                                                                {reply.likeCnt}
+                                                            </Label>
+                                                        </Button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </Comment.Actions>
+                                    </div>
                                 </Comment.Author>
                                 <Comment.Metadata>
-                                    <div className="date">{reply.createDate}</div>
+                                    <div
+                                        className="date">{new Date(reply.createDate).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: 'numeric',
+                                        minute: 'numeric'
+                                    })}</div>
                                 </Comment.Metadata>
                                 {editReplyId === reply.id ? (
-                                    // 수정 폼 표시
                                     <Form reply>
                                         <Form.TextArea
                                             value={replyUpdateContent}
@@ -345,19 +543,83 @@ const DetailPost = () => {
                                         />
                                     </Form>
                                 ) : (
-                                    // 댓글 내용과 수정/삭제 버튼 표시
                                     <div>
                                         <Comment.Text>{reply.content}</Comment.Text>
-                                        <Comment.Actions>
-                                            {reply.user.id === userId && (
-                                                <>
-                                                    <a onClick={() => handleUpdateReplyForm(reply.id)}
-                                                       className="reply">수정</a>
-                                                    <a onClick={() => handleDeleteReply(reply.id)}
-                                                       className="reply">삭제</a>
-                                                </>
-                                            )}
-                                        </Comment.Actions>
+                                        {showSubRepliesId === reply.id && ( // 대댓글 보기가 클릭된 댓글에 대해서만 렌더링합니다.
+                                            (subReplies[reply.id] && Array.isArray(subReplies[reply.id])) ?
+                                                subReplies[reply.id].map((subReply, index) => (
+                                                    <Comment.Group key={subReply.id}>
+                                                        <Comment>
+                                                            <Comment.Content>
+                                                                <Comment.Author>
+                                                                    <Link to={`/blog/${subReply.user.username}`}>
+                                                                        {subReply.user.username}
+                                                                    </Link>
+                                                                </Comment.Author>
+                                                                <Comment.Metadata>
+                                                                    <div
+                                                                        className="date">{new Date(subReply.createDate).toLocaleDateString('en-US', {
+                                                                        year: 'numeric',
+                                                                        month: 'short',
+                                                                        day: 'numeric',
+                                                                        hour: 'numeric',
+                                                                        minute: 'numeric'
+                                                                    })}</div>
+                                                                </Comment.Metadata>
+                                                                {subReplyEditId === subReply.id ? (
+                                                                    <Form reply>
+                                                                        <Form.TextArea
+                                                                            value={subReplyUpdateContent}
+                                                                            onChange={(e) => setSubReplyUpdateContent(e.target.value)}
+                                                                        />
+                                                                        <Button
+                                                                            type={"button"}
+                                                                            content="수정 완료"
+                                                                            labelPosition="left"
+                                                                            icon="edit"
+                                                                            color="blue"
+                                                                            className="btn-reply-write"
+                                                                            onClick={() => handleUpdateSubReply(subReply.id, reply.id)}
+                                                                        />
+                                                                    </Form>
+                                                                ) : (
+                                                                    <>
+                                                                        <Comment.Text>{subReply.content}</Comment.Text>
+                                                                        <Comment.Actions>
+                                                                            {subReply.user.id === userId && (
+                                                                                <>
+                                                                                    <a onClick={() => handleUpdateSubReplyForm(subReply.id, reply.id)}
+                                                                                       className="reply">수정</a>
+                                                                                    <a onClick={() => handleDeleteSubReply(subReply.id, reply.id)}
+                                                                                       className="reply">삭제</a>
+                                                                                </>
+                                                                            )}
+                                                                        </Comment.Actions>
+                                                                    </>
+                                                                )}
+                                                            </Comment.Content>
+                                                        </Comment>
+                                                    </Comment.Group>
+                                                ))
+                                                : null
+                                        )}
+                                        {showSubReplyFormId === reply.id && (
+                                            <Form reply>
+                                                <Form.TextArea
+                                                    value={subReplyContent}
+                                                    onChange={(e) => setSubReplyContent(e.target.value)}
+                                                />
+                                                <Button
+                                                    type={"button"}
+                                                    content="대댓글 등록"
+                                                    labelPosition="left"
+                                                    icon="edit"
+                                                    color="blue"
+                                                    className="btn-reply-write"
+                                                    onClick={() => handleWriteSubReply(reply.id)}
+                                                />
+                                            </Form>
+                                        )}
                                     </div>
                                 )}
                             </Comment.Content>
@@ -368,6 +630,7 @@ const DetailPost = () => {
                 {!isEditing && (
                     <Form reply>
                         <Form.TextArea
+                            value={replyContent}
                             onChange={(e) => setReplyContent(e.target.value)}
                         />
                         <Button

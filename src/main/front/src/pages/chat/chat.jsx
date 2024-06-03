@@ -5,18 +5,19 @@ import {
     MessageInput,
     MessageList,
 } from "@chatscope/chat-ui-kit-react";
-import { Client } from "@stomp/stompjs";
+import {Client} from "@stomp/stompjs";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Button } from "semantic-ui-react";
+import {useEffect, useRef, useState} from "react";
+import {useParams} from "react-router-dom";
+import {Button} from "semantic-ui-react";
 import SockJS from "sockjs-client";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import './chat.css';
+import Avatar from "react-avatar";
 
 function Chat() {
-    const { roomId, chatRoomName } = useParams();
+    const {roomId, chatRoomName} = useParams();
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [roomName, setRoomName] = useState(chatRoomName);
@@ -38,7 +39,7 @@ function Chat() {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             beforeConnect: () => {
-                client.connectHeaders = { 'Authorization': token };
+                client.connectHeaders = {'Authorization': token};
             },
             onConnect: () => {
                 subscription = client.subscribe(`/topic/rooms/${roomId}`, (message) => {
@@ -159,6 +160,33 @@ function Chat() {
         }
     };
 
+    function stringToColor(string) {
+        let hash = 0;
+        let i;
+
+        for (i = 0; i < string.length; i += 1) {
+            hash = string.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        let color = '#';
+
+        for (i = 0; i < 3; i += 1) {
+            const value = (hash >> (i * 8)) & 0xff;
+            color += `00${value.toString(16)}`.slice(-2);
+        }
+
+        return color;
+    }
+
+    function stringAvatar(name) {
+        const initials = name.length > 1 ? `${name[0][0]}${name[1][0]}` : `${name[0][0]}`;
+
+        return {
+            name: initials,
+            color: stringToColor(name)
+        };
+    }
+
     return (
         <>
             <div className="chat-container" style={containerStyle}>
@@ -171,16 +199,43 @@ function Chat() {
                         <ChatContainer>
                             <MessageList>
                                 {Array.isArray(messages) && messages.map((msg, index) => (
-                                    <Message
-                                        key={index}
-                                        model={{
-                                            message: msg.message,
-                                            sentTime: msg.sentTime,
-                                            sender: msg.sender,
-                                            direction: msg.sender === username ? "outgoing" : "incoming"
-                                        }}
-                                        className={msg.sender === username ? "message-outgoing" : "message-incoming"}
-                                    />
+                                    <div key={index}
+                                         // style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                         style={{
+                                             display: 'flex',
+                                             alignItems: 'center',
+                                             marginBottom: '10px',
+                                             justifyContent: msg.sender === username ? 'flex-end' : 'flex-start'
+                                         }}
+                                    >
+                                        {msg.sender !== username && (
+                                            <Avatar
+                                                name={stringAvatar(msg.sender).name}
+                                                color={stringAvatar(msg.sender).color}
+                                                size="40"
+                                                round={true}
+                                                style={{ marginRight: '2px' }}
+                                            />
+                                        )}
+                                        <Message
+                                            model={{
+                                                message: msg.message,
+                                                sentTime: msg.sentTime,
+                                                sender: msg.sender,
+                                                direction: msg.sender === username ? "outgoing" : "incoming"
+                                            }}
+                                            className={msg.sender === username ? "message-outgoing" : "message-incoming"}
+                                        />
+                                        {msg.sender === username && (
+                                            <Avatar
+                                                name={stringAvatar(msg.sender).name}
+                                                color={stringAvatar(msg.sender).color}
+                                                size="40"
+                                                round={true}
+                                                style={{ marginLeft: '2px' }}
+                                            />
+                                        )}
+                                    </div>
                                 ))}
                             </MessageList>
                             <MessageInput
@@ -195,7 +250,8 @@ function Chat() {
                 </div>
             </div>
         </>
-    )
+    );
 }
+
 
 export default Chat;
