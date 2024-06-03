@@ -40,10 +40,10 @@ public class Reply {
     private Long likeCnt;
 
     @OneToMany(mappedBy = "reply", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<ReplyLike> replyLikeList = new ArrayList<>();
+    private List<CommentReply> commentReplyList = new ArrayList<>();
 
     @OneToMany(mappedBy = "reply", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    private List<CommentReply> commentReplyList = new ArrayList<>();
+    private List<ReplyLike> replyLikeList = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createDate;

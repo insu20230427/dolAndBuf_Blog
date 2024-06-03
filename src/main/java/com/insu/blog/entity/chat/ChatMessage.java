@@ -5,11 +5,13 @@ import com.insu.blog.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class ChatMessage {
 
@@ -32,9 +34,6 @@ public class ChatMessage {
     @Column
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private Long chatRoomId;
-
     @ManyToOne
     @JoinColumn(name = "chatroom_id")
     private ChatRoom chatRoom;
@@ -49,7 +48,6 @@ public class ChatMessage {
         if(chatMessageDto.getImgData() != null) {
             this.imgUrl = chatMessageDto.getImgData();
         }
-        this.chatRoomId = chatMessageDto.getRoomId();
         this.createdAt = LocalDateTime.now();
     }
 }
