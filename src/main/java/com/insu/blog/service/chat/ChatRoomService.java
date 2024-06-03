@@ -56,7 +56,6 @@ public class ChatRoomService {
         return new ChatRoomInfoResponseDto(newChatRoom);
     }
 
-
     // 채팅방 채팅 기록 조회
     public List<ChatMessageDto> getChatRoomChatMessages(String roomId, User user) {
         ChatRoom chatRoom = findChatRoomById(Integer.parseInt(roomId));
@@ -93,6 +92,7 @@ public class ChatRoomService {
         if (!(chatRoom.getHostUserId() == user.getId())) {
             throw new IllegalArgumentException("채팅방은 호스트만 삭제할 수 있습니다.");
         }
+//        chatMessageRepository.delete();
         chatRoomRepository.delete(chatRoom);
     }
 
@@ -173,13 +173,11 @@ public class ChatRoomService {
         return userList;
     }
 
-
     public User findUserById(int userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new NullPointerException("존재하지 않는 사용자입니다.")
         );
     }
-
 
     public ChatRoom findChatRoomById(int chatRoomId) {
         return chatRoomRepository.findById(chatRoomId).orElseThrow(
@@ -187,9 +185,7 @@ public class ChatRoomService {
         );
     }
 
-
     public ChatUser findChatUserByChatRoomAndUser(ChatRoom chatRoom, User user) {
         return chatUserRepository.findByChatRoomAndUser(chatRoom, user);
     }
 }
-
