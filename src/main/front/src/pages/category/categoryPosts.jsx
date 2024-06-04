@@ -22,8 +22,8 @@ const CategoryPosts = () => {
     useEffect(() => {
         const fetchPosts = async (page) => {
             try {
-                const url = categoryId === 'all' || '' ? 
-                    `http://localhost:8080/api/posts?page=${page}` : 
+                const url = categoryId === 'all' || '' ?
+                    `http://localhost:8080/api/posts?page=${page}` :
                     `http://localhost:8080/api/${categoryId}/posts?page=${page}`;
                 const response = await axios.get(url);
                 // const responseData = categoryId === 'all' ? response.data.data : response.data;
@@ -49,7 +49,7 @@ const CategoryPosts = () => {
 
     return (
         <div>
-            <br/><br/><br/><br/>
+            <br /><br /><br /><br />
             <div className="container" style={containerStyle}>
                 <div className="ui grid">
                     <Grid columns='equal'>
@@ -61,19 +61,19 @@ const CategoryPosts = () => {
                                         onClick={() => {
                                             navigate(`/detail-post/${post.id}`);
                                         }}
-                                        style={{cursor: 'pointer', height: '250px'}}
+                                        style={{ cursor: 'pointer', height: '250px' }}
                                     >
                                         <div className="content">
-                                            <div className="header" style={{textAlign: 'center', marginTop: '5px'}}>
+                                            <div className="header" style={{ textAlign: 'center', marginTop: '5px' }}>
                                                 {post.title}
                                             </div>
                                             <div className="description"
-                                                 style={{textAlign: 'center', marginTop: '5px'}}>
+                                                style={{ textAlign: 'center', marginTop: '5px' }}>
                                                 {post.content.length > 50 ? `${post.content.substring(0, 50)}...` : post.content}
                                             </div>
-                                            <br/>
+                                            <br />
                                             <div className="extra content"
-                                                 style={{fontSize: 'x-small', textAlign: 'center'}}>
+                                                style={{ fontSize: 'x-small', textAlign: 'center' }}>
                                                 {post.modifyDate ? `수정일 : ${post.modifyDate}` : `작성일 : ${post.createDate}`}
                                             </div>
                                         </div>
@@ -111,8 +111,8 @@ const CategoryPosts = () => {
                         <Icon color='grey' name="arrow right" />
                     </Pagination.Next>
                 </Pagination>
-                <br/>
-                <br/>
+                <br />
+                <br />
             </nav>
         </div>
     );

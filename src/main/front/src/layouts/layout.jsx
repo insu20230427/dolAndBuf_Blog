@@ -2,12 +2,13 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Footer from '../components/footer';
 import Header from '../components/header';
-import Sidebar from '../components/sidebar';
+import SidebarExample from '../components/sidebar';
 import { useBlog } from '../contexts/blogContext';
 
 const Layout = ({ children }) => {
     const [userId, setUserId] = useState(null);
     const { blogName } = useBlog();
+    console.log(blogName);
 
     useEffect(() => {
         if (blogName) {
@@ -31,7 +32,7 @@ const Layout = ({ children }) => {
             <div style={{ display: 'flex' }}>
                 {blogName && (
                     <div style={{ width: '200px' }}>
-                        {userId && <Sidebar userId={userId} />}
+                        {userId && <SidebarExample userId={userId} />}
                     </div>
                 )}
                 <main style={{ flex: 1 }}>

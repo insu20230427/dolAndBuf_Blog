@@ -3,6 +3,7 @@ import { BlogProvider } from './contexts/blogContext';
 import Layout from './layouts/layout';
 import UserBlog from './pages/blog/userBlog';
 import CategoryPosts from './pages/category/categoryPosts';
+import CategorySetting from './pages/category/categorySetting';
 import Chat from './pages/chat/chat';
 import ChatApp from './pages/chat/chatApp';
 import Index from './pages/index';
@@ -32,6 +33,7 @@ function App() {
                     <Route path="/blog/:blogName" element={<UserBlog/>}/>
                     <Route path="/chat" element={<ChatApp/>}/>
                     <Route path="/room/:roomId/:chatRoomName" element={<Chat/>}/>
+                    <Route path="/category-setting" element={<CategorySetting />}/>
                 </Routes>
             </Layout>
             </BlogProvider>
