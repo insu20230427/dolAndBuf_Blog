@@ -51,7 +51,7 @@ const WritePost = () => {
                 setCategoryData(response.data);
                 if(response.data && response.data.length === 0){
                     Swal.fire({
-                        icon: 'alert',
+                        icon: 'info',
                         title: "카테고리가 존재하지 않습니다."
                     }).then(() => {
                         navigate('/category-setting');

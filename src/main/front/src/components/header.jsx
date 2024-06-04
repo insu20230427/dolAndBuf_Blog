@@ -14,8 +14,8 @@ export default function Header() {
     const [showSearch, setShowSearch] = useState(false); // 검색 UI 표시 상태 추가
     const validToken = Cookies.get('Authorization');
     const navigate = useNavigate();
-    const { blogName } = useBlog();
-
+    const { blogName, setBlogName } = useBlog();
+    const [ username, setUsername] = useState('');
 
     useEffect(() => {
         updateLoginStatus();
@@ -34,6 +34,19 @@ export default function Header() {
         // 토큰 유무에 따라 로그인 상태 업데이트
         if (validToken) {
             setIsLoggedIn(true);
+            const jwtParts = validToken.split(' ');
+            if (jwtParts.length !== 2) {
+                console.error('Invalid JWT Token format');
+                return;
+            }
+
+            const token = jwtParts[1];
+            const parts = token.split('.');
+            const payload = parts[1];
+            const username = JSON.parse(atob(payload)).sub;
+
+            setUsername(username);
+
         } else {
             setIsLoggedIn(false);
         }
@@ -72,11 +85,12 @@ export default function Header() {
     return (
         <>
             <Navbar bg="dark" variant="dark" expand="md">
-                <Navbar.Brand as={Link} to="/">{blogName} blog</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/" onClick={() => {setBlogName('')}}>{blogName} blog</Navbar.Brand>
                 <Navbar.Collapse id="collapsibleNavbar">
-                    <Nav className="mr-auto">
+                    <Nav className="mr-auto" onClick={() => {setBlogName('')}}>
                         {isLoggedIn ? (
                             <>
+                                <Nav.Link as={Link} to={`/blog/${username}`}>내블로그</Nav.Link>
                                 <Nav.Link as={Link} to="/write">글쓰기</Nav.Link>
                                 <Nav.Link as={Link} to="/user">회원정보</Nav.Link>
                                 <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>

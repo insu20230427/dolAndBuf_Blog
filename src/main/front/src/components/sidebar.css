@@ -4,8 +4,24 @@
     border-right: 1px solid #dee2e6;
     display: flex;
     flex-direction: column;
-    justify-content: 'space-between';
+    justify-content: space-between;
     height: 87vh;
+}
+.category-list {
+    list-style: none;
+    padding: 0;
+}
+.item a {
+    text-decoration: none;
+    color: #495057;
+    display: block;
+    padding: 8px 0;
+    transition: color 0.3s;
+}
+
+.selected {
+    font-weight: bold;
+    text-decoration: underline;
 }
 /*
 .sidebar h3 {

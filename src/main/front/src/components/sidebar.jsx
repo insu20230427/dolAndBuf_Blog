@@ -1,22 +1,23 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-// import './sidebar.css';
-import { Button, Sidebar, Menu, Icon, Segment } from 'semantic-ui-react';
+import './sidebar.css';
+import Cookies from "js-cookie";
+import { Button, Menu, Icon, Segment } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
-const SidebarExample = ({ userId }) => {
+const Sidebar = ({ userId }) => {
     const [categories, setCategories] = useState([]);
     const [totalPostsCount, setTotalPostsCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [selectedCategoryId, setSelectedCategoryId] = useState('all');
     const [expandedCategories, setExpandedCategories] = useState({});
-
     const [visible, setVisible] = useState(false);
 
-    const toggleSidebar = () => {
-        setVisible(!visible);
-    };
+    // const toggleSidebar = () => {
+    //     setVisible(!visible);
+    // };
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -36,6 +37,30 @@ const SidebarExample = ({ userId }) => {
         };
 
         fetchCategories();
+
+        const jwtToken = Cookies.get('Authorization');
+        if (!jwtToken) {
+            console.error('JWT Token not found');
+            return;
+        }
+
+        const jwtParts = jwtToken.split(' ');
+        if (jwtParts.length !== 2) {
+            console.error('Invalid JWT Token format');
+            return;
+        }
+
+        const token = jwtParts[1];
+        const parts = token.split('.');
+        const payload = parts[1];
+        const visitorId = JSON.parse(atob(payload)).userId;
+
+        console.log(userId);
+        console.log(visitorId);
+        if(visitorId === userId){
+            setVisible(true);
+        }
+
     }, [userId]);
 
     console.log(categories);
@@ -105,52 +130,54 @@ const SidebarExample = ({ userId }) => {
     }
 
     return (
-        // <div className="sidebar" style={{display : 'flex'}}>
-        //     {renderCategories(categories)}
-        //     <Link to={'/category-setting' } style={{color:'#ccc'}}>
-        //         <Icon name='setting'/>
-        //     </Link>
-        // </div>
-
-        <div>
-            <Button onClick={toggleSidebar}>
-                <Icon name="sidebar" /> Toggle Sidebar
-            </Button>
-
-            <Sidebar.Pushable as={Segment} style={{ minHeight: '100vh' }}>
-                <Sidebar
-                    as={Menu}
-                    animation='overlay'
-                    icon='labeled'
-                    inverted
-                    onHide={() => setVisible(false)}
-                    vertical
-                    visible={visible}
-                    width='thin'
-                >
-                    <Menu.Item as='a'>
-                        <Icon name='home' />
-                        Home
-                    </Menu.Item>
-                    <Menu.Item as='a'>
-                        <Icon name='gamepad' />
-                        Games
-                    </Menu.Item>
-                    <Menu.Item as='a'>
-                        <Icon name='camera' />
-                        Channels
-                    </Menu.Item>
-                </Sidebar>
-
-                <Sidebar.Pusher>
-                    <Segment basic>
-                        <h3>Main Content</h3>
-                        <p>This is the main content area.</p>
-                    </Segment>
-                </Sidebar.Pusher>
-            </Sidebar.Pushable>
+        <div className="sidebar" style={{display : 'flex'}}>
+            {renderCategories(categories)}
+            {visible && (
+                <Link to={'/category-setting' } style={{color:'#ccc'}}>
+                    <Icon name='setting'/>
+                </Link>
+            )}
         </div>
+
+        // <div>
+        //     <Button onClick={toggleSidebar}>
+        //         <Icon name="sidebar" /> Toggle Sidebar
+        //     </Button>
+
+        //     <Sidebar.Pushable as={Segment} style={{ minHeight: '100vh' }}>
+        //         <Sidebar
+        //             as={Menu}
+        //             animation='overlay'
+        //             icon='labeled'
+        //             inverted
+        //             onHide={() => setVisible(false)}
+        //             vertical
+        //             visible={visible}
+        //             width='thin'
+        //         >
+        //             <Menu.Item as='a'>
+        //                 <Icon name='home' />
+        //                 Home
+        //             </Menu.Item>
+        //             <Menu.Item as='a'>
+        //                 <Icon name='gamepad' />
+        //                 Games
+        //             </Menu.Item>
+        //             <Menu.Item as='a'>
+        //                 <Icon name='camera' />
+        //                 Channels
+        //             </Menu.Item>
+        //         </Sidebar>
+
+        //         <Sidebar.Pusher>
+        //             <Segment basic>
+        //                 <h3>Main Content</h3>
+        //                 <p>This is the main content area.</p>
+        //             </Segment>
+        //         </Sidebar.Pusher>
+        //     </Sidebar.Pushable>
+        // </div>
     );
 };
 
-export default SidebarExample;
+export default Sidebar;

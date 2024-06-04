@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Footer from '../components/footer';
 import Header from '../components/header';
-import SidebarExample from '../components/sidebar';
+import Sidebar from '../components/sidebar';
 import { useBlog } from '../contexts/blogContext';
 
 const Layout = ({ children }) => {
@@ -32,7 +32,7 @@ const Layout = ({ children }) => {
             <div style={{ display: 'flex' }}>
                 {blogName && (
                     <div style={{ width: '200px' }}>
-                        {userId && <SidebarExample userId={userId} />}
+                        {userId && <Sidebar userId={userId} />}
                     </div>
                 )}
                 <main style={{ flex: 1 }}>
