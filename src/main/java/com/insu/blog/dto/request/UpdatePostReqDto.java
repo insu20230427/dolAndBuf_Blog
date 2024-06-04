@@ -8,4 +8,5 @@ import lombok.RequiredArgsConstructor;
 public class UpdatePostReqDto {
     private String content;
     private String title;
+    private String categoryName;
 }
