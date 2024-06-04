@@ -1,23 +1,5 @@
 package com.insu.blog.controller.api;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.insu.blog.dto.request.CategoryRequestDto;
 import com.insu.blog.dto.request.UpdatePostReqDto;
 import com.insu.blog.dto.response.ApiResponseDto;
@@ -26,9 +8,18 @@ import com.insu.blog.entity.Post;
 import com.insu.blog.security.service.PrincipalDetails;
 import com.insu.blog.service.CategoryService;
 import com.insu.blog.service.PostService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -58,7 +49,16 @@ public class PostController {
     // 게시글 생성
     @PostMapping("/posts")
     public ResponseEntity<ApiResponseDto> writePost(@RequestBody Post post,
+            @RequestParam String categoryId,
             @AuthenticationPrincipal PrincipalDetails userDetails) {
+
+        Category category = categoryService.getCategoryById(Integer.parseInt(categoryId))
+                .orElseThrow(() -> new NullPointerException("해당 카테고리가 없습니다."));
+
+        post.setCategory(category);
+
+        log.info("Post : {} ", post);
+
         postService.writePost(post, userDetails.getUser());
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 작성 성공!").build());
     }
@@ -122,19 +122,14 @@ public class PostController {
     }
 
     // 카테고리 조회
-    // @GetMapping("/categories")
-    // public ResponseEntity<ApiResponseDto> getAllCategories() {
-    // return ResponseEntity.ok().body(
-    // ApiResponseDto.builder().message("카테고리 조회 성공!")
-    // .data(categoryService.getAllCategories()).build());
-    // }
-
-    // 카테고리 조회
     @GetMapping("/categories/{userId}")
-    public ResponseEntity<ApiResponseDto> getCategoriesByUserId(@PathVariable int userId) {
+    public List<CategoryRequestDto> getCategoriesByUserId(@PathVariable int userId) {
         List<Category> categories = categoryService.getCategoriesByUserId(userId);
-        return ResponseEntity.ok().body(
-                ApiResponseDto.builder().message("카테고리 조회 성공!").data(categories).build());
+        List<CategoryRequestDto> categoryRequestDtos = categories.stream()
+                .map(CategoryRequestDto::fromEntity)
+                .collect(Collectors.toList());
+
+        return categoryRequestDtos;
     }
 
     // 카테고리 ID에 따른 포스트 페이징 조회
@@ -148,17 +143,19 @@ public class PostController {
 
     // 카테고리 생성
     @PostMapping("/categories")
-    public ResponseEntity<ApiResponseDto> createCategory(@RequestBody Category category,
-            @AuthenticationPrincipal PrincipalDetails userDetails) {
+    public ResponseEntity<ApiResponseDto> createCategory(@RequestBody CategoryRequestDto category) {
+        log.info("categoryDto: {}", category);
+
         categoryService.createCategory(category);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("카테고리 생성 성공!").build());
     }
 
     // 카테고리 수정
-    @PutMapping("/categories/{categoryId}")
-    public ResponseEntity<ApiResponseDto> updateCategory(@PathVariable("categoryId") int categoryId,
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<ApiResponseDto> updateCategory(@PathVariable String id,
             @RequestBody CategoryRequestDto category) {
-        categoryService.updateCategory(categoryId, category);
+        category.setId(Integer.parseInt(id));
+        categoryService.updateCategory(Integer.parseInt(id), category);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("카테고리 수정 성공!").build());
     }
 
