@@ -55,6 +55,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             // Claims 값(username) 추출
             username = jwtUtil.getUserInfoFromToken(accessTokenValue).getSubject();
 
+            // 인증 객체 생성
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);

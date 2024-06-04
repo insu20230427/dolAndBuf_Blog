@@ -75,10 +75,23 @@ const Index = () => {
                                                     {post.content.length > 50 ? `${post.content.substring(0, 50)}...` : post.content}
                                                 </div>
                                                 <br/>
-                                                <div className="extra content"
-                                                     style={{fontSize: 'x-small', textAlign: 'center'}}>
-                                                    {post.modifyDate ? `수정일 : ${post.modifyDate}` : `작성일 : ${post.createDate}`}
-                                                </div>
+                                                {post.modifyDate ? (
+                                                    <div className="date"  style={{fontSize: 'small', textAlign: 'center'}}>수정일 : {new Date(post.modifyDate).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        hour: 'numeric',
+                                                        minute: 'numeric'
+                                                    })}</div>
+                                                ) : (
+                                                    <div className="date"  style={{fontSize: 'small', textAlign: 'center'}}>작성일 : {new Date(post.createDate).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        hour: 'numeric',
+                                                        minute: 'numeric'
+                                                    })}</div>
+                                                )}
                                             </div>
                                         </Segment>
                                     </GridColumn>
@@ -94,7 +107,7 @@ const Index = () => {
                             onClick={() => handlePageClick(currentPage - 1)}
                             disabled={currentPage === 0}
                         >
-                            <Icon color='grey' name="arrow left" />
+                            <Icon color='grey' name="arrow left"/>
                         </Pagination.Prev>
 
                         {Array.from({ length: totalPages }, (_, i) => (

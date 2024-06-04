@@ -3,7 +3,6 @@ package com.insu.blog.security.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insu.blog.dto.request.LoginRequestDto;
 import com.insu.blog.dto.response.ApiResponseDto;
-import com.insu.blog.dto.response.TokenResponseDto;
 import com.insu.blog.security.jwt.JwtUtil;
 import com.insu.blog.security.service.PrincipalDetails;
 import com.insu.blog.service.AuthService;
@@ -27,10 +26,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     public CustomAuthenticationFilter(AuthService authService) {
         this.authService = authService;
-
         setFilterProcessesUrl("/api/auth/login");
     }
-    @Override // 로그인 요청 처리 : SecurityContext에 Authentication 설정
+
+    @Override // 로그인 요청 처리
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("------attemptAuthentication start------");
 
@@ -72,7 +71,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         res.getWriter().write(json);// getWriter().write() -> 바디로 반환
     }
 
-    @Override // 인증 실패 시 401
+    @Override // 인증 실패 시 401에러 반환
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         log.error("인증 실패", failed);
         response.setStatus(401);

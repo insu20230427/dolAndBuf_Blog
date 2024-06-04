@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insu.blog.dto.chat.ChatMessageDto;
 import com.insu.blog.entity.User;
 import com.insu.blog.entity.chat.ChatMessage;
+import com.insu.blog.entity.chat.ChatRoom;
 import com.insu.blog.repository.UserRepository;
 import com.insu.blog.repository.chat.ChatMessageRepository;
+import com.insu.blog.repository.chat.ChatRoomRepository;
 import com.insu.blog.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +25,12 @@ import java.time.format.DateTimeFormatter;
 public class ChatService {
 
     private final JwtUtil jwtUtil;
-    private final ChannelTopic channelTopic;
     // private final RedisTemplate<String, String> redisTemplate;
 	private final SimpMessagingTemplate template;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     // 채팅방에 메시지 발송
     public void publishMessageToRedis(ChatMessageDto chatMessageDto, String token) {
@@ -48,7 +50,11 @@ public class ChatService {
         }
 
         // 메세지 저장
-        chatMessageRepository.save(new ChatMessage(user, chatMessageDto));
+        log.info("roomid : {}", chatMessageDto.getRoomId());
+        ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId());
+        ChatMessage chatMessage = new ChatMessage(user, chatMessageDto);
+        chatMessage.setChatRoom(chatRoom);
+        chatMessageRepository.save(chatMessage);
 
         // 메세지 dto에 현재 시각 설정 (사용자에게 바로 보내질 시각)
         chatMessageDto.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd HH:mm")));
@@ -70,6 +76,7 @@ public class ChatService {
         return userRepository.findByUsername(username).orElseThrow(() ->
                 new NullPointerException("존재하지 않는 사용자"));
     }
+
 
     
     // public String getRoomId(String destination) {
