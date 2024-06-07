@@ -29,6 +29,7 @@ public class PostService {
         post.setUser(user);
         // post.setContent(post.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>",
         // ""));
+        // 이미지 첨부를 위해 수정
         post.setContent(post.getContent());
         postRepository.save(post);
     }
@@ -43,8 +44,11 @@ public class PostService {
     @Transactional
     public void updatePost(int postId, UpdatePostReqDto updatePostReqDto) {
         Post updatePost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
-        updatePost.setContent(
-                updatePostReqDto.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
+        // updatePost.setContent(
+        // updatePostReqDto.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>",
+        // ""));
+        updatePost.setContent(updatePostReqDto.getContent());
+
         if (StringUtils.isNotBlank(updatePostReqDto.getTitle())) {
             updatePost.setTitle(updatePostReqDto.getTitle());
         }
