@@ -27,7 +27,9 @@ public class PostService {
     public void writePost(Post post, User user) {
         post.setCount(0);
         post.setUser(user);
-        post.setContent(post.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
+        // post.setContent(post.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>",
+        // ""));
+        post.setContent(post.getContent());
         postRepository.save(post);
     }
 
@@ -41,8 +43,9 @@ public class PostService {
     @Transactional
     public void updatePost(int postId, UpdatePostReqDto updatePostReqDto) {
         Post updatePost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
-        updatePost.setContent(updatePostReqDto.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
-        if(StringUtils.isNotBlank(updatePostReqDto.getTitle())) {
+        updatePost.setContent(
+                updatePostReqDto.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", ""));
+        if (StringUtils.isNotBlank(updatePostReqDto.getTitle())) {
             updatePost.setTitle(updatePostReqDto.getTitle());
         }
         System.out.println("content : " + updatePostReqDto.getContent());
@@ -61,13 +64,13 @@ public class PostService {
         return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
     }
 
-
-    //게시글 좋아요
+    // 게시글 좋아요
     public void createLikes(int postId, User user) {
 
         Optional<PostLike> existingLikesOptional = postLikeRepository.findByPostIdAndUserId(postId, user.getId());
         if (!existingLikesOptional.isPresent()) { // 좋아요를 한번도 누르지 않은 사람
-            Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다."));
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다."));
 
             PostLike newLikes = new PostLike(true, post, user);
             post.setLikeCnt(post.getLikeCnt() + 1);
@@ -85,10 +88,11 @@ public class PostService {
         }
     }
 
-    //게시글 좋아요 취소
+    // 게시글 좋아요 취소
     public void deleteLikes(int postId, User user) {
 
-        PostLike postLike = postLikeRepository.findByPostIdAndUserId(postId, user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 게시글 좋아요가 존재하지 않습니다."));
+        PostLike postLike = postLikeRepository.findByPostIdAndUserId(postId, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글 좋아요가 존재하지 않습니다."));
 
         likesValid(postLike, user);
 

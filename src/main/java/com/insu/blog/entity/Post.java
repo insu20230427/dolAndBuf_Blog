@@ -37,6 +37,7 @@ public class Post {
     @Column(nullable = false, unique = true, length = 100)
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private int count;
