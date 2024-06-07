@@ -96,6 +96,7 @@ export default function Header() {
                                 <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                                 <Nav.Link as={Link} to="/chat">채팅</Nav.Link>
                                 <Nav.Link as={Link} to="/game-board">겜</Nav.Link>
+                                <Nav.Link as={Link} to="/category-setting">카테고리</Nav.Link>
                             </>
                         ) : (
                             <>
