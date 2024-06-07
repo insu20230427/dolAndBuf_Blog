@@ -14,6 +14,7 @@ import UpdatePost from './pages/posts/updatePost/updatePost';
 import WritePost from './pages/posts/writePost/writePost';
 import Signup from './pages/signup/signup';
 import User from './pages/user/user';
+import GameBoard from './game/GameBoard';
 
 function App() {
     return (
@@ -34,6 +35,7 @@ function App() {
                     <Route path="/chat" element={<ChatApp/>}/>
                     <Route path="/room/:roomId/:chatRoomName" element={<Chat/>}/>
                     <Route path="/category-setting" element={<CategorySetting />}/>
+                    <Route path="/game-board" element={<GameBoard />} />
                 </Routes>
             </Layout>
             </BlogProvider>

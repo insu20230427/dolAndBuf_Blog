@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './sidebar.css';
 import Cookies from "js-cookie";
-import { Button, Menu, Icon, Segment } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
 const Sidebar = ({ userId }) => {
@@ -55,15 +55,11 @@ const Sidebar = ({ userId }) => {
         const payload = parts[1];
         const visitorId = JSON.parse(atob(payload)).userId;
 
-        console.log(userId);
-        console.log(visitorId);
-        if(visitorId === userId){
+        if (visitorId === userId) {
             setVisible(true);
         }
 
     }, [userId]);
-
-    console.log(categories);
 
     const toggleCategory = (id) => {
         setExpandedCategories(prev => ({
