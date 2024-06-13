@@ -43,7 +43,7 @@ public class UserController {
     // 회원 수정
     @PutMapping("/users")
     public ResponseEntity<ApiResponseDto> updateUser(@Valid @RequestBody UpdateUserRequestDto updateDto,
-            @AuthenticationPrincipal PrincipalDetails principalDetails) throws IOException {
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
         userService.updateUser(updateDto, principalDetails);
         userService.authenticationUser(updateDto, principalDetails);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("회원정보 수정 성공!").build());
@@ -67,7 +67,7 @@ public class UserController {
 
     // 블로그이름으로 id 가져오기
     @GetMapping("/blogs")
-    public ResponseEntity<ApiResponseDto> getUserIdByBlogName(@RequestParam String blogName) {
+    public ResponseEntity<ApiResponseDto> getUserIdByBlogName(@RequestParam("blogName") String blogName) {
         User user = userService.findByBlogName(blogName);
         if (user == null) {
             return ResponseEntity.notFound().build();

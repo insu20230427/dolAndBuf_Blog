@@ -3,9 +3,11 @@ package com.insu.blog.controller;
 import com.insu.blog.dto.request.CommentReplyRequestDto;
 import com.insu.blog.dto.response.ApiResponseDto;
 import com.insu.blog.entity.CommentReply;
+import com.insu.blog.security.service.PrincipalDetails;
 import com.insu.blog.service.CommentReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,5 +48,23 @@ public class CommentReplyController {
                                                              @RequestBody CommentReplyRequestDto req) {
         commentReplyService.updateReply(commentId, req);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("댓글 수정 성공!").build());
+    }
+
+    // 대댓글 좋아요 추가
+    @PostMapping("/comments/likes/{replyId}/{commentId}")
+    public ResponseEntity<ApiResponseDto> createPostLike(@PathVariable("commentId") String commentId,
+                                                         @AuthenticationPrincipal PrincipalDetails userDetails) {
+        commentReplyService.createLikes(commentId, userDetails.getUser());
+        return ResponseEntity.ok()
+                .body(ApiResponseDto.builder().message("좋아요 추가 성공!").data(userDetails.getUser().getId()).build());
+    }
+
+    // 대댓글 좋아요 취소
+    @DeleteMapping("/comments/likes/{replyId}/{commentId}")
+    public ResponseEntity<ApiResponseDto> deletePostLike(@PathVariable("commentId") String commentId,
+                                                         @AuthenticationPrincipal PrincipalDetails userDetails) {
+        commentReplyService.deleteLikes(commentId, userDetails.getUser());
+        return ResponseEntity.ok()
+                .body(ApiResponseDto.builder().message("좋아요 삭제 성공!").data(userDetails.getUser().getId()).build());
     }
 }

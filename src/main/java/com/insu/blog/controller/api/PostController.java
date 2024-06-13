@@ -39,6 +39,14 @@ public class PostController {
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 조회 성공!").data(posts).build());
     }
 
+    @GetMapping("/ddong/{userId}/posts")
+    public ResponseEntity<ApiResponseDto> getPostByUser(
+            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @PathVariable("userId") String userId) {
+        Page<Post> posts = postService.findAllPagedPostsByUser(pageable, userId);
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("유저에 따른 게시글 조회 성공!").data(posts).build());
+    }
+
     // 게시글 단일 조회
     @GetMapping("/posts/{postId}")
     public ResponseEntity<ApiResponseDto> getPostById(@PathVariable("postId") String postId) {
@@ -126,7 +134,7 @@ public class PostController {
 
     // 카테고리 조회
     @GetMapping("/categories/{userId}")
-    public List<CategoryRequestDto> getCategoriesByUserId(@PathVariable int userId) {
+    public List<CategoryRequestDto> getCategoriesByUserId(@PathVariable("userId") String userId) {
         List<Category> categories = categoryService.getCategoriesByUserId(userId);
         List<CategoryRequestDto> categoryRequestDtos = categories.stream()
                 .map(CategoryRequestDto::fromEntity)
@@ -138,7 +146,7 @@ public class PostController {
     // 카테고리 ID에 따른 포스트 페이징 조회
     @GetMapping("/{categoryId}/posts")
     public ResponseEntity<ApiResponseDto> getPostsByCategoryId(
-            @PathVariable int categoryId,
+            @PathVariable("categoryId") String categoryId,
             @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<Post> posts = categoryService.getPostsByCategoryId(categoryId, pageable);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("카테고리 게시글 조회 성공!").data(posts).build());
