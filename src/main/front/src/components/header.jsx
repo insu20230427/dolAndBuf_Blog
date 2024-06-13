@@ -15,7 +15,7 @@ export default function Header() {
     const validToken = Cookies.get('Authorization');
     const navigate = useNavigate();
     const { blogName, setBlogName } = useBlog();
-    const [ username, setUsername] = useState('');
+    const [username, setUsername] = useState('');
 
     useEffect(() => {
         updateLoginStatus();
@@ -27,7 +27,7 @@ export default function Header() {
     }, [searchType, searchKeyword]);
 
     const handleSearchTypeChange = (e, { value }) => {
-           setSearchType(value); // 검색 유형 변경 핸들러
+        setSearchType(value); // 검색 유형 변경 핸들러
     };
 
     const updateLoginStatus = () => {
@@ -85,12 +85,13 @@ export default function Header() {
     return (
         <>
             <Navbar bg="dark" variant="dark" expand="md">
-                <Navbar.Brand as={Link} to="/" onClick={() => {setBlogName('')}}>{blogName} blog</Navbar.Brand>
+                <Navbar.Brand >{blogName} blog</Navbar.Brand>
                 <Navbar.Collapse id="collapsibleNavbar">
-                    <Nav className="mr-auto" onClick={() => {setBlogName('')}}>
+                    <Nav className="mr-auto" onClick={() => { setBlogName('') }}>
                         {isLoggedIn ? (
                             <>
-                                <Nav.Link as={Link} to={`/blog/${username}`}>내블로그</Nav.Link>
+                                {blogName !== '' ? (<Nav.Link as={Link} to="/" onClick={() => { setBlogName('') }}>블로그 홈</Nav.Link>)
+                                    : (<Nav.Link as={Link} to={`/blog/${username}`}>내블로그</Nav.Link>)}
                                 <Nav.Link as={Link} to="/write">글쓰기</Nav.Link>
                                 <Nav.Link as={Link} to="/user">회원정보</Nav.Link>
                                 <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
@@ -109,45 +110,45 @@ export default function Header() {
                 <Navbar.Collapse id="collapsibleNavbar">
                     <Nav className="mr-auto">
                         {showSearch && (
-                        <>
-                        <Dropdown
-                            selection
-                            id="searchTypeDropdown"
-                            value={searchType}
-                            options={[
-                                { key: 'title', text: '제목', value: '0' },
-                                { key: 'contents', text: '내용', value: '1' },
-                                { key: 'titleAndContents', text: '제목+내용', value: '2' }
-                                ]}
-                            onChange={handleSearchTypeChange}
-                            style={{minWidth: '105px', marginRight: '10px', borderRadius: '5px'}}
-                        />
-                        <Input
-                            className="prompt"
-                            type="text"
-                            id="searchKeyword"
-                            placeholder="검색어를 입력하세요"
-                            value={searchKeyword}
-                            onChange={(e) => setSearchKeyword(e.target.value)}
-                            style={{width: '450px', paddingRight: '20px', textAlign: 'center'}}
-                        />
-                        </>
+                            <>
+                                <Dropdown
+                                    selection
+                                    id="searchTypeDropdown"
+                                    value={searchType}
+                                    options={[
+                                        { key: 'title', text: '제목', value: '0' },
+                                        { key: 'contents', text: '내용', value: '1' },
+                                        { key: 'titleAndContents', text: '제목+내용', value: '2' }
+                                    ]}
+                                    onChange={handleSearchTypeChange}
+                                    style={{ minWidth: '105px', marginRight: '10px', borderRadius: '5px' }}
+                                />
+                                <Input
+                                    className="prompt"
+                                    type="text"
+                                    id="searchKeyword"
+                                    placeholder="검색어를 입력하세요"
+                                    value={searchKeyword}
+                                    onChange={(e) => setSearchKeyword(e.target.value)}
+                                    style={{ width: '450px', paddingRight: '20px', textAlign: 'center' }}
+                                />
+                            </>
                         )}
-                        
+
                     </Nav>
                 </Navbar.Collapse>
-                         <Button
-                            icon="search"
-                            type="button"
-                            color="yellow"
-                            id="searchButton"
-                            style={{border: 'none', background: 'transparent', cursor: 'pointer', marginRight: '10px'}}
-                            onClick={(e) => {
-                                toggleSearch(); // 검색 UI 표시 상태를 토글합니다.
-                                handleSearchSubmit(e); // 검색을 수행합니다.
-                            }}
-                        >
-                        </Button>
+                <Button
+                    icon="search"
+                    type="button"
+                    color="yellow"
+                    id="searchButton"
+                    style={{ border: 'none', background: 'transparent', cursor: 'pointer', marginRight: '10px' }}
+                    onClick={(e) => {
+                        toggleSearch(); // 검색 UI 표시 상태를 토글합니다.
+                        handleSearchSubmit(e); // 검색을 수행합니다.
+                    }}
+                >
+                </Button>
             </Navbar>
         </>
     )
