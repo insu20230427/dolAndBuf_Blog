@@ -8,14 +8,13 @@ import { useBlog } from '../contexts/blogContext';
 const Layout = ({ children }) => {
     const [userId, setUserId] = useState(null);
     const { blogName } = useBlog();
-    console.log(blogName);
 
     useEffect(() => {
         if (blogName) {
             const fetchUserId = async () => {
                 try {
                     const response = await axios.get(`http://localhost:8080/api/blogs?blogName=${blogName}`);
-                    console.log(response.data.data);
+                    // console.log(response.data.data);
                     setUserId(response.data.data);
                 } catch (error) {
                     console.error('Failed to fetch user ID:', error);

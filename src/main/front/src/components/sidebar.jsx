@@ -92,7 +92,7 @@ const Sidebar = ({ userId }) => {
                                         {category.childrenId && category.childrenId.length > 0 && (
                                             <i onClick={(e) => { e.stopPropagation(); toggleCategory(category.id); }}
                                                 className={`caret ${expandedCategories[category.id] ? 'down' : 'right'} icon`}>
-                                                {category.name}
+                                                &nbsp; {category.name}
                                             </i>
                                         )}
                                     </>

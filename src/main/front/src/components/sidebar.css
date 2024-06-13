@@ -6,11 +6,17 @@
     flex-direction: column;
     justify-content: space-between;
     height: 87vh;
+    overflow-y: auto;
+    /* 추가: 세로 스크롤바 추가 */
 }
-.category-list {
-    list-style: none;
-    padding: 0;
+
+.item {
+    display: block;
+    /* 추가: 블록 레벨 요소로 설정하여 세로 배치 문제 해결 */
+    white-space: nowrap;
+    /* 추가: 텍스트가 한 줄에 나타나도록 설정 */
 }
+
 .item a {
     text-decoration: none;
     color: #495057;
@@ -19,34 +25,7 @@
     transition: color 0.3s;
 }
 
-.selected {
+\.item .active a {
     font-weight: bold;
     text-decoration: underline;
 }
-/*
-.sidebar h3 {
-    color: #343a40;
-    margin-bottom: 15px;
-}
-
-.category-list {
-    list-style: none;
-    padding: 0;
-}
-
-.category-list li a {
-    text-decoration: none;
-    color: #495057;
-    display: block;
-    padding: 8px 0;
-    transition: color 0.3s;
-}
-
-.category-list li a:hover {
-    color: #0056b3;
-}
-
-.selected {
-    font-weight: bold;
-    text-decoration: underline;
-} */
