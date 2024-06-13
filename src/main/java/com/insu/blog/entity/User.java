@@ -39,7 +39,7 @@ public class User {
     private String nickname;
 
     @Column
-    private String profileImage;
+    private String AvatarImage;
 
     @Column(unique = true, length = 100)
     private String email;
