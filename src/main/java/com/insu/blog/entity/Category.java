@@ -9,6 +9,9 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -23,10 +26,12 @@ public class Category {
 
     private String name;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
     private List<Category> children = new ArrayList<>();
 
@@ -34,6 +39,7 @@ public class Category {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
     private List<Post> posts = new ArrayList<>();
 }
