@@ -18,7 +18,7 @@ const WritePost = () => {
     const [category, setCategory] = useState(null);
     const [categoryData, setCategoryData] = useState([]);
     const quillRef = useRef(null);
- 
+
     const containerStyle = {
         height: '87vh',
     };
@@ -46,7 +46,7 @@ const WritePost = () => {
             input.setAttribute('type', 'file');
             input.setAttribute('accept', 'image/*');
             input.click();
-    
+
             input.onchange = async () => {
                 const file = input.files[0];
                 const formData = new FormData();
@@ -156,13 +156,15 @@ const WritePost = () => {
 
         try {
             const response = await axios.post(
-                `http://localhost:8080/api/posts?categoryId=${category.id}`,
+                'http://localhost:8080/api/posts',
                 {
                     title: title,
                     content: content,
+                    categoryId: category.id
                 },
                 {
                     headers: {
+                        'Content-Type': 'application/json', // JSON 형식으로 설정
                         Authorization: Cookies.get('Authorization'),
                     },
                 }

@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button, Divider, Icon, Label } from "semantic-ui-react";
+import { Button, Container, Divider, Icon, Label} from "semantic-ui-react";
 import Swal from "sweetalert2";
 import DOMPurify from "dompurify";
 import Reply from "../../../components/Reply";
@@ -10,7 +10,7 @@ import Reply from "../../../components/Reply";
 const DetailPost = () => {
     const containerStyle = {
         height: '87vh'
-    }
+    };
 
     const [detailPost, setDetailPost] = useState({});
     const { id } = useParams();
@@ -135,7 +135,7 @@ const DetailPost = () => {
                     {userId && detailPost.user && String(userId) === String(detailPost.user.id) && (
                         <>
                             <Button icon onClick={() => navigate(`/update-post/${id}`)}>
-                                <Icon name="cut" />
+                                <Icon name="edit" />
                             </Button>
                             <Button icon onClick={handleDeletePost}>
                                 <Icon name="trash alternate" />
@@ -145,6 +145,13 @@ const DetailPost = () => {
                 </div>
                 <br /><br />
                 <h3>{detailPost.title}</h3>
+                {detailPost.category && (
+                    <Container textAlign='right'>
+                        <Label color='blue' size='large'>
+                            {detailPost.category.name}
+                        </Label>
+                    </Container>
+                )}
                 <Divider />
                 <div>
                     <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(detailPost.content) }} />

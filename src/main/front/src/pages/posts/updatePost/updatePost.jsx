@@ -5,7 +5,7 @@ import { Form } from "react-bootstrap";
 import ReactQuill, { Quill } from "react-quill";
 import ImageResize from "quill-image-resize-module-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Icon } from "semantic-ui-react";
+import { Button, Dropdown, DropdownItem, DropdownMenu, Icon } from "semantic-ui-react";
 import Swal from 'sweetalert2';
 import 'react-quill/dist/quill.snow.css';
 
@@ -13,21 +13,15 @@ Quill.register("modules/imageResize", ImageResize);
 
 export default function UpdatePost() {
     const [detailPost, setDetailPost] = useState({});
+    const [categoryData, setCategoryData] = useState([]);
+    const [category, setCategory] = useState({});
     const navigate = useNavigate();
     const { id } = useParams();
-    const [username, setUsername] = useState('');
     const quillRef = useRef(null);
 
     useEffect(() => {
-        const storedToken = Cookies.get('Authorization');
-        if (storedToken) {
-            const jwtToken = storedToken.split(' ')[1];
-            const parts = jwtToken.split('.');
-            const payload = parts[1];
-            const decodedPayload = JSON.parse(atob(payload));
-            setUsername(decodedPayload.sub);
-        }
         fetchPosts();
+        fetchCategories();
     }, []);
 
     useEffect(() => {
@@ -70,9 +64,81 @@ export default function UpdatePost() {
         try {
             const response = await axios.get(`http://localhost:8080/api/posts/${id}`);
             setDetailPost(response.data.data);
+            setCategory(response.data.data.category); // Fetch the category of the post
         } catch (error) {
             console.error('Error fetching posts:', error);
         }
+    };
+
+    const fetchCategories = async () => {
+        const jwtToken = Cookies.get('Authorization');
+        if (!jwtToken) {
+            console.error('JWT Token not found');
+            return;
+        }
+
+        const jwtParts = jwtToken.split(' ');
+        if (jwtParts.length !== 2) {
+            console.error('Invalid JWT Token format');
+            return;
+        }
+
+        const token = jwtParts[1];
+        const parts = token.split('.');
+        const payload = parts[1];
+        const userId = JSON.parse(atob(payload)).userId;
+
+        try {
+            const response = await axios.get(`http://localhost:8080/api/categories/${userId}`);
+            console.log(response.data);
+            setCategoryData(response.data);
+            if (response.data && response.data.length === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: '카테고리가 존재하지 않습니다.',
+                }).then(() => {
+                    navigate('/category-setting');
+                });
+            }
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+        }
+    };
+
+    const processDropdownData = (data) => {
+        const accordionOptions = [];
+        const findChildren = (parentId) => {
+            return Object.values(data)
+                .filter((child) => child.parentId === parentId)
+                .map((child) => ({
+                    key: child.id,
+                    text: child.name,
+                    value: child.id,
+                }));
+        };
+
+        Object.values(data).forEach((category) => {
+            if (category.parentId === null) {
+                accordionOptions.push({
+                    key: category.id,
+                    title: category.name,
+                    content: {
+                        key: category.id,
+                        content: findChildren(category.id),
+                    },
+                });
+            }
+        });
+
+        return accordionOptions;
+    };
+
+    const dropdownOptions = processDropdownData(categoryData);
+
+    const handleCategoryChange = (e, { value }) => {
+        e.preventDefault();
+        setCategory(categoryData.find((cat) => cat.id === value));
+        console.log(category);
     };
 
     if (!detailPost.title && !detailPost.content && !id) {
@@ -87,13 +153,14 @@ export default function UpdatePost() {
         try {
             await axios.put(`http://localhost:8080/api/posts/${id}`, {
                 content: detailPost.content,
-                title: detailPost.title
+                title: detailPost.title,
+                categoryId: category.id
             });
             Swal.fire({
                 icon: 'success',
                 text: '게시글 수정 성공.'
             }).then(() => {
-                navigate('/');
+                navigate(`/detail-post/${id}`);
             });
         } catch (error) {
             console.error('게시글 수정 실패:', error);
@@ -101,7 +168,7 @@ export default function UpdatePost() {
                 icon: 'error',
                 text: '게시글 수정 실패. 다시 시도해주세요'
             });
-            navigate(`/detail-post/${id}`);
+            //navigate(`/detail-post/${id}`);
         }
     };
 
@@ -147,6 +214,41 @@ export default function UpdatePost() {
             <br />
             <div className="container" style={containerStyle}>
                 <Form>
+                    <Form.Group>
+                        <Dropdown
+                            placeholder="Select a category"
+                            fluid
+                            pointing
+                            className="item"
+                            text={category !== null ? category.name : 'Select a category'}
+                            style={{
+                                width: '30%',
+                                border: '1px solid #bbb',
+                                padding: '5px',
+                                paddingLeft: '10px',
+                                borderRadius: '4px',
+                                color: 'black',
+                            }}
+                        >
+                            <DropdownMenu>
+                                {dropdownOptions.map((cat) => (
+                                    <DropdownItem key={cat.key}>
+                                        <Dropdown text={cat.title} pointing="left" className="link item">
+                                            <DropdownMenu>
+                                                {cat.content.content &&
+                                                    cat.content.content.map((child) => (
+                                                        <DropdownItem key={child.key} value={child.value} onClick={handleCategoryChange}>
+                                                            {child.text}
+                                                        </DropdownItem>
+                                                    ))}
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                    </DropdownItem>
+                                ))}
+                            </DropdownMenu>
+                        </Dropdown>
+                    </Form.Group>
+                    <br />
                     <Form.Group>
                         <Form.Control
                             type="text"
