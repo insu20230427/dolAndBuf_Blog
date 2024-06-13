@@ -1,9 +1,9 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
 import './sidebar.css';
 import Cookies from "js-cookie";
-import { Icon } from 'semantic-ui-react';
+import {Icon} from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
 const Sidebar = ({ userId }) => {
@@ -13,11 +13,6 @@ const Sidebar = ({ userId }) => {
     const [selectedCategoryId, setSelectedCategoryId] = useState('all');
     const [expandedCategories, setExpandedCategories] = useState({});
     const [visible, setVisible] = useState(false);
-
-    // const toggleSidebar = () => {
-    //     setVisible(!visible);
-    // };
-
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -134,45 +129,6 @@ const Sidebar = ({ userId }) => {
                 </Link>
             )}
         </div>
-
-        // <div>
-        //     <Button onClick={toggleSidebar}>
-        //         <Icon name="sidebar" /> Toggle Sidebar
-        //     </Button>
-
-        //     <Sidebar.Pushable as={Segment} style={{ minHeight: '100vh' }}>
-        //         <Sidebar
-        //             as={Menu}
-        //             animation='overlay'
-        //             icon='labeled'
-        //             inverted
-        //             onHide={() => setVisible(false)}
-        //             vertical
-        //             visible={visible}
-        //             width='thin'
-        //         >
-        //             <Menu.Item as='a'>
-        //                 <Icon name='home' />
-        //                 Home
-        //             </Menu.Item>
-        //             <Menu.Item as='a'>
-        //                 <Icon name='gamepad' />
-        //                 Games
-        //             </Menu.Item>
-        //             <Menu.Item as='a'>
-        //                 <Icon name='camera' />
-        //                 Channels
-        //             </Menu.Item>
-        //         </Sidebar>
-
-        //         <Sidebar.Pusher>
-        //             <Segment basic>
-        //                 <h3>Main Content</h3>
-        //                 <p>This is the main content area.</p>
-        //             </Segment>
-        //         </Sidebar.Pusher>
-        //     </Sidebar.Pushable>
-        // </div>
     );
 };
 

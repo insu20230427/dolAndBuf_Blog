@@ -8,7 +8,7 @@ import {
 import {Client} from "@stomp/stompjs";
 import axios from "axios";
 import Cookies from "js-cookie";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useParams} from "react-router-dom";
 import {Button} from "semantic-ui-react";
 import SockJS from "sockjs-client";
@@ -23,6 +23,7 @@ function Chat() {
     const [roomName, setRoomName] = useState(chatRoomName);
     const [username, setUsername] = useState('');
     const clientRef = useRef(null);
+    const [avatar, setAvatar] = useState('');
 
     const containerStyle = {
         height: '87vh'
@@ -122,6 +123,8 @@ function Chat() {
         // Base64 디코딩 후 JSON 파싱
         const username = JSON.parse(atob(payload)).sub;
 
+        setAvatar(process.env.PUBLIC_URL + '/images/' + username + '.jpg');
+        console.log(avatar)
         setUsername(username);
 
         if (message) {
@@ -160,32 +163,6 @@ function Chat() {
         }
     };
 
-    function stringToColor(string) {
-        let hash = 0;
-        let i;
-
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.slice(-2);
-        }
-
-        return color;
-    }
-
-    function stringAvatar(name) {
-        const initials = name.length > 1 ? `${name[0][0]}${name[1][0]}` : `${name[0][0]}`;
-
-        return {
-            name: initials,
-            color: stringToColor(name)
-        };
-    }
 
     return (
         <>
@@ -209,13 +186,7 @@ function Chat() {
                                          }}
                                     >
                                         {msg.sender !== username && (
-                                            <Avatar
-                                                name={stringAvatar(msg.sender).name}
-                                                color={stringAvatar(msg.sender).color}
-                                                size="40"
-                                                round={true}
-                                                style={{ marginRight: '2px' }}
-                                            />
+                                               <img src={avatar} alt="Avatar" style={{width: '30px', height: '30px', borderRadius: '50%'}}/>
                                         )}
                                         <Message
                                             model={{
@@ -227,13 +198,7 @@ function Chat() {
                                             className={msg.sender === username ? "message-outgoing" : "message-incoming"}
                                         />
                                         {msg.sender === username && (
-                                            <Avatar
-                                                name={stringAvatar(msg.sender).name}
-                                                color={stringAvatar(msg.sender).color}
-                                                size="40"
-                                                round={true}
-                                                style={{ marginLeft: '2px' }}
-                                            />
+                                                <img src={avatar} alt="Avatar" style={{width: '30px', height: '30px', borderRadius: '50%'}}/>
                                         )}
                                     </div>
                                 ))}

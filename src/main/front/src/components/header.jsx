@@ -1,11 +1,11 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.css';
 import Cookies from 'js-cookie';
-import React, { useEffect, useState } from 'react';
-import { Nav, Navbar } from 'react-bootstrap';
-import { Link, useNavigate } from "react-router-dom";
-import { Button, Dropdown, Input } from 'semantic-ui-react';
-import { useBlog } from '../contexts/blogContext';
+import React, {useEffect, useState} from 'react';
+import {Nav, Navbar} from 'react-bootstrap';
+import {Link, useNavigate} from "react-router-dom";
+import {Button, Dropdown, Input} from 'semantic-ui-react';
+import {useBlog} from '../contexts/blogContext';
 
 export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,8 +14,9 @@ export default function Header() {
     const [showSearch, setShowSearch] = useState(false); // 검색 UI 표시 상태 추가
     const validToken = Cookies.get('Authorization');
     const navigate = useNavigate();
-    const { blogName, setBlogName } = useBlog();
+    const {blogName, setBlogName} = useBlog();
     const [username, setUsername] = useState('');
+    const [avatar, setAvatar] = useState('');
 
     useEffect(() => {
         updateLoginStatus();
@@ -45,6 +46,8 @@ export default function Header() {
             const payload = parts[1];
             const username = JSON.parse(atob(payload)).sub;
 
+            setAvatar(process.env.PUBLIC_URL + '/images/' + username + '.jpg');
+            console.log(avatar)
             setUsername(username);
 
         } else {
@@ -90,10 +93,12 @@ export default function Header() {
                     <Nav className="mr-auto" onClick={() => { setBlogName('') }}>
                         {isLoggedIn ? (
                             <>
+                                <Nav.Link as={Link} to="/user">
+                                    {avatar && <img src={avatar} alt="Avatar" style={{width: '30px', height: '30px', borderRadius: '50%'}}/>}
+                                </Nav.Link>
                                 {blogName !== '' ? (<Nav.Link as={Link} to="/" onClick={() => { setBlogName('') }}>블로그 홈</Nav.Link>)
                                     : (<Nav.Link as={Link} to={`/blog/${username}`}>내블로그</Nav.Link>)}
                                 <Nav.Link as={Link} to="/write">글쓰기</Nav.Link>
-                                <Nav.Link as={Link} to="/user">회원정보</Nav.Link>
                                 <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                                 <Nav.Link as={Link} to="/chat">채팅</Nav.Link>
                                 <Nav.Link as={Link} to="/game-board">겜</Nav.Link>

@@ -13,19 +13,66 @@ const Signup = () => {
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [emailError, setEmailError] = useState('');
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const containerStyle = {
         height: '87vh'
-    }
+    };
+
+    const stringToColor = (string) => {
+        let hash = 0;
+        for (let i = 0; i < string.length; i++) {
+            hash = string.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        let color = '#';
+        for (let i = 0; i < 3; i++) {
+            const value = (hash >> (i * 8)) & 0xff;
+            color += `00${value.toString(16)}`.slice(-2);
+        }
+        return color;
+    };
+
+    const stringAvatar = (name) => {
+        const initials = name
+            .split(' ')
+            .map(part => part[0].toUpperCase()) // 각 부분의 첫 글자를 대문자로 변환
+            .join('');
+        return {
+            name: initials,
+            color: stringToColor(name)
+        };
+    };
+
+    const drawAvatar = (name) => {
+        const avatarData = stringAvatar(name);
+        const canvas = document.createElement('canvas');
+        canvas.width = 100;
+        canvas.height = 100;
+        const context = canvas.getContext('2d');
+
+        // Draw background
+        context.fillStyle = avatarData.color;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw initials
+        context.font = '40px Arial';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillStyle = 'white';
+        context.fillText(avatarData.name, canvas.width / 2, canvas.height / 2);
+
+        return canvas.toDataURL('image/jpeg');
+    };
 
     const handleSignup = async () => {
-
         try {
+            const avatarImage = drawAvatar(username);
+
             await axios.post('http://localhost:8080/api/auth/signup', {
                 username: username,
                 password: password,
-                email: email
+                email: email,
+                avatarImage: avatarImage
             });
 
             Swal.fire({
@@ -54,7 +101,6 @@ const Signup = () => {
 
     return (
         <>
-
             <br />
             <Container style={containerStyle}>
                 <Form>
@@ -96,10 +142,8 @@ const Signup = () => {
                     회원가입
                 </Button>
             </Container>
-
         </>
     );
 };
 
 export default Signup;
-

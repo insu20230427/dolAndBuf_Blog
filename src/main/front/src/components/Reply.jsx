@@ -1,11 +1,12 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Button, Comment, Form, Icon, Label } from "semantic-ui-react";
+import React, {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
+import {Button, Comment, Form, Icon, Label} from "semantic-ui-react";
 import Swal from "sweetalert2";
+import './Reply.css'
 
-const Reply = ({ postId, userId }) => {
+const Reply = ({postId, userId}) => {
     const [replies, setReplies] = useState([]);
     const [replyContent, setReplyContent] = useState('');
     const [editReplyId, setEditReplyId] = useState(null);
@@ -17,9 +18,37 @@ const Reply = ({ postId, userId }) => {
     const [subReplyUpdateContent, setSubReplyUpdateContent] = useState('');
     const [showSubReplyFormId, setShowSubReplyFormId] = useState(null);
     const [showSubRepliesId, setShowSubRepliesId] = useState(null);
+    const [avatar, setAvatar] = useState('');
+
 
     useEffect(() => {
         fetchReplies();
+
+        const jwtToken = Cookies.get('Authorization');
+        if (!jwtToken) {
+            console.error('JWT Token not found');
+            return;
+        }
+
+        const jwtParts = jwtToken.split(' ');
+        if (jwtParts.length !== 2) {
+            console.error('Invalid JWT Token format');
+            return;
+        }
+
+        const token = jwtParts[1];
+
+        // 토큰을 "."으로 분리하여 배열로 만듦
+        const parts = token.split('.');
+
+        // Payload 부분 추출 (인덱스 1)
+        const payload = parts[1];
+
+        // Base64 디코딩 후 JSON 파싱
+        const username = JSON.parse(atob(payload)).sub;
+
+        setAvatar(process.env.PUBLIC_URL + '/images/' + username + '.jpg');
+        console.log(avatar)
     }, []);
 
     const fetchReplies = async () => {
@@ -31,7 +60,7 @@ const Reply = ({ postId, userId }) => {
 
                 const subRepliesPromises = repliesData.map(async (reply) => {
                     const subRepliesResponse = await fetchSubReplies(reply.id);
-                    return { [reply.id]: subRepliesResponse };
+                    return {[reply.id]: subRepliesResponse};
                 });
 
                 const subRepliesData = await Promise.all(subRepliesPromises);
@@ -309,7 +338,7 @@ const Reply = ({ postId, userId }) => {
         <Comment.Group>
             {replies.map((reply) => (
                 <Comment key={reply.id}>
-                    <Comment.Content>
+                    <Comment.Content >
                         <Comment.Author>
                             <div style={{
                                 display: "flex",
@@ -317,15 +346,21 @@ const Reply = ({ postId, userId }) => {
                                 alignItems: "center"
                             }}>
                                 <Link to={`/blog/${reply.user.username}`}>
-                                    {reply.user.username}
+                                    <img src={process.env.PUBLIC_URL + '/images/' + reply.user.username + '.jpg'}
+                                         alt="Avatar" style={{
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        marginRight: '5px'
+                                    }}/>{reply.user.username}
                                 </Link>
                                 <Comment.Actions>
                                     {reply.user.id === userId && (
                                         <>
                                             <a onClick={() => handleUpdateReplyForm(reply.id)}
-                                                className="reply">수정</a>
+                                               className="reply">수정</a>
                                             <a onClick={() => handleDeleteReply(reply.id)}
-                                                className="reply">삭제</a>
+                                               className="reply">삭제</a>
                                         </>
                                     )}
                                     <a onClick={() => {
@@ -341,8 +376,8 @@ const Reply = ({ postId, userId }) => {
                                             <>
                                                 <Button as='div' labelPosition='right'>
                                                     <Button icon color='red'
-                                                        onClick={() => deleteLikeReply(reply.id)}>
-                                                        <Icon name='heart' />
+                                                            onClick={() => deleteLikeReply(reply.id)}>
+                                                        <Icon name='heart'/>
                                                     </Button>
                                                     <Label basic color='red' pointing='left'>
                                                         {reply.likeCnt}
@@ -353,7 +388,7 @@ const Reply = ({ postId, userId }) => {
                                             <>
                                                 <Button as='div' labelPosition='right'>
                                                     <Button icon onClick={() => addLikeReply(reply.id)}>
-                                                        <Icon name='heart' />
+                                                        <Icon name='heart'/>
                                                     </Button>
                                                     <Label basic pointing='left'>
                                                         {reply.likeCnt}
@@ -402,7 +437,14 @@ const Reply = ({ postId, userId }) => {
                                                     <Comment.Content>
                                                         <Comment.Author>
                                                             <Link to={`/blog/${subReply.user.username}`}>
-                                                                {subReply.user.username}
+                                                                <img
+                                                                    src={process.env.PUBLIC_URL + '/images/' + subReply.user.username + '.jpg'}
+                                                                    alt="Avatar" style={{
+                                                                    width: '20px',
+                                                                    height: '20px',
+                                                                    borderRadius: '50%',
+                                                                    marginRight: '5px'
+                                                                }}/>{subReply.user.username}
                                                             </Link>
                                                         </Comment.Author>
                                                         <Comment.Metadata>
@@ -438,9 +480,9 @@ const Reply = ({ postId, userId }) => {
                                                                     {subReply.user.id === userId && (
                                                                         <>
                                                                             <a onClick={() => handleUpdateSubReplyForm(subReply.id, reply.id)}
-                                                                                className="reply">수정</a>
+                                                                               className="reply">수정</a>
                                                                             <a onClick={() => handleDeleteSubReply(subReply.id, reply.id)}
-                                                                                className="reply">삭제</a>
+                                                                               className="reply">삭제</a>
                                                                         </>
                                                                     )}
                                                                 </Comment.Actions>
