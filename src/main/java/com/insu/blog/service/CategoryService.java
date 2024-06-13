@@ -56,14 +56,14 @@ public class CategoryService {
 
     // 카테고리 전체조회
     @Transactional(readOnly = true)
-    public List<Category> getCategoriesByUserId(int userId) {
-        return categoryRepository.findByUserId(userId);
+    public List<Category> getCategoriesByUserId(String userId) {
+        return categoryRepository.findByUserId(Integer.parseInt(userId));
     }
 
     // 카테고리 상세 조회
     @Transactional
-    public Page<Post> getPostsByCategoryId(int categoryId, Pageable pageable) {
-        return postRepository.findByCategoryId(categoryId, pageable);
+    public Page<Post> getPostsByCategoryId(String categoryId, Pageable pageable) {
+        return postRepository.findByCategoryId(Integer.parseInt(categoryId), pageable);
     }
 
     // 카테고리 아이디로 조회
@@ -109,8 +109,8 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
-    // 카테고리 이름으로 조회
-    public Category findByName(String name) {
-        return categoryRepository.findByName(name);
-    }
+//    // 카테고리 이름으로 조회
+//    public Category findByName(String name) {
+//        return categoryRepository.findByName(name);
+//    }
 }

@@ -37,7 +37,7 @@ public class ReplyService {
         replyRepository.mupdate(replyId, reqDto.getContent());
     }
 
-    //게시글 좋아요
+    // 댓글 좋아요
     public void createLikes(int replyId, User user) {
 
         Optional<ReplyLike> existingLikesOptional = replyLikeRepository.findByReplyIdAndUserId(replyId, user.getId());
@@ -60,7 +60,7 @@ public class ReplyService {
         }
     }
 
-    //게시글 좋아요 취소
+    // 댓글 좋아요 취소
     public void deleteLikes(int replyId, User user) {
 
         ReplyLike replyLike = replyLikeRepository.findByReplyIdAndUserId(replyId, user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 댓글의 좋아요가 존재하지 않습니다."));

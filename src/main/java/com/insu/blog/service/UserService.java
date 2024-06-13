@@ -1,8 +1,12 @@
 package com.insu.blog.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,6 +48,33 @@ public class UserService {
     public void signup(SignupRequestDto signupRequestDto) {
         User signupUser = new User(signupRequestDto.getUsername(), encoder.encode(signupRequestDto.getPassword()),
                 signupRequestDto.getEmail(), RoleType.ROLE_USER);
+
+        // Decode Base64 encoded image
+        String base64Image = signupRequestDto.getAvatarImage().split(",")[1];
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+
+        // Save image to disk
+        String avatarDirectoryPath = "src/main/front/public/images/";
+        String avatarFileName = signupUser.getUsername() + ".jpg";
+        String avatarPath = avatarDirectoryPath + avatarFileName;
+
+        try {
+            // 디렉토리가 존재하지 않으면 생성
+            File directory = new File(avatarDirectoryPath);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            // 이미지 저장
+            try (OutputStream stream = new FileOutputStream(avatarPath)) {
+                stream.write(imageBytes);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Set avatar image path
+        signupUser.setAvatarImage(avatarPath);
         userRepository.save(signupUser);
     }
 

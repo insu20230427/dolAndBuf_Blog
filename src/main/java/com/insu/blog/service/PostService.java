@@ -76,6 +76,12 @@ public class PostService {
         return postRepository.findAll(pageable);
     }
 
+    // 페이징된 유저에 따른 글 조회
+    @Transactional(readOnly = true)
+    public Page<Post> findAllPagedPostsByUser(Pageable pageable, String userId) {
+        return postRepository.findAllByUserId(pageable, Integer.parseInt(userId));
+    }
+
     // 상세 게시글 조회
     @Transactional(readOnly = true)
     public Post showPostDetail(int postId) {
