@@ -1,30 +1,12 @@
 package com.insu.blog.controller.api;
 
-import java.util.List;
-
-import com.insu.blog.service.CategoryService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.insu.blog.dto.request.CategoryRequestDto;
 import com.insu.blog.dto.request.UpdatePostReqDto;
 import com.insu.blog.dto.response.ApiResponseDto;
 import com.insu.blog.entity.Category;
 import com.insu.blog.entity.Post;
 import com.insu.blog.security.service.PrincipalDetails;
+import com.insu.blog.service.CategoryService;
 import com.insu.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,13 +48,16 @@ public class PostController {
 
     // 게시글 생성
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponseDto> writePost(@RequestBody Post post,
-            @RequestParam String categoryId,
+    public ResponseEntity<ApiResponseDto> writePost(@RequestBody UpdatePostReqDto postDto,
             @AuthenticationPrincipal PrincipalDetails userDetails) {
 
-        Category category = categoryService.getCategoryById(Integer.parseInt(categoryId))
+        Category category = categoryService.getCategoryById(postDto.getCategoryId())
                 .orElseThrow(() -> new NullPointerException("해당 카테고리가 없습니다."));
 
+        Post post = new Post();
+
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
         post.setCategory(category);
 
         log.info("Post : {} ", post);

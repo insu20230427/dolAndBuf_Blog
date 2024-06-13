@@ -1,9 +1,11 @@
 package com.insu.blog.service;
 
 import com.insu.blog.dto.request.UpdatePostReqDto;
+import com.insu.blog.entity.Category;
 import com.insu.blog.entity.Post;
 import com.insu.blog.entity.PostLike;
 import com.insu.blog.entity.User;
+import com.insu.blog.repository.CategoryRepository;
 import com.insu.blog.repository.PostLikeRepository;
 import com.insu.blog.repository.PostRepository;
 import io.micrometer.common.util.StringUtils;
@@ -21,6 +23,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CategoryRepository categoryRepository;
 
     // 글 작성
     @Transactional
@@ -43,15 +46,26 @@ public class PostService {
     // 게시글 수정
     @Transactional
     public void updatePost(int postId, UpdatePostReqDto updatePostReqDto) {
-        Post updatePost = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패"));
-        // updatePost.setContent(
-        // updatePostReqDto.getContent().replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>",
-        // ""));
+        Post updatePost = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 찾기 실패 ID: " + postId));
+
+        if (StringUtils.isNotBlank(updatePostReqDto.getTitle())) {
+            updatePost.setTitle(updatePostReqDto.getTitle());
+        }
         updatePost.setContent(updatePostReqDto.getContent());
 
         if (StringUtils.isNotBlank(updatePostReqDto.getTitle())) {
             updatePost.setTitle(updatePostReqDto.getTitle());
         }
+
+        Category category = categoryRepository.findById(updatePostReqDto.getCategoryId())
+                .orElseThrow(
+                        () -> new IllegalArgumentException("카테고리 찾기 실패 ID: " + updatePostReqDto.getCategoryId()));
+
+        updatePost.setCategory(category);
+
+        postRepository.save(updatePost);
+
         System.out.println("content : " + updatePostReqDto.getContent());
         System.out.println("title : " + updatePostReqDto.getTitle());
     }

@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.hibernate.annotations.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -50,8 +52,7 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user; // user -> User/id -> User
 
-    @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Category category;
 
