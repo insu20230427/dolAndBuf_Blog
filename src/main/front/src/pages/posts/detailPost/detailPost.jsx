@@ -8,9 +8,9 @@ import DOMPurify from "dompurify";
 import Reply from "../../../components/Reply";
 
 const DetailPost = () => {
-    const containerStyle = {
-        height: '87vh'
-    };
+    // const containerStyle = {
+    //     height: '87vh'
+    // };
 
     const [detailPost, setDetailPost] = useState({});
     const {id} = useParams();
@@ -110,7 +110,7 @@ const DetailPost = () => {
     };
 
     return (
-        <div className="ui container" style={containerStyle}>
+        <div className="ui container">
             <br/><br/> <br/><br/>
             <div style={{marginBottom: '10px'}}>
                 {detailPost.category && (

@@ -19,9 +19,9 @@ const WritePost = () => {
     const [categoryData, setCategoryData] = useState([]);
     const quillRef = useRef(null);
 
-    const containerStyle = {
-        height: '87vh',
-    };
+    // const containerStyle = {
+    //     height: '87vh',
+    // };
 
     const modules = {
         toolbar: {
@@ -191,7 +191,7 @@ const WritePost = () => {
         <>
             <br />
             <br />
-            <div className="container" style={containerStyle}>
+            <div className="container">
                 <Form onSubmit={handlePostSubmit}>
                     <Form.Group>
                         <Dropdown
@@ -266,8 +266,7 @@ const WritePost = () => {
                             ]}
                         />
                     </Form.Group>
-                    <br />
-                    <br />
+                    <br /><br /><br /><br />
                     <div style={{ textAlign: 'center' }}>
                         <Button icon onClick={() => navigate('/')}>
                             <Icon name="arrow left" />
@@ -276,6 +275,7 @@ const WritePost = () => {
                             <Icon name="edit" />
                         </Button>
                     </div>
+                    <br /><br />
                 </Form>
             </div>
         </>

@@ -1,60 +1,57 @@
 import axios from 'axios';
-import React, {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './sidebar.css';
-import Cookies from "js-cookie";
-import {Icon} from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 
-const Sidebar = ({ userId }) => {
+const Sidebar = ({ userId, visible, onClose }) => {
     const [categories, setCategories] = useState([]);
     const [totalPostsCount, setTotalPostsCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [selectedCategoryId, setSelectedCategoryId] = useState('all');
     const [expandedCategories, setExpandedCategories] = useState({});
-    const [visible, setVisible] = useState(false);
+    const sidebarRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            setLoading(true);
-            try {
-                const response = await axios.get(`http://localhost:8080/api/categories/${userId}`);
-                const fetchedCategories = response.data;
-                setTotalPostsCount(fetchedCategories.reduce((acc, cat) => acc + cat.postCount, 0));
-                setCategories([{
-                    id: 'all', name: '전체보기', parentId: null, postCount: totalPostsCount,
-                    childrenId: []
-                }, ...fetchedCategories]);
-            } catch (error) {
-                console.error('Failed to fetch categories:', error);
+        if (userId) {
+            const fetchCategories = async () => {
+                setLoading(true);
+                try {
+                    const response = await axios.get(`http://localhost:8080/api/categories/${userId}`);
+                    const fetchedCategories = response.data;
+                    setTotalPostsCount(fetchedCategories.reduce((acc, cat) => acc + cat.postCount, 0));
+                    setCategories([{
+                        id: 'all', name: '전체보기', parentId: null, postCount: totalPostsCount,
+                        childrenId: []
+                    }, ...fetchedCategories]);
+                } catch (error) {
+                    console.error('Failed to fetch categories:', error);
+                }
+                setLoading(false);
+            };
+            fetchCategories();
+        }
+    }, [userId]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+                onClose();
             }
-            setLoading(false);
         };
 
-        fetchCategories();
-
-        const jwtToken = Cookies.get('Authorization');
-        if (!jwtToken) {
-            console.error('JWT Token not found');
-            return;
+        if (visible) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
         }
 
-        const jwtParts = jwtToken.split(' ');
-        if (jwtParts.length !== 2) {
-            console.error('Invalid JWT Token format');
-            return;
-        }
-
-        const token = jwtParts[1];
-        const parts = token.split('.');
-        const payload = parts[1];
-        const visitorId = JSON.parse(atob(payload)).userId;
-
-        if (visitorId === userId) {
-            setVisible(true);
-        }
-
-    }, [userId]);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [visible, onClose]);
 
     const toggleCategory = (id) => {
         setExpandedCategories(prev => ({
@@ -66,68 +63,63 @@ const Sidebar = ({ userId }) => {
     const handleCategoryClick = (id) => {
         setSelectedCategoryId(id);
         toggleCategory(id);
+        navigate(`/posts/${id}`);
     };
 
     const renderCategories = (categories) => {
         return (
-            <div className="ui link list">
-                <div className={`item ${selectedCategoryId === 'all' ? 'active' : ''}`}
-                    onClick={() => handleCategoryClick('all')}>
-                    <Link to={`/posts/all`} onClick={() => setSelectedCategoryId('all')}>
-                        전체보기 ({totalPostsCount})
-                    </Link>
+            <div className="menu">
+                <div
+                    className={`menu-item ${selectedCategoryId === 'all' ? 'menu-item-active' : ''}`}
+                    onClick={() => handleCategoryClick('all')}
+                >
+                    전체보기 ({totalPostsCount})
                 </div>
-
-                {categories.map(category => (
-                    <div key={category.id} className='item'>
-                        <div onClick={() => handleCategoryClick(category.id)} className="category content">
-                            {category.id === 'all' ? (<></>)
-                                : (
-                                    <>
-                                        {category.childrenId && category.childrenId.length > 0 && (
-                                            <i onClick={(e) => { e.stopPropagation(); toggleCategory(category.id); }}
-                                                className={`caret ${expandedCategories[category.id] ? 'down' : 'right'} icon`}>
-                                                &nbsp; {category.name}
-                                            </i>
-                                        )}
-                                    </>
-                                )}
+                {categories.filter(cat => cat.id !== 'all' && cat.parentId === null).map(category => (
+                    <React.Fragment key={category.id}>
+                        <div
+                            className={`menu-item ${selectedCategoryId === category.id ? 'menu-item-active' : ''}`}
+                            onClick={() => {toggleCategory(category.id); setSelectedCategoryId(category.id);}}
+                        >
+                            <span className="menu-link">
+                                <Icon name={expandedCategories[category.id] ? 'angle down' : 'angle right'} />
+                                {category.name}
+                            </span>
                         </div>
-                        {expandedCategories[category.id] && (
-                            <>
-                                {category.childrenId.map(childId => (
-                                    <div key={childId} className={`item ${selectedCategoryId === childId ? 'active' : ''}`}
-                                        style={{ textIndent: '10px' }}>
-                                        <Link to={`/posts/${childId}`} onClick={() => { setSelectedCategoryId(childId); }}>
-                                            - {categories.find(cat => cat.id === childId).name}
-                                            ({categories.find(cat => cat.id === childId).postCount})
-                                        </Link>
-
-                                    </div>
-                                ))}
-
-                            </>
+                        {category.childrenId && category.childrenId.length > 0 && expandedCategories[category.id] && (
+                            <div className="menu-submenu">
+                                {category.childrenId.map(childId => {
+                                    const childCategory = categories.find(cat => cat.id === childId);
+                                    return (
+                                        <div
+                                            key={childId}
+                                            className={`menu-item ${selectedCategoryId === childId ? 'menu-item-active' : ''}`}
+                                            onClick={() => handleCategoryClick(childId)}
+                                        >
+                                            - {childCategory.name} ({childCategory.postCount})
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         )}
-
-                    </div>
+                    </React.Fragment>
                 ))}
-
             </div>
         );
     };
 
-    if (loading) {
-        return <div className="sidebar-loading">로딩 중...</div>;
-    }
+    // if (loading) {
+    //     return <div className="sidebar-loading">로딩 중...</div>;
+    // }
 
     return (
-        <div className="sidebar" style={{display : 'flex'}}>
+        <div ref={sidebarRef} className={`sidebar ${visible ? 'visible' : ''}`}>
             {renderCategories(categories)}
-            {visible && (
-                <Link to={'/category-setting' } style={{color:'#ccc'}}>
-                    <Icon name='setting'/>
+            <div className="menu-item">
+                <Link to={'/category-setting'} className="menu-link" style={{ color: '#ccc' }}>
+                    <Icon name='setting' /> 설정
                 </Link>
-            )}
+            </div>
         </div>
     );
 };

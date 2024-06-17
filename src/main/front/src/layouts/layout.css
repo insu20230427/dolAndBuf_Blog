@@ -1,0 +1,16 @@
+/* layout.css */
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    padding: 1em;
+    overflow: auto; /* This will prevent the footer from overlapping when content is large */
+}
+
+footer {
+    flex-shrink: 0; /* Ensure footer stays at the bottom */
+}

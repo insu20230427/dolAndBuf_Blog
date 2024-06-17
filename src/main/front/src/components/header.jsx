@@ -1,20 +1,20 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.css';
 import Cookies from 'js-cookie';
-import React, {useEffect, useState} from 'react';
-import {Nav, Navbar} from 'react-bootstrap';
-import {Link, useNavigate} from "react-router-dom";
-import {Button, Dropdown, Input} from 'semantic-ui-react';
-import {useBlog} from '../contexts/blogContext';
+import React, { useEffect, useState } from 'react';
+import { Nav, Navbar } from 'react-bootstrap';
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Dropdown, Icon, Input } from 'semantic-ui-react';
+import { useBlog } from '../contexts/blogContext';
 
-export default function Header() {
+export default function Header({ onSidebarToggle, isSidebarVisible }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchType, setSearchType] = useState(localStorage.getItem('searchType') || '0'); // 로컬 스토리지에서 검색 타입을 가져옵니다.
     const [searchKeyword, setSearchKeyword] = useState(localStorage.getItem('searchKeyword') || '');
     const [showSearch, setShowSearch] = useState(false); // 검색 UI 표시 상태 추가
     const validToken = Cookies.get('Authorization');
     const navigate = useNavigate();
-    const {blogName, setBlogName} = useBlog();
+    const { blogName, setBlogName } = useBlog();
     const [username, setUsername] = useState('');
     const [avatar, setAvatar] = useState('');
 
@@ -88,13 +88,20 @@ export default function Header() {
     return (
         <>
             <Navbar bg="dark" variant="dark" expand="md">
+                {blogName ? (<Button icon style={{ backgroundColor: 'transparent' }} onClick={(e) => {
+                    e.preventDefault();
+                    onSidebarToggle();
+                }}>
+                    <Icon name={"bars"} style={{ color: 'white' }} />
+                </Button>) : (
+                    <></>)}
                 <Navbar.Brand >{blogName} blog</Navbar.Brand>
                 <Navbar.Collapse id="collapsibleNavbar">
                     <Nav className="mr-auto" onClick={() => { setBlogName('') }}>
                         {isLoggedIn ? (
                             <>
                                 <Nav.Link as={Link} to="/user">
-                                    {avatar && <img src={avatar} alt="Avatar" style={{width: '30px', height: '30px', borderRadius: '50%'}}/>}
+                                    {avatar && <img src={avatar} alt="Avatar" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />}
                                 </Nav.Link>
                                 {blogName !== '' ? (<Nav.Link as={Link} to="/" onClick={() => { setBlogName('') }}>블로그 홈</Nav.Link>)
                                     : (<Nav.Link as={Link} to={`/blog/${username}`}>내블로그</Nav.Link>)}
