@@ -1,20 +1,20 @@
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, {useEffect, useState} from 'react';
-import {Pagination} from 'react-bootstrap';
-import {useNavigate, useParams} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Pagination } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
-import {Grid, GridColumn, GridRow, Icon, Segment} from 'semantic-ui-react';
+import { Grid, GridColumn, GridRow, Icon, Segment } from 'semantic-ui-react';
 import DOMPurify from 'dompurify';
-import Cookies from "js-cookie";
+import { useBlog } from "../../contexts/blogContext";
 
 const CategoryPosts = () => {
     const [posts, setPosts] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
     const navigate = useNavigate();
-    const {categoryId} = useParams();
-    const [userId, setUserId] = useState('');
+    const { categoryId } = useParams();
+    const { blogName } = useBlog();
 
     const containerStyle = {
         height: '87vh',
@@ -23,16 +23,11 @@ const CategoryPosts = () => {
     };
 
     useEffect(() => {
-        const fetchPosts = async (page) => {
-            const storedToken = Cookies.get('Authorization');
-            if (storedToken) {
-                const jwtToken = storedToken.split(' ')[1];
-                const parts = jwtToken.split('.');
-                const payload = parts[1];
-                const decodedPayload = JSON.parse(atob(payload));
+        if (blogName) {
+            const fetchPosts = async (page) => {
                 try {
                     const url = categoryId === 'all' || '' ?
-                        `http://localhost:8080/api/ddong/${decodedPayload.userId}/posts?page=${page}` :
+                        `http://localhost:8080/api/all/posts/${blogName}?page=${page}` :
                         `http://localhost:8080/api/${categoryId}/posts?page=${page}`;
                     const response = await axios.get(url);
                     const responseData = response.data.data;
@@ -43,17 +38,18 @@ const CategoryPosts = () => {
                     console.error('Error fetching posts:', error);
                 }
             }
-        };
 
-        fetchPosts(currentPage);
-    }, [currentPage, categoryId]);
+            fetchPosts(currentPage);
+        }
+
+    }, [blogName, currentPage, categoryId]);
 
     const handlePageClick = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
     const getThumbnailAndText = (content) => {
-        const cleanContent = DOMPurify.sanitize(content, {USE_PROFILES: {html: true}});
+        const cleanContent = DOMPurify.sanitize(content, { USE_PROFILES: { html: true } });
         const parser = new DOMParser();
         const doc = parser.parseFromString(cleanContent, 'text/html');
 
@@ -65,7 +61,7 @@ const CategoryPosts = () => {
         }
         const textContent = doc.body.textContent || "";
 
-        return {imgSrc, textContent};
+        return { imgSrc, textContent };
     };
 
     if (!posts) {
@@ -74,13 +70,13 @@ const CategoryPosts = () => {
 
     return (
         <div>
-            <br/><br/><br/><br/>
+            <br /><br /><br /><br />
             <div className="container" style={containerStyle}>
                 <div className="ui grid">
                     <Grid columns='equal'>
                         <GridRow columns={3}>
                             {posts.map(post => {
-                                const {imgSrc, textContent} = getThumbnailAndText(post.content);
+                                const { imgSrc, textContent } = getThumbnailAndText(post.content);
                                 return (
                                     <GridColumn key={post.id}>
                                         <Segment
@@ -88,25 +84,25 @@ const CategoryPosts = () => {
                                             onClick={() => {
                                                 navigate(`/detail-post/${post.id}`);
                                             }}
-                                            style={{cursor: 'pointer', height: '250px'}}
+                                            style={{ cursor: 'pointer', height: '250px' }}
                                         >
                                             <div className="content">
-                                                <div className="header" style={{textAlign: 'center', marginTop: '5px'}}>
+                                                <div className="header" style={{ textAlign: 'center', marginTop: '5px' }}>
                                                     {post.title}
                                                 </div>
                                                 {imgSrc && (
-                                                    <div style={{textAlign: 'center', marginTop: '5px'}}>
+                                                    <div style={{ textAlign: 'center', marginTop: '5px' }}>
                                                         <img src={imgSrc} alt="thumbnail"
-                                                             style={{maxHeight: '150px', maxWidth: '100px'}}/>
+                                                            style={{ maxHeight: '150px', maxWidth: '100px' }} />
                                                     </div>
                                                 )}
                                                 <div className="description"
-                                                     style={{textAlign: 'center', marginTop: '5px'}}>
+                                                    style={{ textAlign: 'center', marginTop: '5px' }}>
                                                     {textContent.length > 50 ? `${textContent.substring(0, 50)}...` : textContent}
                                                 </div>
-                                                <br/>
+                                                <br />
                                                 <div className="extra content"
-                                                     style={{fontSize: 'x-small', textAlign: 'center'}}>
+                                                    style={{ fontSize: 'x-small', textAlign: 'center' }}>
                                                     {post.modifyDate ? `수정일 : ${new Date(post.modifyDate).toLocaleDateString('en-US', {
                                                         year: 'numeric',
                                                         month: 'short',
@@ -137,10 +133,10 @@ const CategoryPosts = () => {
                         onClick={() => handlePageClick(currentPage - 1)}
                         disabled={currentPage === 0}
                     >
-                        <Icon color='grey' name="arrow left"/>
+                        <Icon color='grey' name="arrow left" />
                     </Pagination.Prev>
 
-                    {Array.from({length: totalPages}, (_, i) => (
+                    {Array.from({ length: totalPages }, (_, i) => (
                         <Pagination.Item
                             key={i}
                             active={i === currentPage}
@@ -154,11 +150,11 @@ const CategoryPosts = () => {
                         onClick={() => handlePageClick(currentPage + 1)}
                         disabled={currentPage === totalPages - 1}
                     >
-                        <Icon color='grey' name="arrow right"/>
+                        <Icon color='grey' name="arrow right" />
                     </Pagination.Next>
                 </Pagination>
-                <br/>
-                <br/>
+                <br />
+                <br />
             </nav>
         </div>
     );

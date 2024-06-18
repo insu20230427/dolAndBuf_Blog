@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './sidebar.css';
 import { Icon } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
+import Cookies from 'js-cookie';
 
 const Sidebar = ({ userId, visible, onClose }) => {
     const [categories, setCategories] = useState([]);
@@ -11,6 +12,7 @@ const Sidebar = ({ userId, visible, onClose }) => {
     const [loading, setLoading] = useState(true);
     const [selectedCategoryId, setSelectedCategoryId] = useState('all');
     const [expandedCategories, setExpandedCategories] = useState({});
+    const [isOwner, setIsOwner] = useState(false);
     const sidebarRef = useRef(null);
     const navigate = useNavigate();
 
@@ -33,6 +35,25 @@ const Sidebar = ({ userId, visible, onClose }) => {
             };
             fetchCategories();
         }
+
+        const jwtToken = Cookies.get('Authorization');
+        if (!jwtToken) {
+            console.error('JWT Token not found');
+            return;
+        } else {
+            const jwtParts = jwtToken.split(' ');
+            const token = jwtParts[1];
+            const parts = token.split('.');
+            const payload = parts[1];
+            const currentUserId = JSON.parse(atob(payload)).userId;
+
+            if (currentUserId === userId) {
+                setIsOwner(true);
+            } else {
+                setIsOwner(false);
+            }
+        }
+
     }, [userId]);
 
     useEffect(() => {
@@ -52,6 +73,14 @@ const Sidebar = ({ userId, visible, onClose }) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [visible, onClose]);
+
+
+    const updateSidebarCategories = (updatedCategories) => {
+        setCategories([{
+            id: 'all', name: '전체보기', parentId: null, postCount: updatedCategories.reduce((acc, cat) => acc + cat.postCount, 0),
+            childrenId: []
+        }, ...updatedCategories]);
+    };
 
     const toggleCategory = (id) => {
         setExpandedCategories(prev => ({
@@ -79,7 +108,7 @@ const Sidebar = ({ userId, visible, onClose }) => {
                     <React.Fragment key={category.id}>
                         <div
                             className={`menu-item ${selectedCategoryId === category.id ? 'menu-item-active' : ''}`}
-                            onClick={() => {toggleCategory(category.id); setSelectedCategoryId(category.id);}}
+                            onClick={() => { toggleCategory(category.id); setSelectedCategoryId(category.id); }}
                         >
                             <span className="menu-link">
                                 <Icon name={expandedCategories[category.id] ? 'angle down' : 'angle right'} />
@@ -108,18 +137,16 @@ const Sidebar = ({ userId, visible, onClose }) => {
         );
     };
 
-    // if (loading) {
-    //     return <div className="sidebar-loading">로딩 중...</div>;
-    // }
-
     return (
         <div ref={sidebarRef} className={`sidebar ${visible ? 'visible' : ''}`}>
             {renderCategories(categories)}
-            <div className="menu-item">
-                <Link to={'/category-setting'} className="menu-link" style={{ color: '#ccc' }}>
-                    <Icon name='setting' /> 설정
-                </Link>
-            </div>
+            {isOwner && (
+                <div className="menu-item">
+                    <Link to={'/category-setting'} className="menu-link" style={{ color: '#ccc' }}>
+                        <Icon name='setting' /> 설정
+                    </Link>
+                </div>
+            )}
         </div>
     );
 };
