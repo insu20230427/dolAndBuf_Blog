@@ -39,15 +39,16 @@ public class PostController {
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 조회 성공!").data(posts).build());
     }
 
-    @GetMapping("/ddong/{userId}/posts")
-    public ResponseEntity<ApiResponseDto> getPostByUser(
-            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-            @PathVariable("userId") String userId) {
-        Page<Post> posts = postService.findAllPagedPostsByUser(pageable, userId);
-        return ResponseEntity.ok().body(ApiResponseDto.builder().message("유저에 따른 게시글 조회 성공!").data(posts).build());
+    @GetMapping("/all/posts/{blogName}")
+    public ResponseEntity<ApiResponseDto> getPostByBlogName(
+            @PathVariable(name = "blogName") String blogName,
+            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        log.info("blogName : {}", blogName);
+        Page<Post> posts = postService.findAllPagedPostsByBlogName(pageable, blogName);
+        return ResponseEntity.ok().body(ApiResponseDto.builder().message("블로그 게시글 조회 성공!").data(posts).build());
     }
 
-    // 게시글 단일 조회
     @GetMapping("/posts/{postId}")
     public ResponseEntity<ApiResponseDto> getPostById(@PathVariable("postId") String postId) {
         Post post = postService.showPostDetail(Integer.parseInt(postId));
@@ -71,7 +72,18 @@ public class PostController {
         log.info("Post : {} ", post);
 
         postService.writePost(post, userDetails.getUser());
-        return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 작성 성공!").build());
+
+        // 카테고리 목록 반환
+        List<Category> updatedCategories = categoryService
+                .getCategoriesByUserId(String.valueOf(userDetails.getUser().getId()));
+        List<CategoryRequestDto> categoryRequestDtos = updatedCategories.stream()
+                .map(CategoryRequestDto::fromEntity)
+                .collect(Collectors.toList());
+
+        log.info("List<CategoryRequestDto> : {}", categoryRequestDtos);
+
+        return ResponseEntity.ok()
+                .body(ApiResponseDto.builder().message("게시글 작성 성공!").data(categoryRequestDtos).build());
     }
 
     // 게시글 삭제
