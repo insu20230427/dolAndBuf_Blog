@@ -44,7 +44,7 @@ public class PostController {
             @PathVariable(name = "blogName") String blogName,
             @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        log.info("blogName : {}", blogName);
+//        log.info("blogName : {}", blogName);
         Page<Post> posts = postService.findAllPagedPostsByBlogName(pageable, blogName);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("블로그 게시글 조회 성공!").data(posts).build());
     }
