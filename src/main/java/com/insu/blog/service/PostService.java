@@ -82,6 +82,12 @@ public class PostService {
         return postRepository.findAllByUserId(pageable, Integer.parseInt(userId));
     }
 
+    // 블로그이름에 따른 전체 글 조회
+    @Transactional(readOnly = true)
+    public Page<Post> findAllPagedPostsByBlogName(Pageable pageable, String blogName) {
+        return postRepository.findAllByBlogName(blogName, pageable);
+    }
+
     // 상세 게시글 조회
     @Transactional(readOnly = true)
     public Post showPostDetail(int postId) {
