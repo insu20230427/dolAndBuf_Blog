@@ -145,9 +145,9 @@ export default function UpdatePost() {
         return alert("loading...");
     }
 
-    const containerStyle = {
-        height: '87vh'
-    }
+    // const containerStyle = {
+    //     height: '87vh'
+    // }
 
     const handleUpdate = async () => {
         try {
@@ -212,7 +212,7 @@ export default function UpdatePost() {
         <>
             <br />
             <br />
-            <div className="container" style={containerStyle}>
+            <div className="container">
                 <Form>
                     <Form.Group>
                         <Dropdown
@@ -273,7 +273,7 @@ export default function UpdatePost() {
                             style={{ height: '700px' }}
                         />
                     </Form.Group>
-                    <br /><br /><br /><br /><br />
+                    <br /><br /><br /><br />
                     <div style={{ textAlign: 'center' }}>
                         <Button icon onClick={() => navigate('/')}>
                             <Icon name="arrow left" />
@@ -289,6 +289,7 @@ export default function UpdatePost() {
                             <Icon name="trash alternate" />
                         </Button>
                     </div>
+                    <br /><br />
                 </Form>
             </div>
         </>

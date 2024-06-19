@@ -1,31 +1,57 @@
+/* sidebar.css */
 .sidebar {
-    background-color: #f8f9fa;
+    width: 250px;
+    background-color: #f9f9f9;
     padding: 20px;
-    border-right: 1px solid #dee2e6;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 87vh;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 음영 효과 추가 */
+    position: fixed;
+    height: 100%;
     overflow-y: auto;
-    /* 추가: 세로 스크롤바 추가 */
+    transition: transform 0.3s ease;
+    transform: translateX(-100%);
+    z-index: 1000;
 }
 
-.item {
-    display: block;
-    /* 추가: 블록 레벨 요소로 설정하여 세로 배치 문제 해결 */
-    white-space: nowrap;
-    /* 추가: 텍스트가 한 줄에 나타나도록 설정 */
+.sidebar.visible {
+    transform: translateX(0);
 }
 
-.item a {
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.menu-link {
     text-decoration: none;
-    color: #495057;
+    color: #333;
     display: block;
-    padding: 8px 0;
-    transition: color 0.3s;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
-\.item .active a {
+.menu-link:hover {
+    background-color: #ececec;
+}
+
+.menu-item-active {
     font-weight: bold;
-    text-decoration: underline;
+    background-color: #e9ecef;
+    color: #000;
+}
+
+.menu-submenu {
+    margin-left: 20px;
+}
+
+.sidebar-loading {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2em;
 }
