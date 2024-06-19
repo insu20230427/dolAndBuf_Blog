@@ -35,7 +35,7 @@ public class User {
     @Column(nullable = false, length = 200)
     private String password;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true, length = 8)
     private String nickname;
 
     @Column
@@ -74,12 +74,14 @@ public class User {
         this.blogName = username;
     }
 
-    public User(String username, String password, String email, RoleType role) {
+    @Builder
+    public User(String username, String password, String email, RoleType role, String nickname) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
         this.blogName = username;
+        this.nickname = nickname;
     }
 
     @Builder

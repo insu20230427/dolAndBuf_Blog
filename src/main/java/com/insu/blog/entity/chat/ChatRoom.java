@@ -22,11 +22,11 @@ public class ChatRoom {
     private String chatRoomName;
 
     @Column(nullable = false)
-    private int hostUserId;
+    private String hostNickname;
 
-    public ChatRoom(User user, String chatRoomName) {
+    public ChatRoom(String hostNickname, String chatRoomName) {
         this.chatRoomName = chatRoomName;
-        this.hostUserId = user.getId();
+        this.hostNickname = hostNickname;
     }
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
