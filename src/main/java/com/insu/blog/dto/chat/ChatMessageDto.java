@@ -2,6 +2,7 @@ package com.insu.blog.dto.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.insu.blog.entity.chat.ChatMessage;
+import com.insu.blog.repository.UserRepository;
 import lombok.*;
 
 import java.time.format.DateTimeFormatter;
@@ -21,6 +22,7 @@ public class ChatMessageDto {
     private String sender;  // nickname
     private String message;
     private String imgData;
+    private String username;
 
     @JsonFormat(pattern = "yy-MM-dd HH:mm")
     private String createdAt;
@@ -28,6 +30,8 @@ public class ChatMessageDto {
     public ChatMessageDto(ChatMessage chatMessage) {
         this.type = MessageType.TALK;
         this.sender = chatMessage.getSenderNickname();
+        this.username = chatMessage.getUsername();
+
         if(chatMessage.getMessage() != null) {
             this.message = chatMessage.getMessage();
         }
@@ -35,12 +39,5 @@ public class ChatMessageDto {
             this.imgData = chatMessage.getImgUrl();
         }
         this.createdAt = chatMessage.getCreatedAt().format(DateTimeFormatter.ofPattern("yy-MM-dd HH:mm"));
-    }
-
-    @Builder
-    public ChatMessageDto(Long roomId, String imageUrl) {
-        this.type = MessageType.TALK;
-        this.roomId = roomId;
-        this.imgData = imageUrl;
     }
 }

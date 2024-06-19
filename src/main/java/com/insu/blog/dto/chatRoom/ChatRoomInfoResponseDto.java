@@ -8,12 +8,12 @@ public class ChatRoomInfoResponseDto {
 
     private int chatRoomId;
     private String chatRoomName;
-    private int hostUserId;
+    private String hostNickname;
 
 
     public ChatRoomInfoResponseDto(ChatRoom chatRoom) {
         this.chatRoomId = chatRoom.getId();
         this.chatRoomName = chatRoom.getChatRoomName();
-        this.hostUserId = chatRoom.getHostUserId();
+        this.hostNickname = chatRoom.getHostNickname();
     }
 }

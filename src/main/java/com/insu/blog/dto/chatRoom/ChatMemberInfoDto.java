@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 public class ChatMemberInfoDto {
     private int userId;
     private String username;
-//    private String nickname;
+    private String nickname;
 
     public ChatMemberInfoDto(ChatUser chatUser) {
         this.userId = chatUser.getUser().getId();
         this.username = chatUser.getUser().getUsername();
-//        this.nickname = chatUser.getUser().getNickname();
+        this.nickname = chatUser.getUser().getNickname();
     }
 }
