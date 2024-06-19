@@ -9,5 +9,5 @@ import java.util.List;
 @Setter
 public class CreateChatRoomRequestDto {
     private String chatRoomName;
-    private List<ChatMemberIdDto> memberIdList;
+    private List<ChatNicknameDto> nicknameList;
 }

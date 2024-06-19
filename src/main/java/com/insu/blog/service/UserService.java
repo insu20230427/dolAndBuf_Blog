@@ -46,8 +46,13 @@ public class UserService {
     // 회원 가입
     @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
-        User signupUser = new User(signupRequestDto.getUsername(), encoder.encode(signupRequestDto.getPassword()),
-                signupRequestDto.getEmail(), RoleType.ROLE_USER);
+        User signupUser = new User(
+                signupRequestDto.getUsername(),
+                encoder.encode(signupRequestDto.getPassword()),
+                signupRequestDto.getEmail(),
+                RoleType.ROLE_USER,
+                signupRequestDto.getNickname()
+        );
 
         // Decode Base64 encoded image
         String base64Image = signupRequestDto.getAvatarImage().split(",")[1];
@@ -55,7 +60,7 @@ public class UserService {
 
         // Save image to disk
         String avatarDirectoryPath = "src/main/front/public/images/";
-        String avatarFileName = signupUser.getUsername() + ".jpg";
+        String avatarFileName = signupUser.getNickname() + ".jpg";
         String avatarPath = avatarDirectoryPath + avatarFileName;
 
         try {

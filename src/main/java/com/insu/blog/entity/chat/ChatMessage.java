@@ -38,10 +38,14 @@ public class ChatMessage {
     @JoinColumn(name = "chatroom_id")
     private ChatRoom chatRoom;
 
+    @Column
+    private String username;
+
     public ChatMessage(User user, ChatMessageDto chatMessageDto) {
         this.senderId = user.getId();
+        this.username = user.getUsername();
 //        this.senderNickname = user.getNickname();
-        this.senderNickname = user.getUsername();
+        this.senderNickname = user.getNickname();
         if(chatMessageDto.getMessage() != null) {
             this.message = chatMessageDto.getMessage();
         }

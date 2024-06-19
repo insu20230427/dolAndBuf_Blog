@@ -10,9 +10,11 @@ const Signup = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
+    const [nickname, setNickname] = useState('');
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [emailError, setEmailError] = useState('');
+    const [nicknameError, setNicknameError] = useState('');
     const navigate = useNavigate();
 
     const containerStyle = {
@@ -66,12 +68,13 @@ const Signup = () => {
 
     const handleSignup = async () => {
         try {
-            const avatarImage = drawAvatar(username);
+            const avatarImage = drawAvatar(nickname);
 
             await axios.post('http://localhost:8080/api/auth/signup', {
                 username: username,
                 password: password,
                 email: email,
+                nickname: nickname,
                 avatarImage: avatarImage
             });
 
@@ -88,6 +91,7 @@ const Signup = () => {
                     setUsernameError(errors.username || '');
                     setPasswordError(errors.password || '');
                     setEmailError(errors.email || '');
+                    setNicknameError(errors.nickname || '');
                 }
             }
 
@@ -114,7 +118,7 @@ const Signup = () => {
                         />
                         {usernameError && <Label basic color='red' pointing>{usernameError}</Label>}
                     </Form.Group>
-                    <br />
+                    <br/>
                     <Form.Group controlId="password">
                         <Form.Label>비밀번호</Form.Label>
                         <Form.Control
@@ -125,7 +129,7 @@ const Signup = () => {
                         />
                         {passwordError && <Label basic color='red' pointing>{passwordError}</Label>}
                     </Form.Group>
-                    <br />
+                    <br/>
                     <Form.Group controlId="email">
                         <Form.Label>이메일</Form.Label>
                         <Form.Control
@@ -137,7 +141,18 @@ const Signup = () => {
                         {emailError && <Label basic color='red' pointing>{emailError}</Label>}
                     </Form.Group>
                 </Form>
-                <br />
+                <br/>
+                <Form.Group controlId="nickname">
+                    <Form.Label>닉네임</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="닉네임을 입력해주세요."
+                        value={nickname}
+                        onChange={(e) => setNickname(e.target.value)}
+                    />
+                    {nicknameError && <Label basic color='red' pointing>{nicknameError}</Label>}
+                </Form.Group>
+                <br/>
                 <Button variant="primary" onClick={handleSignup}>
                     회원가입
                 </Button>

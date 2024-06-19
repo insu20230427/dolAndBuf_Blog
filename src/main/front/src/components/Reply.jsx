@@ -346,13 +346,13 @@ const Reply = ({postId, userId}) => {
                                 alignItems: "center"
                             }}>
                                 <Link to={`/blog/${reply.user.username}`}>
-                                    <img src={process.env.PUBLIC_URL + '/images/' + reply.user.username + '.jpg'}
+                                    <img src={process.env.PUBLIC_URL + '/images/' + reply.user.nickname + '.jpg'}
                                          alt="Avatar" style={{
                                         width: '20px',
                                         height: '20px',
                                         borderRadius: '50%',
                                         marginRight: '5px'
-                                    }}/>{reply.user.username}
+                                    }}/>{reply.user.nickname}
                                 </Link>
                                 <Comment.Actions>
                                     {reply.user.id === userId && (
@@ -438,13 +438,13 @@ const Reply = ({postId, userId}) => {
                                                         <Comment.Author>
                                                             <Link to={`/blog/${subReply.user.username}`}>
                                                                 <img
-                                                                    src={process.env.PUBLIC_URL + '/images/' + subReply.user.username + '.jpg'}
+                                                                    src={process.env.PUBLIC_URL + '/images/' + subReply.user.nickname + '.jpg'}
                                                                     alt="Avatar" style={{
                                                                     width: '20px',
                                                                     height: '20px',
                                                                     borderRadius: '50%',
                                                                     marginRight: '5px'
-                                                                }}/>{subReply.user.username}
+                                                                }}/>{subReply.user.nickname}
                                                             </Link>
                                                         </Comment.Author>
                                                         <Comment.Metadata>

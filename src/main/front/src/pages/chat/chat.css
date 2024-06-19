@@ -1,15 +1,11 @@
 .message-outgoing {
-   text-align: right;
-   padding: 10px;
-   border-radius: 10px;
-   margin: 5px;
+   text-align: right !important;
+   padding: 6px !important;
 }
 
 .message-incoming {
-   text-align: left;
-   padding: 10px;
-   border-radius: 10px;
-   margin: 5px;
+   text-align: left !important;
+   padding: 6px !important;
 }
 
 /* 채팅 컨테이너 전체 스타일 */

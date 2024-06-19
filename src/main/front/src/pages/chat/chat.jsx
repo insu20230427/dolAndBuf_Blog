@@ -1,20 +1,13 @@
-import {
-    ChatContainer,
-    MainContainer,
-    Message,
-    MessageInput,
-    MessageList,
-} from "@chatscope/chat-ui-kit-react";
+import {ChatContainer, MainContainer, Message, MessageInput, MessageList,} from "@chatscope/chat-ui-kit-react";
 import {Client} from "@stomp/stompjs";
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, {useEffect, useRef, useState} from "react";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {Button} from "semantic-ui-react";
 import SockJS from "sockjs-client";
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import './chat.css';
-import Avatar from "react-avatar";
+import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 function Chat() {
     const {roomId, chatRoomName} = useParams();
@@ -22,6 +15,7 @@ function Chat() {
     const [messages, setMessages] = useState([]);
     const [roomName, setRoomName] = useState(chatRoomName);
     const [username, setUsername] = useState('');
+    const [nickname, setNickname] = useState('');
     const clientRef = useRef(null);
     const [avatar, setAvatar] = useState('');
 
@@ -45,7 +39,7 @@ function Chat() {
             onConnect: () => {
                 subscription = client.subscribe(`/topic/rooms/${roomId}`, (message) => {
                     const messageData = JSON.parse(message.body);
-                    console.log("data 받아옴 : " + messageData)
+                    console.log("data 받아옴:", JSON.stringify(messageData, null, 2));
                     setMessages(prevMessages => [...prevMessages, messageData]);
                 });
             }
@@ -85,47 +79,45 @@ function Chat() {
     }, [roomId]);
 
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const token = Cookies.get('Authorization');
-                const payload = token.split('.')[1];
-                const decoded = JSON.parse(atob(payload));
-                setUsername(decoded.sub);
-            } catch (error) {
-                console.error('사용자 정보를 가져오는 데 실패했습니다:', error);
-            }
-        };
         fetchUser();
     }, []);
 
+    const fetchUser = async () => {
+        try {
+            const validToken = Cookies.get('Authorization');
+            const jwtParts = validToken.split(' ');
+            if (jwtParts.length !== 2) {
+                console.error('Invalid JWT Token format');
+                return;
+            }
+
+            const token = jwtParts[1];
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                console.error('Invalid JWT Token structure');
+                return;
+            }
+
+            const payload = parts[1];
+            // Base64 URL 디코딩
+            const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+            const binaryString = atob(base64);
+            const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
+            const jsonPayload = new TextDecoder().decode(bytes);
+
+            const claims = JSON.parse(jsonPayload);
+            const username = claims.sub;
+            const nickname = claims.nickname;
+            console.log("username : " + username)
+            setAvatar(process.env.PUBLIC_URL + '/images/' + nickname + '.jpg');
+            setUsername(username);
+            setNickname(nickname);
+        } catch (error) {
+            console.error('사용자 정보를 가져오는 데 실패했습니다:', error);
+        }
+    };
+
     const sendMessage = () => {
-
-        const jwtToken = Cookies.get('Authorization');
-        if (!jwtToken) {
-            console.error('JWT Token not found');
-            return;
-        }
-
-        const jwtParts = jwtToken.split(' ');
-        if (jwtParts.length !== 2) {
-            console.error('Invalid JWT Token format');
-            return;
-        }
-
-        const token = jwtParts[1];
-
-        // 토큰을 "."으로 분리하여 배열로 만듦
-        const parts = token.split('.');
-
-        // Payload 부분 추출 (인덱스 1)
-        const payload = parts[1];
-
-        // Base64 디코딩 후 JSON 파싱
-        const username = JSON.parse(atob(payload)).sub;
-
-        setAvatar(process.env.PUBLIC_URL + '/images/' + username + '.jpg');
-        console.log(avatar)
-        setUsername(username);
 
         if (message) {
             const messageData = {
@@ -141,6 +133,7 @@ function Chat() {
                 body: JSON.stringify(messageData)
             });
             setMessage('');
+
         }
     }
 
@@ -175,33 +168,46 @@ function Chat() {
                     <MainContainer>
                         <ChatContainer>
                             <MessageList>
-                                {Array.isArray(messages) && messages.map((msg, index) => (
-                                    <div key={index}
-                                         // style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
-                                         style={{
-                                             display: 'flex',
-                                             alignItems: 'center',
-                                             marginBottom: '10px',
-                                             justifyContent: msg.sender === username ? 'flex-end' : 'flex-start'
-                                         }}
-                                    >
-                                        {msg.sender !== username && (
-                                               <img src={avatar} alt="Avatar" style={{width: '30px', height: '30px', borderRadius: '50%'}}/>
-                                        )}
-                                        <Message
-                                            model={{
-                                                message: msg.message,
-                                                sentTime: msg.sentTime,
-                                                sender: msg.sender,
-                                                direction: msg.sender === username ? "outgoing" : "incoming"
-                                            }}
-                                            className={msg.sender === username ? "message-outgoing" : "message-incoming"}
-                                        />
-                                        {msg.sender === username && (
-                                                <img src={avatar} alt="Avatar" style={{width: '30px', height: '30px', borderRadius: '50%'}}/>
-                                        )}
-                                    </div>
-                                ))}
+                                {Array.isArray(messages) && messages.map((msg, index) => {
+                                    const isOutgoing = msg.sender === nickname;
+                                    console.log("sender : " + msg.sender)
+                                    console.log("nickname : " + nickname)
+                                    console.log("send_username : " + msg.username)
+                                    console.log("username : " + username)
+
+                                    return (
+                                        <div key={index}
+                                             style={{
+                                                 display: 'flex',
+                                                 alignItems: 'center',
+                                                 marginBottom: '10px',
+                                                 justifyContent: isOutgoing ? 'flex-end' : 'flex-start'
+                                             }}
+                                        >
+                                            {!isOutgoing && (
+                                                <Link to={`/blog/${msg.username}`}>
+                                                <img src={process.env.PUBLIC_URL + '/images/' + msg.sender + '.jpg'} alt="Avatar"
+                                                     style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                                                </Link>
+                                            )}
+                                            <Message
+                                                model={{
+                                                    message: msg.message,
+                                                    sentTime: msg.sentTime,
+                                                    sender: msg.sender,
+                                                    direction: isOutgoing ? "outgoing" : "incoming"
+                                                }}
+                                                className={isOutgoing ? "message-outgoing" : "message-incoming"}
+                                            />
+                                            {isOutgoing && (
+                                                <Link to={`/blog/${msg.username}`}>
+                                                <img src={avatar} alt="Avatar"
+                                                     style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                                                </Link>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </MessageList>
                             <MessageInput
                                 placeholder="메시지 입력..."

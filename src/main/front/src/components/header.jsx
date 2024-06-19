@@ -43,11 +43,23 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
 
             const token = jwtParts[1];
             const parts = token.split('.');
-            const payload = parts[1];
-            const username = JSON.parse(atob(payload)).sub;
+            if (parts.length !== 3) {
+                console.error('Invalid JWT Token structure');
+                return;
+            }
 
-            setAvatar(process.env.PUBLIC_URL + '/images/' + username + '.jpg');
-            console.log(avatar)
+            const payload = parts[1];
+            // Base64 URL 디코딩
+            const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+            const binaryString = atob(base64);
+            const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
+            const jsonPayload = new TextDecoder().decode(bytes);
+
+            const claims = JSON.parse(jsonPayload);
+            const username = claims.sub;
+            const nickname = claims.nickname;
+
+            setAvatar(process.env.PUBLIC_URL + '/images/' + nickname + '.jpg');
             setUsername(username);
 
         } else {

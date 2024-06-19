@@ -12,16 +12,10 @@ import com.insu.blog.repository.chat.ChatRoomRepository;
 import com.insu.blog.repository.chat.ChatUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j(topic = "ChatRoomService")
@@ -32,15 +26,15 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatUserRepository chatUserRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private static final int MESSAGE_PAGE_SIZE = 35;
+//    private static final int MESSAGE_PAGE_SIZE = 35;
 
     // 채팅방 생성
     @Transactional
-    public ChatRoomInfoResponseDto createChatRoom(User user, CreateChatRoomRequestDto requestDto) {
-        ChatRoom newChatRoom = new ChatRoom(user, requestDto.getChatRoomName());
+    public ChatRoomInfoResponseDto createChatRoom(User user, CreateChatRoomRequestDto req) {
+        ChatRoom newChatRoom = new ChatRoom(user.getNickname(), req.getChatRoomName());
 
         // userList에 초대한 사용자 추가
-        Set<User> userList = new HashSet<>(dtoToUserList(requestDto.getMemberIdList()));
+        Set<User> userList = new HashSet<>(dtoToUserList(req.getNicknameList()));
         userList.add(user);
 
         chatRoomRepository.save(newChatRoom);
@@ -76,7 +70,7 @@ public class ChatRoomService {
         // 요청한 user가 채팅방의 생성자인지 확인
         ChatRoom chatRoom = findChatRoomById(Integer.parseInt(chatRoomId));
 
-        if (!(chatRoom.getHostUserId() == user.getId())) {
+        if (!(Objects.equals(chatRoom.getHostNickname(), user.getNickname()))) {
             throw new IllegalArgumentException("채팅방의 이름은 호스트만 변경할 수 있습니다.");
         }
 
@@ -89,10 +83,9 @@ public class ChatRoomService {
         // 요청한 user가 채팅방의 생성자인지 확인
         ChatRoom chatRoom = findChatRoomById(Integer.parseInt(chatRoomId));
 
-        if (!(chatRoom.getHostUserId() == user.getId())) {
+        if (!(Objects.equals(chatRoom.getHostNickname(), user.getNickname()))) {
             throw new IllegalArgumentException("채팅방은 호스트만 삭제할 수 있습니다.");
         }
-//        chatMessageRepository.delete();
         chatRoomRepository.delete(chatRoom);
     }
 
@@ -109,7 +102,7 @@ public class ChatRoomService {
         return new MemberInfoListDto(chatMemberInfoList);
     }
 
-     // 사용자가 속한 채팅방 전체 조회
+    // 사용자가 속한 채팅방 전체 조회
     public MyChatRoomResponseDto getMyChatRooms(User user) {
         List<ChatRoomInfoResponseDto> myChatRoomList = chatUserRepository
                 .findAllByUser(user)
@@ -119,7 +112,7 @@ public class ChatRoomService {
         return new MyChatRoomResponseDto(myChatRoomList);
     }
 
-     // 채팅방 나가기 
+    // 채팅방 나가기
     public void leaveChatRoom(String roomId, User user) {
         ChatRoom chatRoom = findChatRoomById(Integer.parseInt(roomId));
         ChatUser chatUser = findChatUserByChatRoomAndUser(chatRoom, user);
@@ -130,7 +123,7 @@ public class ChatRoomService {
         }
 
         // user가 해당 채팅방의 host인 경우 채팅방 삭제
-        if (chatRoom.getHostUserId() == user.getId()) {
+        if (Objects.equals(chatRoom.getHostNickname(), user.getNickname())) {
             deleteChatRoom(roomId, user);
         }
 
@@ -138,8 +131,8 @@ public class ChatRoomService {
         chatUserRepository.delete(chatUser);
     }
 
-    // 해당 채팅방에 멤버 초대 
-    public void inviteMember(String roomId, MemberIdListDto memberIdListDto, User user) {
+    // 해당 채팅방에 멤버 초대
+    public void inviteMember(String roomId, NicknameListDto nicknameListDto, User user) {
         ChatRoom chatRoom = findChatRoomById(Integer.parseInt(roomId));
         ChatUser chatUser = findChatUserByChatRoomAndUser(chatRoom, user);
 
@@ -148,8 +141,10 @@ public class ChatRoomService {
         }
 
         List<User> userList = new ArrayList<>();
-        for (ChatMemberIdDto cmd : memberIdListDto.getMemberIdList()) {
-            User newUser = findUserById(Integer.parseInt(cmd.getUserId()));
+        for (ChatNicknameDto cmd : nicknameListDto.getNicknameList()) {
+            User newUser = userRepository.findByNickname(cmd.getNickname()).orElseThrow(
+                    () -> new NullPointerException("존재하지 않는 사용자입니다.")
+            );
             userList.add(newUser);
         }
         for (User u : userList) {
@@ -162,22 +157,19 @@ public class ChatRoomService {
     }
 
     // 존재하는 사용자인지 조회
-    public List<User> dtoToUserList(List<ChatMemberIdDto> memberIdList) {
-        log.info(memberIdList.get(0).toString());
+    public List<User> dtoToUserList(List<ChatNicknameDto> nicknameList) {
+        log.info(nicknameList.get(0).toString());
         // 전달받은 사용자 리스트
         List<User> userList = new ArrayList<>();
-        for (ChatMemberIdDto cmd : memberIdList) {
-            User user = findUserById(Integer.parseInt(cmd.getUserId()));
+        for (ChatNicknameDto cmd : nicknameList) {
+            User user = userRepository.findByNickname(cmd.getNickname()).orElseThrow(
+                    () -> new NullPointerException("존재하지 않는 사용자입니다.")
+            );
             userList.add(user);
         }
         return userList;
     }
 
-    public User findUserById(int userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 사용자입니다.")
-        );
-    }
 
     public ChatRoom findChatRoomById(int chatRoomId) {
         return chatRoomRepository.findById(chatRoomId).orElseThrow(

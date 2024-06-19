@@ -12,32 +12,41 @@ const User = () => {
     const [username, setUsername] = useState('');
     const [id, setId] = useState('');
     const [password, setPassword] = useState('')
-    const [oauth, setOauth] = useState('')
+    const [oauth, setOauth] = useState('');
+    const [nickname, setNickname] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [emailError, setEmailError] = useState('');
+    const [nicknameError, setNicknameError] = useState('');
 
     useEffect(() => {
-        const storedToken = Cookies.get('Authorization');
-        if (storedToken) {
-            // "Bearer " 부분 제거 후 토큰만 추출
-            const jwtToken = storedToken.split(' ')[1];
-
-            // 토큰을 "."으로 분리하여 배열로 만듦
-            const parts = jwtToken.split('.');
-
-            // Payload 부분 추출 (인덱스 1)
-            const payload = parts[1];
-
-            // Base64 디코딩 후 JSON 파싱
-            const decodedPayload = JSON.parse(atob(payload));
-
-            console.log(decodedPayload)
-
-            setEmail(decodedPayload.email);
-            setUsername(decodedPayload.sub);
-            setId(decodedPayload.userId);
-            setOauth(decodedPayload.oauth);
+        const validToken = Cookies.get('Authorization');
+        const jwtParts = validToken.split(' ');
+        if (jwtParts.length !== 2) {
+            console.error('Invalid JWT Token format');
+            return;
         }
+
+        const token = jwtParts[1];
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+            console.error('Invalid JWT Token structure');
+            return;
+        }
+
+        const payload = parts[1];
+        // Base64 URL 디코딩
+        const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+        const binaryString = atob(base64);
+        const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
+        const jsonPayload = new TextDecoder().decode(bytes);
+
+        const claims = JSON.parse(jsonPayload);
+
+            setEmail(claims.email);
+            setUsername(claims.sub);
+            setId(claims.userId);
+            setNickname(claims.nickname);
+            setOauth(claims.oauth);
     }, []);
 
     const containerStyle = {
@@ -46,20 +55,14 @@ const User = () => {
 
     const updateUser = async () => {
 
-        console.log(email)
-        console.log(username)
-        console.log(id)
-        console.log(password)
-        console.log(oauth)
-        console.log(Cookies.get('Authorization'))
-
         try {
             await axios.put(
                 'http://localhost:8080/api/users',
                 {
                     username: username,
                     email: email,
-                    password: password
+                    password: password,
+                    nickname: nickname
                 },
                 {
                     withCredentials: true,
@@ -87,6 +90,7 @@ const User = () => {
                 if (errors) {
                     setEmailError(errors.email || '');
                     setPasswordError(errors.password || '');
+                    setNicknameError(errors.nickname || '');
                 }
             }
 
@@ -141,6 +145,18 @@ const User = () => {
                                    value={email}
                                    onChange={(e) => setEmail(e.target.value)}/>
                             {emailError && <Label basic color='red' pointing>{emailError}</Label>}
+                            <span></span>
+                            <br/>
+                        </FormField>
+                        <FormField>
+                            <label>닉네임</label>
+                            <input type="nickname"
+                                   className="form-control"
+                                   id="update-nickname"
+                                   placeholder="닉네임을 입력하세요"
+                                   value={nickname}
+                                   onChange={(e) => setNickname(e.target.value)}/>
+                            {nicknameError && <Label basic color='red' pointing>{nicknameError}</Label>}
                             <span></span>
                         </FormField>
                         <br/>

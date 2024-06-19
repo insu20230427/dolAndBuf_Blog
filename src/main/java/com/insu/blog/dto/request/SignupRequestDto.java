@@ -24,5 +24,10 @@ public class SignupRequestDto {
     @Email(message = "이메일 형식에 맞지 않습니다.")
     private String email;
 
+    @NotBlank(message = "닉네임은 필수 입력값입니다. 기존 닉네임 혹은 새로운 닉네임을 입력해주세요.")
+    @Pattern(regexp = "^[A-Za-z가-힣\\d!-/:-@\\[-`{-~]{2,8}$",
+            message = "닉네임 형식에 맞지 않습니다. 2~8자리의 닉네임을 설정해주세요.")
+    private String nickname;
+
     private String avatarImage;
 }

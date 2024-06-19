@@ -27,8 +27,8 @@ public class ChatRoomController {
             @AuthenticationPrincipal PrincipalDetails userDetails,
             @RequestBody CreateChatRoomRequestDto createChatRoomRequestDto
     ) {
-        for (ChatMemberIdDto memberId : createChatRoomRequestDto.getMemberIdList()) {
-            log.info("채팅방 생성 컨트롤러, memberId: {}", memberId.getUserId());
+        for (ChatNicknameDto nickname : createChatRoomRequestDto.getNicknameList()) {
+            log.info("채팅방 생성 컨트롤러 -> nickname: {}", nickname.getNickname());
         }
 
         ChatRoomInfoResponseDto result = chatRoomService.createChatRoom(userDetails.getUser(), createChatRoomRequestDto);
@@ -87,15 +87,15 @@ public class ChatRoomController {
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("채팅방 나가기 완료").build());
     }
 
-    // 해당 채팅방에 멤버 초대 
+    // 해당 채팅방에 멤버 초대
     @PostMapping("/{roomId}/members")
-    public ResponseEntity<ApiResponseDto> inviteMember(  
+    public ResponseEntity<ApiResponseDto> inviteMember(
             @PathVariable String roomId,
-            @RequestBody MemberIdListDto memberIdListDto,
+            @RequestBody NicknameListDto nicknameListDto,
             @AuthenticationPrincipal PrincipalDetails userDetails
     ) {
         log.info("채팅방 멤버 초대 컨트롤러");
-        chatRoomService.inviteMember(roomId, memberIdListDto, userDetails.getUser());
+        chatRoomService.inviteMember(roomId, nicknameListDto, userDetails.getUser());
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("채팅방 초대 완료").build());
     }
 

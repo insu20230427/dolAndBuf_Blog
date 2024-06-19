@@ -15,8 +15,8 @@ const ChatApp = () => {
     const [rooms, setRooms] = useState([]);
     const [newRoomName, setNewRoomName] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedUserIds, setSelectedUserIds] = useState([]); // 선택된 사용자들의 ID를 저장
-    const [memberId, setMemberId] = useState('');
+    const [selectedNicknames, setSelectedNicknames] = useState([]); // 선택된 사용자들의 ID를 저장
+    const [nickname, setNickname] = useState('');
     const clientRef = useRef(null);
     const navigate = useNavigate();
 
@@ -69,7 +69,7 @@ const ChatApp = () => {
             alert("채팅방 이름을 입력해주세요.");
             return;
         }
-        if (selectedUserIds.length === 0) {
+        if (selectedNicknames.length === 0) {
             alert("멤버를 추가해주세요.");
             return;
         }
@@ -77,14 +77,15 @@ const ChatApp = () => {
         try {
             await axios.post('http://localhost:8080/api/chatRooms', {
                 chatRoomName: newRoomName,
-                memberIdList: selectedUserIds
+                nicknameList: selectedNicknames
             }, {
                 headers: {
                     'Authorization': Cookies.get('Authorization')
                 }
             });
+            console.log("nicknameList : " + selectedNicknames)
             setNewRoomName('');
-            setSelectedUserIds([]);
+            setSelectedNicknames([]);
             setModalOpen(false);
             await fetchRooms();
         } catch (error) {
@@ -178,26 +179,26 @@ const ChatApp = () => {
                         <Form>
                             <Form.Field>
                                 <Input
-                                    placeholder="채팅방 이름"
+                                    placeholder="채팅방 이름을 입력해주세요."
                                     value={newRoomName}
                                     onChange={(e) => setNewRoomName(e.target.value)}
                                 />
                             </Form.Field>
                             <Form.Field>
                                 <Input
-                                    placeholder="멤버 ID 입력..."
-                                    value={memberId}
-                                    onChange={(e) => setMemberId(e.target.value)}
+                                    placeholder="초대할 유저의 닉네임을 입력해주세요."
+                                    value={nickname}
+                                    onChange={(e) => setNickname(e.target.value)}
                                 />
                             </Form.Field>
                             <Button type="button" onClick={() => {
-                                if (memberId) {
-                                    setSelectedUserIds([...selectedUserIds, memberId]);
-                                    setMemberId('');
+                                if (nickname) {
+                                    setSelectedNicknames([...selectedNicknames, nickname]);
+                                    setNickname('');
                                 }
                             }} style={{marginBottom: '10px'}}>멤버 추가</Button>
                             <List>
-                                {selectedUserIds.map((id, index) => (
+                                {selectedNicknames.map((id, index) => (
                                     <List.Item key={index}>
                                         <Icon name='user'/> {id}
                                     </List.Item>

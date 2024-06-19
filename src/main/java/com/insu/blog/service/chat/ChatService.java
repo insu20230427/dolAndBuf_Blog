@@ -39,9 +39,9 @@ public class ChatService {
         // 메세지 header 의 토큰으로 sender 설정
         String pureToken = jwtUtil.substringToken(token);
         String username = jwtUtil.getUserInfoFromToken(pureToken).getSubject();
-        User user = findUserByUsername(username);
-//        chatMessageDto.setSender(user.getNickname());
-        chatMessageDto.setSender(username);
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new NullPointerException("존재하지 않는 사용자"));
+        chatMessageDto.setSender(user.getNickname());
 
         // 나가기 메세지일 경우
         if (ChatMessageDto.MessageType.QUIT.equals(chatMessageDto.getType())) {
@@ -64,47 +64,11 @@ public class ChatService {
         try {
             String messageJson = objectMapper.writeValueAsString(chatMessageDto);
             log.info("try 실행 전 ");
-            // redisTemplate.convertAndSend(channelTopic.getTopic(), messageJson);
             template.convertAndSend("/topic/rooms/" + chatMessageDto.getRoomId(), messageJson);
             log.info("try 실행 후 완료");
         } catch (Exception e) {
             log.error("Failed to publish message to Redis", e);
         }
     }
-
-    public User findUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() ->
-                new NullPointerException("존재하지 않는 사용자"));
-    }
-
-
-    
-    // public String getRoomId(String destination) {
-    //     log.info("getRoomId 원래 destination -> " + destination);
-    //     int lastIndex = destination.lastIndexOf('/');
-    //     if (lastIndex != -1)
-    //         return destination.substring(lastIndex + 1);
-    //     else
-    //         return "";
-    // }
-
-        // // 채팅방에 파일 발송
-    // public void sendImageMessage(Long roomId, User user) {
-    //     log.info("sendImageMessage 메서드 시작");
-
-    //     ChatMessageDto chatMessageDto = ChatMessageDto.builder().roomId(roomId).build();
-    //     chatMessageDto.setSender(user.getNickname());
-
-    //     // 메세지 저장
-    //     chatMessageRepository.save(new ChatMessage(user, chatMessageDto));
-
-    //     // 메세지 dto에 현재 시각 설정 (사용자에게 바로 보내질 시각)
-    //     chatMessageDto.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd HH:mm")));
-    //     log.info("메세지 발송 시각? " + chatMessageDto.getCreatedAt());
-
-    //     // 발송
-    //     redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageDto);
-    // }
-
 }
 
