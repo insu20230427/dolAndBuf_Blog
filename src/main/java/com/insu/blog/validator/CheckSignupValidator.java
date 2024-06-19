@@ -20,6 +20,10 @@ public class CheckSignupValidator extends AbstractValidator<SignupRequestDto> {
         if (userRepository.existsByUsername(dto.getUsername())) {
             errors.rejectValue("username", "아이디 중복 오류", "다른 사용자가 이미 사용중인 아이디 입니다.");
         }
+
+        if (userRepository.existsByNickname(dto.getNickname())) {
+            errors.rejectValue("nickname", "닉네임 중복 오류", "다른 사용자가 이미 사용중인 닉네임 입니다.");
+        }
     }
 }
 
