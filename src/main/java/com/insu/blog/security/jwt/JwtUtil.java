@@ -63,6 +63,7 @@ public class JwtUtil {
                         .claim("userId", user.getId())
                         .claim("email", user.getEmail())
                         .claim("oauth", user.getOauth())
+                        .claim("nickname", user.getNickname())
                         .setIssuedAt(now) // 발급일
                         .setExpiration(expireDate) // 만료일
                         .signWith(key, SignatureAlgorithm.HS256)
