@@ -26,9 +26,6 @@ const DetailPost = () => {
             const payload = parts[1];
             const decodedPayload = JSON.parse(atob(payload));
             setUserId(decodedPayload.userId);
-
-            // Base64 디코딩 후 JSON 파싱
-            const username = decodedPayload.sub;
         }
 
         fetchPost();
@@ -36,7 +33,7 @@ const DetailPost = () => {
 
     useEffect(() => {
         if (detailPost.user) {
-            setAvatar(process.env.PUBLIC_URL + '/images/' + detailPost.user.username + '.jpg');
+            setAvatar(process.env.PUBLIC_URL + '/images/' + detailPost.user.nickname + '.jpg');
         }
     }, [detailPost]);
 
@@ -126,7 +123,7 @@ const DetailPost = () => {
                     <>
                         <img src={avatar} alt="Avatar"
                              style={{marginRight: '5px', width: '30px', height: '30px', borderRadius: '50%'}}/>
-                        {detailPost.user.username}
+                        {detailPost.user.nickname}({detailPost.user.username})
                     </>
                 )}
             </div>
