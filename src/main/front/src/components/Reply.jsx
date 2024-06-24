@@ -345,7 +345,7 @@ const Reply = ({postId, userId}) => {
                                 justifyContent: "space-between",
                                 alignItems: "center"
                             }}>
-                                <Link to={`/blog/${reply.user.username}`}>
+                                <Link to={`/blog/${reply.user.username}`} className="custom-link">
                                     <img src={process.env.PUBLIC_URL + '/images/' + reply.user.nickname + '.jpg'}
                                          alt="Avatar" style={{
                                         width: '20px',
@@ -353,6 +353,16 @@ const Reply = ({postId, userId}) => {
                                         borderRadius: '50%',
                                         marginRight: '5px'
                                     }}/>{reply.user.nickname}
+                                    <Comment.Metadata>
+                                        <div
+                                            className="date">{new Date(reply.createDate).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: 'numeric',
+                                            minute: 'numeric'
+                                        })}</div>
+                                    </Comment.Metadata>
                                 </Link>
                                 <Comment.Actions>
                                     {reply.user.id === userId && (
@@ -400,16 +410,16 @@ const Reply = ({postId, userId}) => {
                                 </Comment.Actions>
                             </div>
                         </Comment.Author>
-                        <Comment.Metadata>
-                            <div
-                                className="date">{new Date(reply.createDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                                hour: 'numeric',
-                                minute: 'numeric'
-                            })}</div>
-                        </Comment.Metadata>
+                        {/*<Comment.Metadata>*/}
+                        {/*    <div*/}
+                        {/*        className="date">{new Date(reply.createDate).toLocaleDateString('en-US', {*/}
+                        {/*        year: 'numeric',*/}
+                        {/*        month: 'short',*/}
+                        {/*        day: 'numeric',*/}
+                        {/*        hour: 'numeric',*/}
+                        {/*        minute: 'numeric'*/}
+                        {/*    })}</div>*/}
+                        {/*</Comment.Metadata>*/}
                         {editReplyId === reply.id ? (
                             <Form reply>
                                 <Form.TextArea
@@ -518,19 +528,23 @@ const Reply = ({postId, userId}) => {
             ))}
             {!isEditing && (
                 <Form reply>
-                    <Form.TextArea
+                    <Form.Group>
+                        <Form.Field style={{ width: '100%' }}>
+                    <textarea
                         value={replyContent}
                         onChange={(e) => setReplyContent(e.target.value)}
+                        placeholder="댓글을 입력하세요..."
+                        style={{ width: '100%', minHeight: '100px', marginBottom: '10px' }}
                     />
-                    <Button
-                        type={"button"}
-                        content="등록"
-                        labelPosition="left"
-                        icon="edit"
-                        color="blue"
-                        className="btn-reply-write"
-                        onClick={handleWriteReply}
-                    />
+                            <Button
+                                circular
+                                icon="edit"
+                                color="grey"
+                                style={{ position: 'absolute', bottom: '23px', right: '10px' }}
+                                onClick={handleWriteReply}
+                            />
+                        </Form.Field>
+                    </Form.Group>
                 </Form>
             )}
         </Comment.Group>

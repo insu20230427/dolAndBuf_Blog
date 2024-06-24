@@ -1,16 +1,17 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, {useEffect, useRef, useState} from "react";
-import {Link, useNavigate, useParams} from "react-router-dom";
-import {Button, Container, Divider, Icon, Label} from "semantic-ui-react";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {Button, Divider, Icon, Label, Dropdown } from "semantic-ui-react";
 import Swal from "sweetalert2";
 import DOMPurify from "dompurify";
 import Reply from "../../../components/Reply";
+import './detailPost.css';
 
 const DetailPost = () => {
-    // const containerStyle = {
-    //     height: '87vh'
-    // };
+    const containerStyle = {
+        height: '87vh'
+    };
 
     const [detailPost, setDetailPost] = useState({});
     const {id} = useParams();
@@ -107,29 +108,43 @@ const DetailPost = () => {
     };
 
     return (
-        <div className="ui container">
-            <br/><br/> <br/><br/>
-            <div style={{marginBottom: '10px'}}>
+        <div className="ui container" style={containerStyle}>
+            <br/><br/><br/><br/>
+            <div style={{ marginBottom: '10px' }}>
+                {detailPost.user && (
+                    <>
+                        <div className="user-info-container">
+                            <img src={avatar} alt="Avatar"
+                                 style={{ marginRight: '5px', width: '30px', height: '30px', borderRadius: '50%' }} />
+                            <div className="user-info">
+                                {detailPost.user.nickname}({detailPost.user.username})
+                            </div>
+                            <Dropdown icon="ellipsis vertical" className="kebob-dropdown">
+                                <Dropdown.Menu>
+                                    {userId && String(userId) === String(detailPost.user.id) && (
+                                        <>
+                                            <Dropdown.Item text="수정" icon="edit" onClick={() => navigate(`/update-post/${id}`)} />
+                                            <Dropdown.Item text="삭제" icon="trash alternate" onClick={handleDeletePost} />
+                                        </>
+                                    )}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </div>
+                    </>
+                )}
+            </div>
+            <h1 style={{ marginRight: '50px' }}>{detailPost.title}</h1>
+            <br/>
+            <div style={{ marginBottom: '10px' }}>
                 {detailPost.category && (
                     <Label tag>
                         {detailPost.category.name}
                     </Label>
                 )}
             </div>
-            <h1 style={{marginRight: '50px'}}>{detailPost.title}</h1>
-            <br/>
-            <div style={{marginBottom: '10px'}}>
-                {detailPost.user && (
-                    <>
-                        <img src={avatar} alt="Avatar"
-                             style={{marginRight: '5px', width: '30px', height: '30px', borderRadius: '50%'}}/>
-                        {detailPost.user.nickname}({detailPost.user.username})
-                    </>
-                )}
-            </div>
             <Divider/>
-            <div style={{marginTop: '50px'}}>
-                <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(detailPost.content)}}/>
+            <div style={{ marginTop: '50px' }}>
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(detailPost.content) }} />
             </div>
             <br/><br/><br/><br/><br/><br/>
             <div className="ui labeled button" tabIndex="0">
@@ -157,21 +172,8 @@ const DetailPost = () => {
                     </>
                 )}
             </div>
-            {/*<Button icon onClick={() => navigate('/')}>*/}
-            {/*    <Icon name="arrow left"/>*/}
-            {/*</Button>*/}
-            {userId && detailPost.user && String(userId) === String(detailPost.user.id) && (
-                <>
-                    <Button icon onClick={() => navigate(`/update-post/${id}`)}>
-                        <Icon name="edit"/>
-                    </Button>
-                    <Button icon onClick={handleDeletePost}>
-                        <Icon name="trash alternate"/>
-                    </Button>
-                </>
-            )}
             <Divider/>
-                <Reply postId={id} userId={userId}/>
+            <Reply postId={id} userId={userId}/>
         </div>
     );
 }

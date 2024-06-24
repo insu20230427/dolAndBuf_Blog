@@ -14,3 +14,25 @@
 footer {
     flex-shrink: 0; /* Ensure footer stays at the bottom */
 }
+
+.banner {
+    background-color: #e6f5ff;
+    height: 250px;
+    text-align: center;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.banner h1 {
+    margin: 0;
+    font-size: 2em;
+    color: #343a40;
+}
+
+.banner p {
+    margin: 10px 0 0;
+    font-size: 1.2em;
+    color: #6c757d;
+}
