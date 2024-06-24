@@ -1,12 +1,13 @@
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useEffect, useState } from 'react';
-import { Pagination } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
-import { Grid, GridColumn, GridRow, Icon, Segment } from 'semantic-ui-react';
+import {Container, Divider, Icon, Item, Pagination} from 'semantic-ui-react';
 import DOMPurify from 'dompurify';
-import { useBlog } from "../../contexts/blogContext";
+import {useBlog} from "../../contexts/blogContext";
+
+const DEFAULT_THUMBNAIL = 'https://i.namu.wiki/i/_FIKQ7NQtBilT8QtmXWvjY8FfusWX6uYHmoDPsK70tP_vijKovxuPJrT-oEEdhjlXPRCEJy0zR30MwQpVRQ0WA.webp';
 
 const CategoryPosts = () => {
     const [posts, setPosts] = useState([]);
@@ -54,7 +55,7 @@ const CategoryPosts = () => {
         const doc = parser.parseFromString(cleanContent, 'text/html');
 
         const imgTag = doc.querySelector('img');
-        const imgSrc = imgTag ? imgTag.src : null;
+        const imgSrc = imgTag ? imgTag.src : DEFAULT_THUMBNAIL;
 
         if (imgTag) {
             imgTag.remove();
@@ -69,94 +70,72 @@ const CategoryPosts = () => {
     }
 
     return (
-        <div>
-            <br /><br /><br /><br />
-            <div className="container" style={containerStyle}>
-                <div className="ui grid">
-                    <Grid columns='equal'>
-                        <GridRow columns={3}>
-                            {posts.map(post => {
-                                const { imgSrc, textContent } = getThumbnailAndText(post.content);
-                                return (
-                                    <GridColumn key={post.id}>
-                                        <Segment
-                                            className="card"
-                                            onClick={() => {
-                                                navigate(`/detail-post/${post.id}`);
-                                            }}
-                                            style={{ cursor: 'pointer', height: '250px' }}
-                                        >
-                                            <div className="content">
-                                                <div className="header" style={{ textAlign: 'center', marginTop: '5px' }}>
-                                                    {post.title}
-                                                </div>
-                                                {imgSrc && (
-                                                    <div style={{ textAlign: 'center', marginTop: '5px' }}>
-                                                        <img src={imgSrc} alt="thumbnail"
-                                                            style={{ maxHeight: '150px', maxWidth: '100px' }} />
-                                                    </div>
-                                                )}
-                                                <div className="description"
-                                                    style={{ textAlign: 'center', marginTop: '5px' }}>
-                                                    {textContent.length > 50 ? `${textContent.substring(0, 50)}...` : textContent}
-                                                </div>
-                                                <br />
-                                                <div className="extra content"
-                                                    style={{ fontSize: 'x-small', textAlign: 'center' }}>
-                                                    {post.modifyDate ? `수정일 : ${new Date(post.modifyDate).toLocaleDateString('en-US', {
-                                                        year: 'numeric',
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        hour: 'numeric',
-                                                        minute: 'numeric'
-                                                    })}` : `작성일 : ${new Date(post.createDate).toLocaleDateString('en-US', {
-                                                        year: 'numeric',
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        hour: 'numeric',
-                                                        minute: 'numeric'
-                                                    })}`}
-                                                </div>
-                                            </div>
-                                        </Segment>
-                                    </GridColumn>
-                                );
-                            })}
-                        </GridRow>
-                    </Grid>
-                </div>
-            </div>
+        <Container>
+            <Item.Group style={{paddingTop: '110px', height: '87vh'}}>
+                {posts.map(post => {
+                    const {imgSrc, textContent} = getThumbnailAndText(post.content);
+                    return (
+                        <React.Fragment key={post.id}>
+                            <Item style={{marginTop: '75px', height: '150px'}}
+                                  onClick={() => navigate(`/detail-post/${post.id}`)}>
+                                {imgSrc ? (
+                                    <img src={imgSrc} style={{marginRight: '20px', width: '130px', height: '90px'}}
+                                         alt="thumbnail"/>
+                                ) : (
+                                    <img src="/default-thumbnail.jpg"
+                                         style={{marginRight: '20px', width: '130px', height: '90px'}}
+                                         alt="default thumbnail"/>
+                                )}
+                                <Item.Content>
+                                    <Item.Header as='h2' style={{
+                                        fontSize: '1.5em',
+                                        marginBottom: '10px'
+                                    }}>{post.title}</Item.Header>
+                                    <Item.Description style={{marginBottom: '15px'}}>
+                                        {textContent.length >= 15 ? `${textContent.substring(0, 14)}...` : textContent}
+                                    </Item.Description>
+                                    <Item.Meta>
+                <span className='date' style={{fontSize: '0.9em'}}>
+                  {post.modifyDate ? (
+                      `수정일 : ${new Date(post.modifyDate).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric'
+                      })}`
+                  ) : (
+                      `작성일 : ${new Date(post.createDate).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric'
+                      })}`
+                  )}
+                </span>
+                                    </Item.Meta>
+                                </Item.Content>
+                            </Item>
+                            <Divider style={{margin: '10px 0'}}/>
+                        </React.Fragment>
+                    );
+                })}
+            </Item.Group>
 
-            <nav className="mt-5">
-                <Pagination className="justify-content-center">
-                    <Pagination.Prev
-                        onClick={() => handlePageClick(currentPage - 1)}
-                        disabled={currentPage === 0}
-                    >
-                        <Icon color='grey' name="arrow left" />
-                    </Pagination.Prev>
-
-                    {Array.from({ length: totalPages }, (_, i) => (
-                        <Pagination.Item
-                            key={i}
-                            active={i === currentPage}
-                            onClick={() => handlePageClick(i)}
-                        >
-                            {i + 1}
-                        </Pagination.Item>
-                    ))}
-
-                    <Pagination.Next
-                        onClick={() => handlePageClick(currentPage + 1)}
-                        disabled={currentPage === totalPages - 1}
-                    >
-                        <Icon color='grey' name="arrow right" />
-                    </Pagination.Next>
-                </Pagination>
-                <br />
-                <br />
-            </nav>
-        </div>
+            <Container textAlign='center' style={{ marginBottom: '40px' }}>
+                <Pagination
+                    defaultActivePage={currentPage + 1}
+                    totalPages={totalPages}
+                    onPageChange={(e, { activePage }) => handlePageClick(activePage - 1)}
+                    ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
+                    firstItem={{ content: <Icon name='angle double left' />, icon: true }}
+                    lastItem={{ content: <Icon name='angle double right' />, icon: true }}
+                    prevItem={{ content: <Icon name='angle left' />, icon: true }}
+                    nextItem={{ content: <Icon name='angle right' />, icon: true }}
+                />
+            </Container>
+        </Container>
     );
 };
 
