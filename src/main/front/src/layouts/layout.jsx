@@ -5,6 +5,7 @@ import Header from '../components/header';
 import Sidebar from '../components/sidebar';
 import { useBlog } from '../contexts/blogContext';
 import { Sidebar as SemanticSidebar } from 'semantic-ui-react';
+import './layout.css';
 
 const Layout = ({ children }) => {
     const [userId, setUserId] = useState(null);
@@ -34,14 +35,18 @@ const Layout = ({ children }) => {
         <div className="layout">
             <Header onSidebarToggle={handleSidebarToggle} isSidebarVisible={sidebarVisible} />
             <SemanticSidebar.Pushable>
-                <Sidebar userId={userId} visible={sidebarVisible} onClose={() => setSidebarVisible(false)} />
+                <Sidebar userId={userId} visible={sidebarVisible} onClose={() => setSidebarVisible(false)}/>
+                <div className="banner">
+                    <h1>Welcome to {blogName} Blog!</h1>
+                    <p>Your go-to place for the latest updates and stories.</p>
+                </div>
                 <SemanticSidebar.Pusher>
                     <main className="main-content">
                         {children}
                     </main>
                 </SemanticSidebar.Pusher>
             </SemanticSidebar.Pushable>
-            <Footer />
+            <Footer/>
         </div>
     );
 };
