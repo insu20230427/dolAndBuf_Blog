@@ -1,0 +1,15 @@
+.user-info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info {
+    margin-right: auto; /* This pushes the user info to the left as much as possible */
+}
+
+.kebob-dropdown {
+    position: relative;
+    right: 0;
+    margin-left: 10px; /* Add some space between user info and kebob dropdown */
+}
