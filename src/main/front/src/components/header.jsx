@@ -1,11 +1,11 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.css';
 import Cookies from 'js-cookie';
-import React, { useEffect, useState } from 'react';
-import { Nav, Navbar } from 'react-bootstrap';
-import { Link, useNavigate } from "react-router-dom";
-import { Button, Dropdown, Icon, Input } from 'semantic-ui-react';
-import { useBlog } from '../contexts/blogContext';
+import React, {useEffect, useState} from 'react';
+import {Nav, Navbar} from 'react-bootstrap';
+import {Link, useNavigate} from "react-router-dom";
+import {Button, Dropdown, Icon, Input} from 'semantic-ui-react';
+import {useBlog} from '../contexts/blogContext';
 import './Header.css'; // 배너 스타일을 위한 CSS 파일 추가
 
 export default function Header({ onSidebarToggle, isSidebarVisible }) {
@@ -118,9 +118,8 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                     }}>
                         {isLoggedIn ? (
                             <>
-                                <Nav.Link as={Link} to="/user">
-                                    {avatar && <img src={avatar} alt="Avatar"
-                                                    style={{width: '30px', height: '30px', borderRadius: '50%'}}/>}
+                                <Nav.Link as={Link} to="/user" className="no-underline">
+                                    {avatar && <img src={avatar} alt="Avatar" style={{width: '30px', height: '30px', borderRadius: '50%'}}/>}
                                 </Nav.Link>
                                 {blogName !== '' ? (
                                     <Nav.Link as={Link} to="/" onClick={() => {

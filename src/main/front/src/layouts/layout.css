@@ -1,4 +1,6 @@
-/* layout.css */
+/* styles.css */
+
+/* Layout styles */
 .layout {
     display: flex;
     flex-direction: column;
@@ -7,32 +9,120 @@
 
 .main-content {
     flex: 1;
-    padding: 1em;
+    padding: 2em;
     overflow: auto; /* This will prevent the footer from overlapping when content is large */
 }
 
 footer {
     flex-shrink: 0; /* Ensure footer stays at the bottom */
+    text-align: center;
+    padding: 1em 0;
+    background-color: #f0f0f0; /* Footer background color */
 }
 
+/* Banner styles */
 .banner {
-    background-color: #e6f5ff;
-    height: 250px;
+    position: relative;
+    height: 300px;
     text-align: center;
-    border-bottom: 1px solid #e9ecef;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    z-index: 1;
+    background: linear-gradient(135deg, #c0e0ff, #e0f7ff); /* Gradient background */
+    color: #333; /* Default text color */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Shadow */
+    transition: background 0.5s ease; /* Background transition */
+}
+
+.banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)); /* Animated gradient overlay */
+    z-index: -1;
+    animation: gradientMove 6s ease infinite; /* Animation for gradient movement */
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.banner h1, .banner p {
+    margin: 0;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
 }
 
 .banner h1 {
-    margin: 0;
-    font-size: 2em;
-    color: #343a40;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #5a5a5a; /* Default text color */
+    text-transform: uppercase; /* Uppercase text */
+    letter-spacing: 2px; /* Letter spacing */
+    transform-origin: center bottom; /* Transform origin */
+    cursor: pointer; /* Cursor pointer */
+    overflow: hidden; /* Hide overflow */
+    position: relative; /* Relative position */
+    text-shadow: 0 1px 0 rgba(255,255,255,.3); /* Shadow */
 }
 
+/*.banner h1:hover {*/
+/*    transform: translateY(-20px) scale(1.2); !* Move up and scale on hover *!*/
+/*}*/
+
 .banner p {
-    margin: 10px 0 0;
-    font-size: 1.2em;
-    color: #6c757d;
+    margin-top: 15px;
+    font-size: 1.3em;
+    font-weight: 300;
+    color: #7a7a7a; /* Default text color */
+    max-width: 70%; /* Limit max width */
+    line-height: 1.6; /* Line height */
+    opacity: 0.8; /* Reduced opacity */
+}
+
+.banner:hover {
+    background: linear-gradient(135deg, #92ddea, #fff); /* Change background gradient on hover */
+    /*transform: translateY(-5px); !* Move banner on hover *!*/
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/*.banner:hover h1 {*/
+/*    transform: translateY(-20px) scale(1.2); !* Move up and scale up h1 text on hover *!*/
+/*    !*color: #4a90e2; !* Text color change on hover *!*!*/
+/*    !*text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2); !* Enhance text shadow on hover *!*!*/
+/*}*/
+
+/*.banner:hover p {*/
+/*    transform: translateY(-5px) scale(1.1); !* Scale up p text on hover *!*/
+/*    color: #666; !* Text color change on hover *!*/
+/*    opacity: 1; !* Full opacity on hover *!*/
+/*}*/
+
+@media (max-width: 768px) {
+    .banner {
+        height: 200px;
+    }
+
+    .banner h1 {
+        font-size: 2em;
+    }
+
+    .banner p {
+        font-size: 1.1em;
+    }
 }

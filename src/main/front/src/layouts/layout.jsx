@@ -37,8 +37,8 @@ const Layout = ({ children }) => {
             <SemanticSidebar.Pushable>
                 <Sidebar userId={userId} visible={sidebarVisible} onClose={() => setSidebarVisible(false)}/>
                 <div className="banner">
-                    <h1>Welcome to {blogName} Blog!</h1>
-                    <p>Your go-to place for the latest updates and stories.</p>
+                    <h1>{blogName}블로그에 오신걸 환영합니다!!</h1>
+                    <p>회원가입 및 로그인을 통해 재밌는 블로그 활동을 해주시길 바랍니다 ㅎㅎ</p>
                 </div>
                 <SemanticSidebar.Pusher>
                     <main className="main-content">
