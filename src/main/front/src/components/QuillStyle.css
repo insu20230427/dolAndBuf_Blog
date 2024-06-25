@@ -1,0 +1,67 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+
+@font-face {
+    font-family: "GangwonEduHyeonokT_OTFMediumA";
+    src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduHyeonokT_OTFMediumA.woff")
+    format("woff");
+}
+
+/* 폰트 설정 */
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="noto-sans-kr"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="noto-sans-kr"]::before {
+    content: "Noto Sans KR";
+    font-family: "Noto Sans KR";
+}
+.ql-font-noto-sans-kr {
+    font-family: "Noto Sans KR";
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="roboto"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="roboto"]::before {
+    content: "Roboto";
+    font-family: "Roboto";
+}
+.ql-font-roboto {
+    font-family: "Roboto";
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="merriweather"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="merriweather"]::before {
+    content: "Merriweather";
+    font-family: "Merriweather";
+}
+.ql-font-merriweather {
+    font-family: "Merriweather";
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="lato"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="lato"]::before {
+    content: "Lato";
+    font-family: "Lato";
+}
+.ql-font-lato {
+    font-family: "Lato";
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="buri"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="buri"]::before {
+    content: "Buri";
+    font-family: "AritaBuri";
+}
+.ql-font-buri {
+    font-family: "AritaBuri";
+}
+
+/* 폰트 크기 예시 */
+.ql-size-huge,
+.ql-size span[data-value="huge"]::before {
+    font-size: 20px !important;
+}
+.ql-size-medium,
+.ql-size span[data-value="medium"]::before {
+    font-size: 14px !important;
+}
+

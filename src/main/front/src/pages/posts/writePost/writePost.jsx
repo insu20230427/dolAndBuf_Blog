@@ -1,15 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
-import ImageResize from 'quill-image-resize-module-react';
-import { Form } from 'react-bootstrap';
+import React, {useEffect, useRef, useState} from 'react';
+import ReactQuill, {Quill} from 'react-quill';
+import {Form} from 'react-bootstrap';
 import 'react-quill/dist/quill.snow.css';
-import { useNavigate } from 'react-router-dom';
-import { Button, Dropdown, DropdownItem, DropdownMenu, Icon } from 'semantic-ui-react';
+import {useNavigate} from 'react-router-dom';
+import {Button, Dropdown, DropdownItem, DropdownMenu, Icon} from 'semantic-ui-react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-
-Quill.register('modules/imageResize', ImageResize);
+import EditorToolBar from '../../../components/EditorToolBar';
 
 const WritePost = () => {
     const navigate = useNavigate();
@@ -25,20 +23,37 @@ const WritePost = () => {
 
     const modules = {
         toolbar: {
-            container: [
-                [{ header: [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                ['blockquote'],
-                [{ list: 'ordered' }, { list: 'bullet' }],
-                [{ color: [] }, { background: [] }],
-                [{ align: [] }, 'link', 'image'],
-            ],
+            container: "#toolbar", // EditorToolBar에서 정의한 #toolbar를 사용
+            handlers: {},
+        },
+        history: {
+            delay: 500,
+            maxStack: 100,
+            userOnly: true,
         },
         imageResize: {
             parchment: Quill.import('parchment'),
             modules: ['Resize', 'DisplaySize', 'Toolbar'],
         },
     };
+
+    const formats = [
+        "font",
+        "size",
+        "header",
+        "color",
+        "background",
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+        "blockquote",
+        "list",
+        "bullet",
+        "indent",
+        "link",
+        "image",
+    ];
 
     useEffect(() => {
         async function imageHandler() {
@@ -238,32 +253,16 @@ const WritePost = () => {
                     </Form.Group>
                     <br />
                     <Form.Group>
+                        <EditorToolBar /> {/* EditorToolBar 컴포넌트 추가 */}
                         <ReactQuill
                             ref={quillRef}
+                            modules={modules}
+                            formats={formats}
                             theme="snow"
                             value={content}
                             onChange={(val) => setContent(val)}
-                            modules={modules}
                             placeholder="Write your content here..."
                             style={{ height: '700px' }}
-                            formats={[
-                                'header',
-                                'font',
-                                'size',
-                                'bold',
-                                'italic',
-                                'underline',
-                                'strike',
-                                'blockquote',
-                                'list',
-                                'bullet',
-                                'indent',
-                                'link',
-                                'image',
-                                'align',
-                                'color',
-                                'background',
-                            ]}
                         />
                     </Form.Group>
                     <br /><br /><br /><br />

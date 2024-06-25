@@ -34,7 +34,7 @@ public class PostController {
     // 메인 index(전체 게시글 조회)
     @GetMapping("/posts")
     public ResponseEntity<ApiResponseDto> index(
-            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 4, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<Post> posts = postService.findAllPagedPosts(pageable);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 조회 성공!").data(posts).build());
     }
@@ -42,7 +42,7 @@ public class PostController {
     @GetMapping("/all/posts/{blogName}")
     public ResponseEntity<ApiResponseDto> getPostByBlogName(
             @PathVariable(name = "blogName") String blogName,
-            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 4, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
 //        log.info("blogName : {}", blogName);
         Page<Post> posts = postService.findAllPagedPostsByBlogName(pageable, blogName);
@@ -124,7 +124,7 @@ public class PostController {
     public ResponseEntity<ApiResponseDto> searchPosts(
             @RequestParam("type") int type,
             @RequestParam("keyword") String keyword,
-            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 4, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<Post> posts;
         switch (type) {
@@ -159,7 +159,7 @@ public class PostController {
     @GetMapping("/{categoryId}/posts")
     public ResponseEntity<ApiResponseDto> getPostsByCategoryId(
             @PathVariable("categoryId") String categoryId,
-            @PageableDefault(size = 9, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 4, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<Post> posts = categoryService.getPostsByCategoryId(categoryId, pageable);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("카테고리 게시글 조회 성공!").data(posts).build());
     }
