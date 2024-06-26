@@ -6,6 +6,7 @@ import Footer from '../components/footer';
 import Header from '../components/header';
 import Sidebar from '../components/sidebar';
 import { useBlog } from '../contexts/blogContext';
+import { Sidebar as SemanticSidebar } from 'semantic-ui-react';
 import './layout.css';
 
 const Layout = ({ children }) => {
@@ -130,15 +131,8 @@ const Layout = ({ children }) => {
             <SemanticSidebar.Pushable>
                 <Sidebar userId={userId} visible={sidebarVisible} onClose={() => setSidebarVisible(false)}/>
                 <div className="banner">
-{/*                     <iframe  */}
-{/*                         src={`https://www.youtube.com/embed/YOUTUBE_VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=YOUTUBE_VIDEO_ID`}  */}
-{/*                         frameBorder="0"  */}
-{/*                         allow="autoplay; encrypted-media"  */}
-{/*                         allowFullScreen */}
-{/*                         title="YouTube video" */}
-{/*                     ></iframe> */}
-                    <h1>Welcome to {blogName} Blog!</h1>
-                    <p>Your go-to place for the latest updates and stories.</p>
+                    <h1>{blogName}블로그에 오신걸 환영합니다!!</h1>
+                    <p>회원가입 및 로그인을 통해 재밌는 블로그 활동을 해주시길 바랍니다 ㅎㅎ</p>
                 </div>
                 <SemanticSidebar.Pusher>
                     <main className="main-content">
@@ -146,10 +140,10 @@ const Layout = ({ children }) => {
                         <div className="toolbar">
                             <div className="player-controls">
                                 <div className="input-container">
-                                    <Input 
-                                        placeholder="Enter YouTube Playlist URL or Title" 
-                                        value={playlistInput} 
-                                        onChange={handlePlaylistChange} 
+                                    <Input
+                                        placeholder="Enter YouTube Playlist URL or Title"
+                                        value={playlistInput}
+                                        onChange={handlePlaylistChange}
                                     />
                                     <Button icon='play' size='tiny' onClick={handlePlayMusic}/>
                                 </div>
@@ -157,12 +151,12 @@ const Layout = ({ children }) => {
                                 <Button  icon='stop' size='tiny' onClick={handleStop}/>
                                 <div className="volume-control">
                                     <label>Volume: </label>
-                                    <input 
-                                        type="range" 
-                                        min="0" 
-                                        max="100" 
-                                        value={volume} 
-                                        onChange={handleVolumeChange} 
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value={volume}
+                                        onChange={handleVolumeChange}
                                     />
                                 </div>
                             </div>

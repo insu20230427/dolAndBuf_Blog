@@ -1,3 +1,6 @@
+/* styles.css */
+
+/* Layout styles */
 .layout {
     display: flex;
     flex-direction: column;
@@ -6,30 +9,32 @@
 
 .main-content {
     flex: 1;
-    padding: 1em;
-    overflow: auto;
-    /* This will prevent the footer from overlapping when content is large */
+    padding: 2em;
+    overflow: auto; /* This will prevent the footer from overlapping when content is large */
 }
 
 footer {
-    flex-shrink: 0;
-    /* Ensure footer stays at the bottom */
+    flex-shrink: 0; /* Ensure footer stays at the bottom */
+    text-align: center;
+    padding: 1em 0;
+    background-color: #f0f0f0; /* Footer background color */
 }
 
+/* Banner styles */
 .banner {
     position: relative;
     height: 300px;
-    /* 배너 높이를 300px로 설정 */
     text-align: center;
-    border-bottom: 1px solid #e9ecef;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* 수평 중앙 정렬 */
     overflow: hidden;
-    background: black;
-    /* 비디오가 로드되지 않을 경우를 대비한 배경색 */
+    z-index: 1;
+    background: linear-gradient(135deg, #c0e0ff, #e0f7ff); /* Gradient background */
+    color: #333; /* Default text color */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Shadow */
+    transition: background 0.5s ease; /* Background transition */
 }
 
 .banner::before {
@@ -37,217 +42,87 @@ footer {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    /* 어두운 오버레이 */
-    z-index: 1;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)); /* Animated gradient overlay */
+    z-index: -1;
+    animation: gradientMove 6s ease infinite; /* Animation for gradient movement */
 }
 
-.banner iframe {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    transform: translateX(-50%);
-    z-index: 0;
-    pointer-events: none;
-    /* 마우스 이벤트가 비디오에 닿지 않게 함 */
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-.banner h1,
-.banner p {
+.banner h1, .banner p {
+    margin: 0;
     position: relative;
     z-index: 2;
-    color: white;
-    /* 텍스트 색상을 흰색으로 */
-    transition: transform 0.3s ease-in-out;
-    /* 떨림 애니메이션의 부드러운 전환 */
+    transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
 }
 
 .banner h1 {
-    margin: 0;
-    font-size: 3em;
-    /* 텍스트 크기 증가 */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    /* 텍스트 그림자 */
-    animation: fadeInDown 1s, pulse 2s infinite;
-    /* 애니메이션 추가 */
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #5a5a5a; /* Default text color */
+    text-transform: uppercase; /* Uppercase text */
+    letter-spacing: 2px; /* Letter spacing */
+    transform-origin: center bottom; /* Transform origin */
+    cursor: pointer; /* Cursor pointer */
+    overflow: hidden; /* Hide overflow */
+    position: relative; /* Relative position */
+    text-shadow: 0 1px 0 rgba(255,255,255,.3); /* Shadow */
 }
+
+/*.banner h1:hover {*/
+/*    transform: translateY(-20px) scale(1.2); !* Move up and scale on hover *!*/
+/*}*/
 
 .banner p {
-    margin: 10px 0 0;
-    font-size: 1.5em;
-    /* 텍스트 크기 증가 */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-    /* 텍스트 그림자 */
-    animation: fadeInUp 1s, pulse 2s infinite;
-    /* 애니메이션 추가 */
+    margin-top: 15px;
+    font-size: 1.3em;
+    font-weight: 300;
+    color: #7a7a7a; /* Default text color */
+    max-width: 70%; /* Limit max width */
+    line-height: 1.6; /* Line height */
+    opacity: 0.8; /* Reduced opacity */
 }
 
-.banner h1:hover,
-.banner p:hover {
-    animation: shake 0.5s;
-    /* 떨림 애니메이션 */
-    /* animation-iteration-count: infinite; 무한 반복 */
+.banner:hover {
+    background: linear-gradient(135deg, #92ddea, #fff); /* Change background gradient on hover */
+    /*transform: translateY(-5px); !* Move banner on hover *!*/
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
 }
 
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
+/*.banner:hover h1 {*/
+/*    transform: translateY(-20px) scale(1.2); !* Move up and scale up h1 text on hover *!*/
+/*    !*color: #4a90e2; !* Text color change on hover *!*!*/
+/*    !*text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2); !* Enhance text shadow on hover *!*!*/
+/*}*/
+
+/*.banner:hover p {*/
+/*    transform: translateY(-5px) scale(1.1); !* Scale up p text on hover *!*/
+/*    color: #666; !* Text color change on hover *!*/
+/*    opacity: 1; !* Full opacity on hover *!*/
+/*}*/
+
+@media (max-width: 768px) {
+    .banner {
+        height: 200px;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    .banner h1 {
+        font-size: 2em;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .banner p {
+        font-size: 1.1em;
     }
-}
-
-@keyframes shake {
-    0% {
-        transform: translate(1px, 1px) rotate(0deg);
-    }
-
-    10% {
-        transform: translate(-1px, -2px) rotate(-1deg);
-    }
-
-    20% {
-        transform: translate(-3px, 0px) rotate(1deg);
-    }
-
-    30% {
-        transform: translate(3px, 2px) rotate(0deg);
-    }
-
-    40% {
-        transform: translate(1px, -1px) rotate(1deg);
-    }
-
-    50% {
-        transform: translate(-1px, 2px) rotate(-1deg);
-    }
-
-    60% {
-        transform: translate(-3px, 1px) rotate(0deg);
-    }
-
-    70% {
-        transform: translate(3px, 1px) rotate(-1deg);
-    }
-
-    80% {
-        transform: translate(-1px, -1px) rotate(1deg);
-    }
-
-    90% {
-        transform: translate(1px, 2px) rotate(0deg);
-    }
-
-    100% {
-        transform: translate(1px, -2px) rotate(-1deg);
-    }
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.05);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-/* 기존 스타일 그대로 유지 */
-/* 기존 스타일 그대로 유지 */
-
-.toolbar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    background-color: #ffffff;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.toolbar .player-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.toolbar .player-controls button {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    color: #333;
-    border: 2px solid rgba(255, 255, 255, 0.5); /* 테두리 두께와 색상 조정 */
-    padding: 8px 16px;
-    font-size: 1em;
-    cursor: pointer;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 -2px 6px rgba(255, 255, 255, 0.4) inset; /* 내부 그림자 추가 */
-    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
-}
-
-.toolbar .player-controls button:hover {
-    background: rgba(255, 255, 255, 0.3);
-    color: #000;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2), 0 -2px 8px rgba(255, 255, 255, 0.4) inset; /* 내부 그림자 강조 */
-}
-
-.toolbar .player-controls .volume-control {
-    display: flex;
-    align-items: center;
-}
-
-.toolbar .player-controls .volume-control label {
-    margin-right: 10px;
-}
-
-.toolbar .player-controls .volume-control input[type="range"] {
-    -webkit-appearance: none;
-    width: 100px;
-    height: 5px;
-    background: #ddd;
-    border-radius: 5px;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: opacity .2s;
-    transition: opacity .2s;
-}
-
-.toolbar .player-controls .volume-control input[type="range"]:hover {
-    opacity: 1;
-}
-
-.toolbar .player-controls .input-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.toolbar .player-controls .input-container input {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
 }
