@@ -53,6 +53,11 @@ public class User {
 
     private String providerId;
 
+    @Column(length = 200)
+    private String bannerImageUrl;
+
+    private String bannerDescription;
+  
     @Column(unique = true, length = 100)
     private String blogName; // User 블로그이름 추가
 
