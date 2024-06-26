@@ -1,19 +1,19 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Footer from '../components/footer';
 import Header from '../components/header';
 import Sidebar from '../components/sidebar';
 import { useBlog } from '../contexts/blogContext';
-import { Sidebar as SemanticSidebar } from 'semantic-ui-react';
+import { Button, Input, Sidebar as SemanticSidebar } from 'semantic-ui-react';
 import './layout.css';
 import Cookies from 'js-cookie';
+import YouTubePlayer from 'youtube-player';
 
 const Layout = ({ children }) => {
     const [userId, setUserId] = useState(null);
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const [playlistInput, setPlaylistInput] = useState('');
     const [currentPlaylistId, setCurrentPlaylistId] = useState('');
-    const { blogName } = useBlog();
     const playerRef = useRef(null);
     const iframeContainerRef = useRef(null);
     const [volume, setVolume] = useState(50);
@@ -212,7 +212,7 @@ const Layout = ({ children }) => {
                                     <Button icon='play' size='tiny' onClick={handlePlayMusic}/>
                                 </div>
                                 <Button icon='pause' size='tiny' onClick={handlePause}/>
-                                <Button  icon='stop' size='tiny' onClick={handleStop}/>
+                                <Button icon='stop' size='tiny' onClick={handleStop}/>
                                 <div className="volume-control">
                                     <label>Volume: </label>
                                     <input
@@ -232,7 +232,6 @@ const Layout = ({ children }) => {
             {currentPlaylistId && (
                 <div style={{ display: 'none' }} ref={iframeContainerRef}></div>
             )}
-            <Footer />
         </div>
     );
 }
