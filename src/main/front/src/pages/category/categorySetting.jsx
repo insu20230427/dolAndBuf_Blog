@@ -222,7 +222,7 @@ class CategorySetting extends Component {
         const dropdownOptions = this.processDropdownData(categoryData);
 
         return (
-            <div className="container" style={{height: '87vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <div className="container" style={{height: 'auto', margin: '100px auto', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Accordion as={Menu} vertical>
                     <MenuItem style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <b>카테고리</b>
