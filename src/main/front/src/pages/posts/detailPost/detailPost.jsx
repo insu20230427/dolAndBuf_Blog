@@ -1,16 +1,16 @@
 import axios from "axios";
-import Cookies from "js-cookie";
-import React, {useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
-import {Button, Divider, Icon, Label, Dropdown } from "semantic-ui-react";
-import Swal from "sweetalert2";
 import DOMPurify from "dompurify";
+import Cookies from "js-cookie";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button, Divider, Dropdown, Icon, Label } from "semantic-ui-react";
+import Swal from "sweetalert2";
 import Reply from "../../../components/Reply";
 import './detailPost.css';
 
 const DetailPost = () => {
     const containerStyle = {
-        height: '87vh'
+        minHeight: '87vh'
     };
 
     const [detailPost, setDetailPost] = useState({});
