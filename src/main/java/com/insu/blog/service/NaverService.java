@@ -1,9 +1,9 @@
 package com.insu.blog.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insu.blog.dto.response.NaverUseInfoResponseDto;
-import com.insu.blog.dto.response.TokenResponseDto;
 import com.insu.blog.dto.response.UsernameAndPasswordDto;
 import com.insu.blog.entity.RoleType;
 import com.insu.blog.entity.User;
@@ -53,6 +53,8 @@ public class NaverService {
     private final HttpServletResponse servletRes;
 
     public void processNaverUser(String code) throws JsonProcessingException {
+        log.info("processNaverUser");
+        log.info(code);
 
         // 액세스 토큰 받기
         String accessToken = getAccessToken(code);
@@ -60,14 +62,14 @@ public class NaverService {
         // 네이버 유저 정보 받기
         NaverUseInfoResponseDto naverUserInfo = getUserInfo(accessToken);
 
-        // 카카오 유저 필요에 따른 회원가입
-        UsernameAndPasswordDto Needauthentication = naverSignup(naverUserInfo);
+        // 네이버 유저 필요에 따른 회원가입
+        UsernameAndPasswordDto needAuthentication = naverSignup(naverUserInfo);
 
-        authenticationNaverUser(Needauthentication);
-
+        authenticationNaverUser(needAuthentication);
     }
 
     public String getAccessToken(String code) throws JsonProcessingException {
+        log.info("getAccessToken");
 
         RestTemplate rt = new RestTemplate();
 
@@ -90,15 +92,19 @@ public class NaverService {
                 "https://nid.naver.com/oauth2.0/token",
                 HttpMethod.POST,
                 naverAccessTokenRequest,
-                String.class
-        );
+                String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
+        log.info(objectMapper.readTree(response.getBody()).toString());
+
+        log.info(objectMapper.readTree(response.getBody()).get("access_token").asText());
+        log.info(objectMapper.readTree(response.getBody()).toString());
 
         return objectMapper.readTree(response.getBody()).get("access_token").asText();
     }
 
     public NaverUseInfoResponseDto getUserInfo(String accessToken) throws JsonProcessingException {
+        log.info("getUserInfo");
 
         RestTemplate rt = new RestTemplate();
 
@@ -107,24 +113,28 @@ public class NaverService {
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
         headers.add("Authorization", "Bearer " + accessToken);
 
-
         // header 생성
-        HttpEntity<MultiValueMap<String, String>> naverAccessTokenRequest = new HttpEntity<>(headers);
+        HttpEntity<MultiValueMap<String, String>> naverUserInfoRequest = new HttpEntity<>(headers);
 
         // String값의 액세스 토큰을 해당 주소에 요청하여 반환받기
         ResponseEntity<String> response = rt.exchange(
                 "https://openapi.naver.com/v1/nid/me",
                 HttpMethod.GET,
-                naverAccessTokenRequest,
-                String.class
-        );
-
+                naverUserInfoRequest,
+                String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode responseJson = objectMapper.readTree(response.getBody()).get("response");
 
-        String id = objectMapper.readTree(response.getBody()).get("response").get("id").asText();
-        String nickname = objectMapper.readTree(response.getBody()).get("response").get("name").asText();
-        String email = objectMapper.readTree(response.getBody()).get("response").get("email").asText();
+        log.info("Naver API Response: " + response.getBody()); // 로그 추가
+
+        if (responseJson == null) {
+            throw new RuntimeException("Invalid response from Naver API");
+        }
+
+        String id = getNodeText(responseJson, "id");
+        String nickname = getNodeText(responseJson, "nickname", "unknown_nickname");
+        String email = getNodeText(responseJson, "email", "unknown_email");
 
         return NaverUseInfoResponseDto.builder()
                 .id(id)
@@ -132,9 +142,29 @@ public class NaverService {
                 .email(email).build();
     }
 
-    // 필요시에 회원가입하는 메서드
-    // 인증정보를 가진 사람, 안 가진 사람 모두 대조할거면 디코딩된 비밀번호를 전달하자. */
+    private String getNodeText(JsonNode node, String fieldName) {
+        log.info("getNodeText");
+        JsonNode fieldNode = node.get(fieldName);
+        if (fieldNode == null) {
+            log.warn("Missing field in Naver response: " + fieldName); // 로그 추가
+            return null;
+        }
+        return fieldNode.asText();
+    }
+
+    private String getNodeText(JsonNode node, String fieldName, String defaultValue) {
+        log.info("getNodeText 인자3");
+
+        JsonNode fieldNode = node.get(fieldName);
+        if (fieldNode == null) {
+            log.warn("Missing field in Naver response: " + fieldName); // 로그 추가
+            return defaultValue;
+        }
+        return fieldNode.asText();
+    }
+
     public UsernameAndPasswordDto naverSignup(NaverUseInfoResponseDto naverUserInfo) {
+        log.info("naverSignup");
 
         String naverUsername = naverUserInfo.getId() + "_naver";
         String naverEmail = naverUserInfo.getEmail() + "_naver";
@@ -142,11 +172,12 @@ public class NaverService {
 
         User originalUser = userService.findUser(naverUsername);
 
-        if (originalUser.getUsername() == null) {
+        if (originalUser == null || originalUser.getUsername() == null) {
             log.info("네이버 유저 회원가입 진행");
             User naverUser = new User(naverUsername, naverPassword, naverEmail, "naver");
             naverUser.setPassword(passwordEncoder.encode(naverPassword));
             naverUser.setRole(RoleType.ROLE_USER);
+            naverUser.setNickname(naverUserInfo.getNickname());
 
             oAuth2Repository.save(naverUser);
 
@@ -160,10 +191,9 @@ public class NaverService {
     }
 
     public void authenticationNaverUser(UsernameAndPasswordDto resDto) {
-
+        log.info("authenticationNaverUser");
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(resDto.getUsername(), resDto.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(resDto.getUsername(), resDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // 토큰 생성
@@ -178,4 +208,3 @@ public class NaverService {
         servletRes.addCookie(cookie);
     }
 }
-

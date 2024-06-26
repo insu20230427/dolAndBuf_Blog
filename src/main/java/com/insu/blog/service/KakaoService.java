@@ -48,7 +48,6 @@ public class KakaoService {
     private final AuthService authService;
     private final HttpServletResponse servletRes;
 
-
     public void processKakaoUser(String code) throws JsonProcessingException {
 
         // 액세스 토큰 받기
@@ -86,8 +85,7 @@ public class KakaoService {
                 "https://kauth.kakao.com/oauth/token",
                 HttpMethod.POST,
                 kakaoAccessTokenRequest,
-                String.class
-        );
+                String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -111,14 +109,18 @@ public class KakaoService {
                 "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
                 kakaoAccessTokenRequest,
-                String.class
-        );
+                String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         log.info("response : " + response);
 
-        String nickname = objectMapper.readTree(response.getBody()).get("properties").get("nickname").asText();
+        // nickname 추출 및 디코딩
+        String nickname = decodeNickname(
+                objectMapper.readTree(response.getBody()).get("properties").get("nickname").asText());
+        if (nickname.length() > 50) { // nickname 길이 확인 및 잘라내기
+            nickname = nickname.substring(0, 50);
+        }
         String id = objectMapper.readTree(response.getBody()).get("id").asText();
 
         return KakaoUserInfoResponseDto.builder()
@@ -127,8 +129,18 @@ public class KakaoService {
                 .build();
     }
 
+    // 인코딩 문제 해결
+    private String decodeNickname(String nickname) {
+        try {
+            return URLEncoder.encode(nickname, StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return nickname;
+        }
+    }
+
     // 필요시에 회원가입
-    // 인증정보를 가진 사람, 안 가진 사람 모두 대조할거면 디코딩된 비밀번호를 전달하자. */
+    // 인증정보를 가진 사람, 안 가진 사람 모두 대조할거면 디코딩된 비밀번호를 전달하자.
     public UsernameAndPasswordDto kakaoSignup(KakaoUserInfoResponseDto kakaoUserInfo) {
 
         String kakaoUsername = kakaoUserInfo.getId() + "_Kakao";
@@ -136,11 +148,12 @@ public class KakaoService {
 
         User originalUser = userService.findUser(kakaoUsername);
 
-        if (originalUser.getUsername() == null) {
+        if (originalUser == null || originalUser.getUsername() == null) { // 수정: originalUser가 null인 경우도 확인
             log.info("카카오 유저 회원가입 진행");
             User kakaoUser = new User(kakaoUsername, kakaoPassword, "kakao");
             kakaoUser.setPassword(passwordEncoder.encode(kakaoPassword));
             kakaoUser.setRole(RoleType.ROLE_USER);
+            kakaoUser.setNickname(kakaoUserInfo.getNickname()); // 수정: 닉네임 설정
 
             oAuth2Repository.save(kakaoUser);
 
@@ -156,8 +169,7 @@ public class KakaoService {
     public void authenticationKakaoUser(UsernameAndPasswordDto resDto) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(resDto.getUsername(), resDto.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(resDto.getUsername(), resDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // AccessToken 생성
