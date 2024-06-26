@@ -1,10 +1,11 @@
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import 'semantic-ui-css/semantic.min.css';
-import {Container, Divider, Icon, Item, Pagination} from 'semantic-ui-react';
 import DOMPurify from 'dompurify';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import 'semantic-ui-css/semantic.min.css';
+import { Container, Divider, Icon, Item, Pagination } from 'semantic-ui-react';
+import './index.css';
 
 const DEFAULT_THUMBNAIL = 'https://i.namu.wiki/i/_FIKQ7NQtBilT8QtmXWvjY8FfusWX6uYHmoDPsK70tP_vijKovxuPJrT-oEEdhjlXPRCEJy0zR30MwQpVRQ0WA.webp';
 
@@ -42,72 +43,68 @@ const Index = () => {
         return <div>Loading...</div>;
     }
 
-
     const getThumbnailAndText = (content) => {
-        const cleanContent = DOMPurify.sanitize(content, {USE_PROFILES: {html: true}});
+        const cleanContent = DOMPurify.sanitize(content, { USE_PROFILES: { html: true } });
         const parser = new DOMParser();
         const doc = parser.parseFromString(cleanContent, 'text/html');
 
         const imgTag = doc.querySelector('img');
-        const imgSrc = imgTag ? imgTag.src : DEFAULT_THUMBNAIL; // 썸네일이 없을 경우 기본 이미지 사용
+        const imgSrc = imgTag ? imgTag.src : DEFAULT_THUMBNAIL;
 
         if (imgTag) {
             imgTag.remove();
         }
         const textContent = doc.body.textContent || "";
 
-        return {imgSrc, textContent};
+        return { imgSrc, textContent };
     };
 
     return (
         <Container>
-            <Item.Group style={{paddingTop: '110px', height: '87vh'}}>
+            <Item.Group style={{ paddingTop: '110px', minHeight: '87vh' }}>
                 {posts.map(post => {
-                    const {imgSrc, textContent} = getThumbnailAndText(post.content);
+                    const { imgSrc, textContent } = getThumbnailAndText(post.content);
                     return (
                         <React.Fragment key={post.id}>
-                            <Item style={{marginTop: '75px', height: '150px'}}
-                                  onClick={() => navigate(`/detail-post/${post.id}`)}>
+                            <Item className="post-item" style={{ margin: '20px 0', height: '150px' }}
+                                onClick={() => navigate(`/detail-post/${post.id}`)}>
                                 {imgSrc ? (
-                                    <img src={imgSrc} style={{marginRight: '20px', width: '130px', height: '90px'}}
-                                         alt="thumbnail"/>
+                                    <img src={imgSrc} style={{ paddingLeft: '20px', marginRight: '20px', width: '130px', height: '90px' }}
+                                        alt="thumbnail" />
                                 ) : (
                                     <img src="/default-thumbnail.jpg"
-                                         style={{marginRight: '20px', width: '130px', height: '90px'}}
-                                         alt="default thumbnail"/>
+                                        style={{ marginRight: '20px', width: '130px', height: '90px' }}
+                                        alt="default thumbnail" />
                                 )}
                                 <Item.Content>
-                                    <Item.Header as='h2' style={{
-                                        fontSize: '1.5em',
-                                        marginBottom: '10px'
-                                    }}>{post.title}</Item.Header>
-                                    <Item.Description style={{marginBottom: '15px'}}>
+                                    <Item.Header as='h2' className="post-header">{post.title}</Item.Header>
+                                    <Item.Description className="post-description">
                                         {textContent.length >= 15 ? `${textContent.substring(0, 14)}...` : textContent}
                                     </Item.Description>
                                     <Item.Meta>
-                <span className='date' style={{fontSize: '0.9em'}}>
-                  {post.modifyDate ? (
-                      `수정일 : ${new Date(post.modifyDate).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: 'numeric',
-                          minute: 'numeric'
-                      })}`
-                  ) : (
-                      `작성일 : ${new Date(post.createDate).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: 'numeric',
-                          minute: 'numeric'
-                      })}`
-                  )}
-                </span>
+                                        <span className='date'>
+                                            {post.modifyDate ? (
+                                                `수정일 : ${new Date(post.modifyDate).toLocaleDateString('ko-KR', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    hour: 'numeric',
+                                                    minute: 'numeric'
+                                                })}`
+                                            ) : (
+                                                `작성일 : ${new Date(post.createDate).toLocaleDateString('ko-KR', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    hour: 'numeric',
+                                                    minute: 'numeric'
+                                                })}`
+                                            )}
+                                        </span>
                                     </Item.Meta>
                                 </Item.Content>
                             </Item>
-                            <Divider style={{margin: '10px 0'}}/>
+                            <Divider className="post-divider"/>
                         </React.Fragment>
                     );
                 })}

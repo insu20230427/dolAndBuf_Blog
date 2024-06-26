@@ -1,0 +1,35 @@
+.post-item {
+    display: flex;
+    align-items: center;  /* 수직 중앙 정렬 */
+    transition: box-shadow 0.3s ease-in-out !important;
+    cursor: pointer;
+    padding: 10px; /* 내부 여백 추가 */
+    border-radius: 10px; /* 모서리 둥글게 */
+}
+
+.post-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.19) !important;
+    border-radius: 5px !important;
+
+}
+
+.post-header {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.post-description {
+    margin-bottom: 15px;
+}
+
+.date {
+    font-size: 0.9em;
+}
+
+.post-divider {
+    margin: 10px 0;
+}
+
+.post-item .content {
+    flex-grow: 1;  /* 남은 공간을 차지하도록 */
+}
