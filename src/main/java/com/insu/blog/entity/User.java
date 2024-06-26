@@ -35,7 +35,7 @@ public class User {
     @Column(nullable = false, length = 200)
     private String password;
 
-    @Column(nullable = false, unique = true, length = 8)
+    @Column(nullable = false, unique = true, length = 50)
     private String nickname;
 
     @Column
@@ -57,7 +57,7 @@ public class User {
     private String bannerImageUrl;
 
     private String bannerDescription;
-  
+
     @Column(unique = true, length = 100)
     private String blogName; // User 블로그이름 추가
 
