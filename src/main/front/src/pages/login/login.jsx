@@ -1,13 +1,18 @@
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
+import FindIdModal from '../../components/FindIdModal';
+import FindPasswordModal from '../../components/FindPasswordModal';
+import './socialLoginButtons.css';
 
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showFindIdModal, setShowFindIdModal] = useState(false);
+    const [showFindPasswordModal, setShowFindPasswordModal] = useState(false);
     const navigate = useNavigate();
 
     const containerStyle = {
@@ -76,20 +81,31 @@ export default function Login() {
                     </Button>
                 </Form>
                 <br />
-                <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ee8abaaf81bcb4e83dff921f9a492de6&redirect_uri=http://localhost:8080/api/oauth2/kakao/callback">
-                    <img src="/images/kakao_login_button.png" style={{ height: '38px' }} alt="Kakao Login" />
-                </a>
-                <a href="https://nid.naver.com/oauth2.0/authorize?&response_type=code&client_id=INlvRIKGwlO9MzaRzyrE&redirect_uri=http://localhost:8080/api/oauth2/naver/callback">
-                    <img src="/images/naver_login_button.png" style={{ height: '38px', width: '90px' }} alt="Naver Login" />
-                </a>
-                <a href="http://localhost:8080/oauth2/authorization/google">
-                    <img src="/images/google_login_button.png" style={{ height: '44px' }} alt="Google Login" />
-                </a>
+                <div className="social-login-buttons">
+                    <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ee8abaaf81bcb4e83dff921f9a492de6&redirect_uri=http://localhost:8080/api/oauth2/kakao/callback">
+                        <img src="/images/kakao_login_button.png" className="social-login-button" alt="Kakao Login" />
+                    </a>
+                    <a href="https://nid.naver.com/oauth2.0/authorize?&response_type=code&client_id=INlvRIKGwlO9MzaRzyrE&redirect_uri=http://localhost:8080/api/oauth2/naver/callback">
+                        <img src="/images/naver_login_button.png" className="social-login-button" alt="Naver Login" />
+                    </a>
+                    <a href="http://localhost:8080/oauth2/authorization/google">
+                        <div className="google-login-wrapper">
+                            <img src="/images/google_login_button.png" className="social-login-button google-login-button" alt="Google Login" />
+                        </div>
+                    </a>
+                </div>
                 <br />
-                <div><a href="/signup">아직 회원가입을 하지 않으셨나요?</a></div>
-                <div><a href="/find-usernameForm">아이디 찾기</a></div>
-                <div><a href="/find-passwordForm">비밀번호 찾기</a></div>
+                <div className="sub-buttons">
+                    <div><a href="/signup">아직 회원가입을 하지 않으셨나요?</a></div>
+                    <div><button className="link-button" onClick={() => setShowFindIdModal(true)}>아이디 찾기</button></div>
+                    <div><button className="link-button" onClick={() => setShowFindPasswordModal(true)}>비밀번호 찾기</button></div>
+                </div>
             </Container>
+            {showFindIdModal && <FindIdModal onClose={() => setShowFindIdModal(false)} />}
+            {showFindPasswordModal && (
+                <FindPasswordModal onClose={() => setShowFindPasswordModal(false)} />
+            )}
         </>
     );
 }
+
