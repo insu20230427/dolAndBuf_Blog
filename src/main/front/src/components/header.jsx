@@ -7,12 +7,14 @@ import {Link, useNavigate} from "react-router-dom";
 import {Button, Dropdown, Icon, Input} from 'semantic-ui-react';
 import {useBlog} from '../contexts/blogContext';
 import './Header.css'; // 배너 스타일을 위한 CSS 파일 추가
+import BannerAddModal from './BannerAddModal';
 
 export default function Header({ onSidebarToggle, isSidebarVisible }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchType, setSearchType] = useState(localStorage.getItem('searchType') || '0'); // 로컬 스토리지에서 검색 타입을 가져옵니다.
     const [searchKeyword, setSearchKeyword] = useState(localStorage.getItem('searchKeyword') || '');
     const [showSearch, setShowSearch] = useState(false); // 검색 UI 표시 상태 추가
+    const [showModal, setShowModal] = useState(false); // 모달 표시 여부를 제어하는 상태 변수
     const validToken = Cookies.get('Authorization');
     const navigate = useNavigate();
     const { blogName, setBlogName } = useBlog();
@@ -132,6 +134,11 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                                 <Nav.Link onClick={handleLogout} style={{color: 'black'}}>로그아웃</Nav.Link>
                                 <Nav.Link as={Link} to="/chat" style={{color: 'black'}}>채팅</Nav.Link>
                                 <Nav.Link as={Link} to="/game-board" style={{color: 'black'}}>겜</Nav.Link>
+                                <>
+                                <Nav.Link onClick={() => setShowModal(true)} style={{cursor: 'pointer', color: 'black'}}>배너</Nav.Link>
+                                {showModal && <BannerAddModal open={showModal} setOpen={setShowModal}/>}
+                                </>
+                        
                                 <Nav.Link as={Link} to="/category-setting" style={{color: 'black'}}>카테고리</Nav.Link>
                             </>
                         ) : (

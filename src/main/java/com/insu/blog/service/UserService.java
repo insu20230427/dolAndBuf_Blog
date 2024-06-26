@@ -7,7 +7,9 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 
+import org.springframework.boot.Banner;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.insu.blog.dto.request.BannerRequestDto;
 import com.insu.blog.dto.request.SignupRequestDto;
 import com.insu.blog.dto.request.UpdateUserRequestDto;
 import com.insu.blog.entity.RoleType;
@@ -51,8 +54,7 @@ public class UserService {
                 encoder.encode(signupRequestDto.getPassword()),
                 signupRequestDto.getEmail(),
                 RoleType.ROLE_USER,
-                signupRequestDto.getNickname()
-        );
+                signupRequestDto.getNickname());
 
         // Decode Base64 encoded image
         String base64Image = signupRequestDto.getAvatarImage().split(",")[1];
@@ -75,7 +77,7 @@ public class UserService {
                 stream.write(imageBytes);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to save avatar image", e);
         }
 
         // Set avatar image path
@@ -160,4 +162,31 @@ public class UserService {
         return userRepository.findByBlogName(blogName);
     }
 
+    public User createBanner(PrincipalDetails principalDetails, BannerRequestDto bannerRequest) {
+        // BannerRequestDto에서 정보를 추출하여 Banner 객체를 생성합니다.
+        Optional<User> userOptional = userRepository.findById(principalDetails.getUser().getId());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setBannerImageUrl(bannerRequest.getUrl());
+            user.setBannerDescription(bannerRequest.getBannerDescription());
+
+            userRepository.save(user);
+            return user;
+        }
+
+        return new User();
+    }
+
+    public User findByPrincipalForBanner(PrincipalDetails principalDetails) {
+        Optional<User> userOptional = userRepository.findById(principalDetails.getUser().getId());
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        }
+
+        return new User();
+    }
+
+    public User findByBlogNameForBanner(String blogName) {
+        return userRepository.findByBlogName(blogName);
+    }
 }

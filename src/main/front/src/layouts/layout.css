@@ -81,6 +81,20 @@ footer {
     text-shadow: 0 1px 0 rgba(255,255,255,.3); /* Shadow */
 }
 
+.banner img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지가 배너를 꽉 채우도록 */
+    z-index: 1; /* 텍스트가 이미지 위에 오도록 */
+}
+
+.banner h1, .banner p {
+    z-index: 2; /* 텍스트가 이미지 위에 오도록 */
+}
+
 /*.banner h1:hover {*/
 /*    transform: translateY(-20px) scale(1.2); !* Move up and scale on hover *!*/
 /*}*/
@@ -98,7 +112,7 @@ footer {
 .banner:hover {
     background: linear-gradient(135deg, #92ddea, #fff); /* Change background gradient on hover */
     /*transform: translateY(-5px); !* Move banner on hover *!*/
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+    /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); Enhanced shadow on hover */
 }
 
 /*.banner:hover h1 {*/
