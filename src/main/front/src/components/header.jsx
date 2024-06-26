@@ -98,6 +98,12 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
 
     const toggleSearch = () => setShowSearch(!showSearch); // 검색 UI 표시 상태 토글
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSearchSubmit(e);
+        }
+    };
+
     return (
         <>
             <Navbar bg="transparent" variant="light" expand="md" className="custom-navbar">
@@ -166,7 +172,8 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                                     placeholder="검색어를 입력하세요"
                                     value={searchKeyword}
                                     onChange={(e) => setSearchKeyword(e.target.value)}
-                                    style={{width: '450px', paddingRight: '20px', textAlign: 'center'}}
+                                    onKeyDown={handleKeyDown}
+                                    style={{minWidth: '200px', paddingRight: '4px', textAlign: 'center'}}
                                 />
                             </>
                         )}
