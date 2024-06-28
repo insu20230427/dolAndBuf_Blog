@@ -108,9 +108,16 @@ const Signup = () => {
             <br />
             <Container style={containerStyle}>
                 <Form>
-                    <Form.Group controlId="username">
+                    <Form.Group controlId="username" style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                    }}>
                         <Form.Label>아이디</Form.Label>
-                        <Form.Control
+                        <Form.Control style={{
+                            width: '450px',
+                            height: '56px'
+                        }}
                             type="text"
                             placeholder="아이디를 입력해주세요."
                             value={username}
@@ -118,10 +125,17 @@ const Signup = () => {
                         />
                         {usernameError && <Label basic color='red' pointing>{usernameError}</Label>}
                     </Form.Group>
-                    <br/>
-                    <Form.Group controlId="password">
+                    <br />
+                    <Form.Group controlId="password" style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                    }}>
                         <Form.Label>비밀번호</Form.Label>
-                        <Form.Control
+                        <Form.Control style={{
+                            width: '450px',
+                            height: '56px'
+                        }}
                             type="password"
                             placeholder="비밀번호를 입력해주세요."
                             value={password}
@@ -129,10 +143,17 @@ const Signup = () => {
                         />
                         {passwordError && <Label basic color='red' pointing>{passwordError}</Label>}
                     </Form.Group>
-                    <br/>
-                    <Form.Group controlId="email">
+                    <br />
+                    <Form.Group controlId="email" style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                    }}>
                         <Form.Label>이메일</Form.Label>
-                        <Form.Control
+                        <Form.Control style={{
+                            width: '450px',
+                            height: '56px'
+                        }}
                             type="email"
                             placeholder="이메일을 입력해주세요."
                             value={email}
@@ -141,10 +162,17 @@ const Signup = () => {
                         {emailError && <Label basic color='red' pointing>{emailError}</Label>}
                     </Form.Group>
                 </Form>
-                <br/>
-                <Form.Group controlId="nickname">
+                <br />
+                <Form.Group controlId="nickname" style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                    }}>
                     <Form.Label>닉네임</Form.Label>
-                    <Form.Control
+                    <Form.Control style={{
+                        width: '450px',
+                        height: '56px'
+                    }}
                         type="text"
                         placeholder="닉네임을 입력해주세요."
                         value={nickname}
@@ -152,7 +180,7 @@ const Signup = () => {
                     />
                     {nicknameError && <Label basic color='red' pointing>{nicknameError}</Label>}
                 </Form.Group>
-                <br/>
+                <br />
                 <Button variant="primary" onClick={handleSignup}>
                     회원가입
                 </Button>

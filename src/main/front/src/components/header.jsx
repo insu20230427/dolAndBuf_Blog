@@ -138,7 +138,6 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                                 )}
                                 <Nav.Link as={Link} to="/write" style={{color: 'black'}}>글쓰기</Nav.Link>
                                 <Nav.Link onClick={handleLogout} style={{color: 'black'}}>로그아웃</Nav.Link>
-                                <Nav.Link as={Link} to="/chat" style={{color: 'black'}}>채팅</Nav.Link>
                                 <Nav.Link as={Link} to="/game-board" style={{color: 'black'}}>겜</Nav.Link>
                                 <>
                                 <Nav.Link onClick={() => setShowModal(true)} style={{cursor: 'pointer', color: 'black'}}>배너</Nav.Link>
