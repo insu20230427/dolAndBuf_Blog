@@ -68,7 +68,7 @@ const CategoryPosts = () => {
     return (
         <div style={{ display: 'flex', position: 'relative' }}>
             <Container>
-                <Item.Group style={{ paddingTop: '110px', height: '87vh'}}>
+                <Item.Group style={{ paddingTop: '110px', minHeight: '87vh' }}>
                     {posts.map((post) => {
                         const { imgSrc, textContent } = getThumbnailAndText(post.content);
                         return (
@@ -123,20 +123,19 @@ const CategoryPosts = () => {
                             </React.Fragment>
                         );
                     })}
+                    <Container textAlign="center" style={{ padding: '20px', paddingBottom: '100px', margin: 'auto' }}>
+                        <Pagination
+                            defaultActivePage={currentPage + 1}
+                            totalPages={totalPages}
+                            onPageChange={(e, { activePage }) => handlePageClick(activePage - 1)}
+                            ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
+                            firstItem={{ content: <Icon name="angle double left" />, icon: true }}
+                            lastItem={{ content: <Icon name="angle double right" />, icon: true }}
+                            prevItem={{ content: <Icon name="angle left" />, icon: true }}
+                            nextItem={{ content: <Icon name="angle right" />, icon: true }}
+                        />
+                    </Container>
                 </Item.Group>
-
-                <Container textAlign="center" style={{ marginBottom: '40px' }}>
-                    <Pagination
-                        defaultActivePage={currentPage + 1}
-                        totalPages={totalPages}
-                        onPageChange={(e, { activePage }) => handlePageClick(activePage - 1)}
-                        ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
-                        firstItem={{ content: <Icon name="angle double left" />, icon: true }}
-                        lastItem={{ content: <Icon name="angle double right" />, icon: true }}
-                        prevItem={{ content: <Icon name="angle left" />, icon: true }}
-                        nextItem={{ content: <Icon name="angle right" />, icon: true }}
-                    />
-                </Container>
                 {/* <ChatApp /> */}
             </Container>
             <div>

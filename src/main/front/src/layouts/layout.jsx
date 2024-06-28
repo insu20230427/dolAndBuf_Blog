@@ -98,10 +98,6 @@ const Layout = ({ children }) => {
             });
         }
     }, [currentPlaylistId]);
-            fetchBannerInfoByPrincipal();
-            fetchBannerInfoByBlogName();
-        }
-    }, [blogName]);
 
     const handleSidebarToggle = () => {
         setSidebarVisible(!sidebarVisible);
