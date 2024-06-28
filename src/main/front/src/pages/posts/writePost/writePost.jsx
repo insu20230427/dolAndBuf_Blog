@@ -1,13 +1,18 @@
-import React, {useEffect, useRef, useState} from 'react';
-import ReactQuill, {Quill} from 'react-quill';
-import {Form} from 'react-bootstrap';
-import 'react-quill/dist/quill.snow.css';
-import {useNavigate} from 'react-router-dom';
-import {Button, Dropdown, DropdownItem, DropdownMenu, Icon} from 'semantic-ui-react';
-import Swal from 'sweetalert2';
-import axios from 'axios';
+import axios from "axios";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Cookies from 'js-cookie';
+import ImageResize from 'quill-image-resize-module-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Form } from 'react-bootstrap';
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { useNavigate } from 'react-router-dom';
+import { Button, Dropdown, DropdownItem, DropdownMenu, Icon } from 'semantic-ui-react';
+import Swal from 'sweetalert2';
 import EditorToolBar from '../../../components/EditorToolBar';
+
+// quill-image-resize-module-react를 Quill 모듈로 등록합니다.
+Quill.register('modules/imageResize', ImageResize);
 
 const WritePost = () => {
     const navigate = useNavigate();
@@ -16,10 +21,6 @@ const WritePost = () => {
     const [category, setCategory] = useState(null);
     const [categoryData, setCategoryData] = useState([]);
     const quillRef = useRef(null);
-
-    // const containerStyle = {
-    //     height: '87vh',
-    // };
 
     const modules = {
         toolbar: {
@@ -32,6 +33,7 @@ const WritePost = () => {
             userOnly: true,
         },
         imageResize: {
+            // quill-image-resize-module-react 설정
             parchment: Quill.import('parchment'),
             modules: ['Resize', 'DisplaySize', 'Toolbar'],
         },
@@ -56,7 +58,7 @@ const WritePost = () => {
     ];
 
     useEffect(() => {
-        async function imageHandler() {
+        const imageHandler = () => {
             const input = document.createElement('input');
             input.setAttribute('type', 'file');
             input.setAttribute('accept', 'image/*');
@@ -84,7 +86,7 @@ const WritePost = () => {
                     console.error('Error uploading image: ', error);
                 }
             };
-        }
+        };
 
         if (quillRef.current) {
             const toolbar = quillRef.current.getEditor().getModule('toolbar');

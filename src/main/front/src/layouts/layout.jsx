@@ -1,17 +1,23 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Footer from '../components/footer';
 import Header from '../components/header';
 import Sidebar from '../components/sidebar';
 import { useBlog } from '../contexts/blogContext';
-import { Sidebar as SemanticSidebar } from 'semantic-ui-react';
+import { Button, Input, Sidebar as SemanticSidebar } from 'semantic-ui-react';
 import './layout.css';
 import Cookies from 'js-cookie';
+import YouTubePlayer from 'youtube-player';
 
 const Layout = ({ children }) => {
     const [userId, setUserId] = useState(null);
     const [sidebarVisible, setSidebarVisible] = useState(false);
-    const [bannerInfo, setBannerInfo] = useState({ bannerImageUrl: '', bannerDescription: '', username: '' });
+    const [playlistInput, setPlaylistInput] = useState('');
+    const [currentPlaylistId, setCurrentPlaylistId] = useState('');
+    const playerRef = useRef(null);
+    const iframeContainerRef = useRef(null);
+    const [volume, setVolume] = useState(50);
+    const [bannerInfo, setBannerInfo] = useState({ bannerImageUrl: '', bannerDescription: '', username: '' }); // 배너 정보 상태 추가
     const [bannerInfoByBlogName, setBannerInfoByBlogName] = useState({ bannerImageUrl: '', bannerDescription: '', username: '' });
     const { blogName } = useBlog();
 
@@ -27,48 +33,71 @@ const Layout = ({ children }) => {
             };
 
             fetchUserId();
+
+
+        // 배너 정보 가져오기
+        const fetchBannerInfoByPrincipal = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/banners', {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: Cookies.get('Authorization')
+                    }
+                });
+                if (response.status === 200 && response.data.data) {
+                    setBannerInfo({
+                        bannerImageUrl: response.data.data.bannerImageUrl,
+                        bannerDescription: response.data.data.bannerDescription,
+                        username: response.data.data.username,
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch banner info:', error);
+            }
+        };
         
-            const fetchBannerInfoByPrincipal = async () => {
-                try {
-                    const response = await axios.get('http://localhost:8080/api/banners', {
-                        withCredentials: true,
-                        headers: {
-                            Authorization: Cookies.get('Authorization')
-                        }
-                    });
-                    if (response.status === 200 && response.data.data) {
-                        setBannerInfo({
-                            bannerImageUrl: response.data.data.bannerImageUrl,
-                            bannerDescription: response.data.data.bannerDescription,
-                            username: response.data.data.username, 
-                        });
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch banner info:', error);
-                }
-            };
 
-            const fetchBannerInfoByBlogName = async () => {
-                try {
-                    if(blogName === '') return;
-                    const response = await axios.get(`http://localhost:8080/api/banners/${blogName}`, {
-                        withCredentials: true,
-                        headers: {
-                            Authorization: Cookies.get('Authorization')
-                        }
-                    });
-                    if (response.status === 200 && response.data.data) {
-                        setBannerInfoByBlogName({
-                            bannerImageUrl: response.data.data.bannerImageUrl,
-                            bannerDescription: response.data.data.bannerDescription,
-                            username: response.data.data.username, 
-                        });
+          const fetchBannerInfoByBlogName = async () => {
+            try {
+                if(blogName === '') return;
+                const response = await axios.get(`http://localhost:8080/api/banners/${blogName}`, {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: Cookies.get('Authorization')
                     }
-                } catch (error) {
-                    console.error('Failed to fetch banner info:', error);
+                });
+                if (response.status === 200 && response.data.data) {
+                    setBannerInfoByBlogName({
+                        bannerImageUrl: response.data.data.bannerImageUrl,
+                        bannerDescription: response.data.data.bannerDescription,
+                        username: response.data.data.username, 
+                    });
                 }
-            };
+            } catch (error) {
+                console.error('Failed to fetch banner info:', error);
+            }
+        };
 
+        fetchBannerInfoByPrincipal();
+        fetchBannerInfoByBlogName();
+    }}, [blogName]); // blogName이 변경될 때마다 실행
+
+    useEffect(() => {
+        if (iframeContainerRef.current && currentPlaylistId) {
+            playerRef.current = YouTubePlayer(iframeContainerRef.current, {
+                playerVars: {
+                    listType: 'playlist',
+                    list: currentPlaylistId,
+                    autoplay: 1,
+                    loop: 1,
+                    mute: 0
+                },
+            });
+            playerRef.current.on('ready', () => {
+                playerRef.current.setVolume(volume);
+            });
+        }
+    }, [currentPlaylistId]);
             fetchBannerInfoByPrincipal();
             fetchBannerInfoByBlogName();
         }
@@ -76,6 +105,76 @@ const Layout = ({ children }) => {
 
     const handleSidebarToggle = () => {
         setSidebarVisible(!sidebarVisible);
+    };
+
+    const handlePlaylistChange = (e) => {
+        setPlaylistInput(e.target.value);
+    };
+
+    const handlePlayMusic = async () => {
+        const playlistId = extractPlaylistId(playlistInput);
+
+        if (playlistId) {
+            setCurrentPlaylistId(playlistId);
+        } else {
+            const searchId = await fetchPlaylistIdByTitle(playlistInput);
+            if (searchId) {
+                setCurrentPlaylistId(searchId);
+            } else {
+                alert("Playlist not found. Please check the title or URL and try again.");
+            }
+        }
+    };
+
+    const extractPlaylistId = (input) => {
+        const urlPattern = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:playlist\?list=|watch\?v=[^&]+&list=)([A-Za-z0-9_-]+)/;
+        const match = input.match(urlPattern);
+        if (match && match[1]) {
+            return match[1];
+        }
+        return null;
+    };
+
+    const fetchPlaylistIdByTitle = async (title) => {
+        try {
+            const response = await axios.get(`https://www.googleapis.com/youtube/v3/search`, {
+                params: {
+                    part: 'snippet',
+                    q: title,
+                    type: 'playlist',
+                    key: 'AIzaSyB6DQycBeJ68mN5Jme6uQtF6t3jyXroa2k'
+                }
+            });
+            if (response.data.items.length > 0) {
+                return response.data.items[0].id.playlistId;
+            }
+        } catch (error) {
+            console.error('Failed to fetch playlist ID by title:', error);
+        }
+        return null;
+    };
+
+    const handlePause = () => {
+        if (playerRef.current) {
+            playerRef.current.pauseVideo();
+        }
+    };
+
+    const handleStop = () => {
+        if (playerRef.current) {
+            playerRef.current.stopVideo();
+            playerRef.current.destroy();
+            playerRef.current = null;
+            setCurrentPlaylistId('');
+        }
+    };
+
+    const handleVolumeChange = (e) => {
+        const newVolume = e.target.value;
+        setVolume(newVolume);
+        if (playerRef.current) {
+            playerRef.current.setVolume(newVolume);
+        }
     };
 
     return (
@@ -104,10 +203,37 @@ const Layout = ({ children }) => {
                     )}
                     <main className="main-content">
                         {children}
+                        <div className="toolbar">
+                            <div className="player-controls">
+                                <div className="input-container">
+                                    <Input
+                                        placeholder="Enter YouTube Playlist URL or Title"
+                                        value={playlistInput}
+                                        onChange={handlePlaylistChange}
+                                    />
+                                    <Button icon='play' size='tiny' onClick={handlePlayMusic}/>
+                                </div>
+                                <Button icon='pause' size='tiny' onClick={handlePause}/>
+                                <Button icon='stop' size='tiny' onClick={handleStop}/>
+                                <div className="volume-control">
+                                    <label>Volume: </label>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value={volume}
+                                        onChange={handleVolumeChange}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </main>
                 </SemanticSidebar.Pusher>
             </SemanticSidebar.Pushable>
-            <Footer />
+            <Footer/>
+            {currentPlaylistId && (
+                <div style={{ display: 'none' }} ref={iframeContainerRef}></div>
+            )}
         </div>
     );
 };

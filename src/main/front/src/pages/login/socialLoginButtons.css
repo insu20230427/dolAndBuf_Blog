@@ -1,0 +1,53 @@
+.social-login-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    /* 버튼 간격 조정 */
+}
+
+.social-login-button {
+    height: 38px;
+    width: 90px;
+    object-fit: cover;
+    /* 버튼 이미지 비율 유지 */
+    display: block;
+}
+
+.google-login-wrapper {
+    width: 90px;
+    /* 너비 지정 */
+    height: 38px;
+    /* 높이 지정 */
+    overflow: hidden;
+    /* 튀어나오는 부분 숨기기 */
+}
+
+.google-login-button {
+    width: auto;
+    /* 부모의 너비에 맞추기 */
+    height: 100%;
+}
+
+.sub-buttons {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: rgba(13, 110, 253, 1);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+}
+
+.link-button:hover {
+    text-decoration: none;
+    /* color: rgba(10, 88, 202, 1); */
+    color: #4183c4;
+}

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import DOMPurify from 'dompurify';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import { Container, Divider, Icon, Item, Pagination } from 'semantic-ui-react';
-import DOMPurify from 'dompurify';
+import './index.css';
 import ChatApp from '../chat/chatApp'; // ChatApp 컴포넌트 import
 
 const DEFAULT_THUMBNAIL = 'https://i.namu.wiki/i/_FIKQ7NQtBilT8QtmXWvjY8FfusWX6uYHmoDPsK70tP_vijKovxuPJrT-oEEdhjlXPRCEJy0zR30MwQpVRQ0WA.webp';
@@ -49,7 +50,7 @@ const Index = () => {
         const doc = parser.parseFromString(cleanContent, 'text/html');
 
         const imgTag = doc.querySelector('img');
-        const imgSrc = imgTag ? imgTag.src : DEFAULT_THUMBNAIL; // 썸네일이 없을 경우 기본 이미지 사용
+        const imgSrc = imgTag ? imgTag.src : DEFAULT_THUMBNAIL;
 
         if (imgTag) {
             imgTag.remove();
@@ -62,7 +63,7 @@ const Index = () => {
     return (
         <div style={{ display: 'flex', position: 'relative' }}>
             <Container>
-                <Item.Group style={{ paddingTop: '110px', height: '87vh'}}>
+                <Item.Group style={{ paddingTop: '110px', height: '87vh' }}>
                     {posts.map((post) => {
                         const { imgSrc, textContent } = getThumbnailAndText(post.content);
                         return (
@@ -118,7 +119,6 @@ const Index = () => {
                         );
                     })}
                 </Item.Group>
-
                 <Container textAlign="center" style={{ marginBottom: '40px' }}>
                     <Pagination
                         defaultActivePage={currentPage + 1}
@@ -131,13 +131,13 @@ const Index = () => {
                         nextItem={{ content: <Icon name="angle right" />, icon: true }}
                     />
                 </Container>
-                {/* <ChatApp /> */}
+                <div>
+                    <ChatApp />
+                </div>
             </Container>
-            <div>
-                <ChatApp />
-            </div>
         </div>
     );
 };
 
 export default Index;
+

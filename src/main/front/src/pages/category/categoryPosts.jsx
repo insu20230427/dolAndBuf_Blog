@@ -1,12 +1,13 @@
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import 'semantic-ui-css/semantic.min.css';
-import {Container, Divider, Icon, Item, Pagination} from 'semantic-ui-react';
 import DOMPurify from 'dompurify';
-import {useBlog} from "../../contexts/blogContext";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import 'semantic-ui-css/semantic.min.css';
+import { Container, Divider, Icon, Item, Pagination } from 'semantic-ui-react';
+import { useBlog } from "../../contexts/blogContext";
 import ChatApp from "../chat/chatApp";
+import '../index/index.css';
 
 const DEFAULT_THUMBNAIL = 'https://i.namu.wiki/i/_FIKQ7NQtBilT8QtmXWvjY8FfusWX6uYHmoDPsK70tP_vijKovxuPJrT-oEEdhjlXPRCEJy0zR30MwQpVRQ0WA.webp';
 
