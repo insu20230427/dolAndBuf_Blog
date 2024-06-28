@@ -157,58 +157,55 @@ function Chat() {
     };
 
 
-    return (
-        <>
-            <div className="chat-container" style={containerStyle}>
-                <div className="chat-header">
-                    <h2>{roomName}</h2>
-                    <Button className="update-room-button" onClick={updateRoomName}>채팅방 이름 수정</Button>
-                </div>
-                <div className="message-list">
-                    <MainContainer>
-                        <ChatContainer>
-                            <MessageList>
-                                {Array.isArray(messages) && messages.map((msg, index) => {
-                                    const isOutgoing = msg.sender === nickname;
-                                    console.log("sender : " + msg.sender)
-                                    console.log("nickname : " + nickname)
-                                    console.log("send_username : " + msg.username)
-                                    console.log("username : " + username)
+   return (
+        <div className="chat-container" style={containerStyle}>
+            <div className="chat-header">
+                <h2>{roomName}</h2>
+                <button className="update-room-button" onClick={updateRoomName}>채팅방 이름 수정</button>
+            </div>
+            <div className="message-list">
+                <MainContainer>
+                    <ChatContainer>
+                        <MessageList>
+                            {Array.isArray(messages) && messages.map((msg, index) => {
+                                const isOutgoing = msg.sender === nickname;
 
-                                    return (
-                                        <div key={index}
-                                             style={{
-                                                 display: 'flex',
-                                                 alignItems: 'center',
-                                                 marginBottom: '10px',
-                                                 justifyContent: isOutgoing ? 'flex-end' : 'flex-start'
-                                             }}
-                                        >
-                                            {!isOutgoing && (
-                                                <Link to={`/blog/${msg.username}`}>
+                                return (
+                                    <div key={index}
+                                         style={{
+                                             display: 'flex',
+                                             alignItems: 'center',
+                                             marginTop: '10px',
+                                             marginBottom: '10px',
+                                             justifyContent: isOutgoing ? 'flex-end' : 'flex-start'
+                                         }}
+                                    >
+                                        {!isOutgoing && (
+                                            <Link to={`/blog/${msg.username}`}>
                                                 <img src={process.env.PUBLIC_URL + '/images/' + msg.sender + '.jpg'} alt="Avatar"
-                                                     style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
-                                                </Link>
-                                            )}
-                                            <Message
-                                                model={{
-                                                    message: msg.message,
-                                                    sentTime: msg.sentTime,
-                                                    sender: msg.sender,
-                                                    direction: isOutgoing ? "outgoing" : "incoming"
-                                                }}
-                                                className={isOutgoing ? "message-outgoing" : "message-incoming"}
-                                            />
-                                            {isOutgoing && (
-                                                <Link to={`/blog/${msg.username}`}>
+                                                     style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '5px' }} />
+                                            </Link>
+                                        )}
+                                        <Message
+                                            model={{
+                                                message: msg.message,
+                                                sentTime: msg.sentTime,
+                                                sender: msg.sender,
+                                                direction: isOutgoing ? "outgoing" : "incoming"
+                                            }}
+                                            className={isOutgoing ? "message-outgoing" : "message-incoming"}
+                                        />
+                                        {isOutgoing && (
+                                            <Link to={`/blog/${msg.username}`}>
                                                 <img src={avatar} alt="Avatar"
-                                                     style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
-                                                </Link>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </MessageList>
+                                                     style={{ width: '30px', height: '30px', borderRadius: '50%', marginLeft: '5px' }} />
+                                            </Link>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </MessageList>
+                        <div className="message-input-container">
                             <MessageInput
                                 placeholder="메시지 입력..."
                                 value={message}
@@ -216,13 +213,22 @@ function Chat() {
                                 attachButton={false}
                                 onSend={sendMessage}
                             />
-                        </ChatContainer>
-                    </MainContainer>
-                </div>
-            </div>
-        </>
-    );
-}
+                            <button onClick={sendMessage}>✉️</button>
+                        </div>
 
+                        <MessageInput
+                            placeholder="메시지 입력..."
+                            value={message}
+                            onChange={(val) => setMessage(val)}
+                            attachButton={false}
+                            onSend={sendMessage}
+                            className="message-input-container"
+                        />
+                    </ChatContainer>
+                </MainContainer>
+            </div>
+        </div>
+    );
+};
 
 export default Chat;

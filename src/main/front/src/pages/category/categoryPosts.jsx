@@ -6,6 +6,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {Container, Divider, Icon, Item, Pagination} from 'semantic-ui-react';
 import DOMPurify from 'dompurify';
 import {useBlog} from "../../contexts/blogContext";
+import ChatApp from "../chat/chatApp";
 
 const DEFAULT_THUMBNAIL = 'https://i.namu.wiki/i/_FIKQ7NQtBilT8QtmXWvjY8FfusWX6uYHmoDPsK70tP_vijKovxuPJrT-oEEdhjlXPRCEJy0zR30MwQpVRQ0WA.webp';
 
@@ -16,12 +17,6 @@ const CategoryPosts = () => {
     const navigate = useNavigate();
     const { categoryId } = useParams();
     const { blogName } = useBlog();
-
-    const containerStyle = {
-        height: '87vh',
-        display: 'flex',
-        justifyContent: 'center'
-    };
 
     useEffect(() => {
         if (blogName) {
@@ -70,73 +65,83 @@ const CategoryPosts = () => {
     }
 
     return (
-        <Container>
-            <Item.Group style={{paddingTop: '110px', height: '87vh'}}>
-                {posts.map(post => {
-                    const {imgSrc, textContent} = getThumbnailAndText(post.content);
-                    return (
-                        <React.Fragment key={post.id}>
-                            <Item style={{marginTop: '75px', height: '150px'}}
-                                  onClick={() => navigate(`/detail-post/${post.id}`)}>
-                                {imgSrc ? (
-                                    <img src={imgSrc} style={{marginRight: '20px', width: '130px', height: '90px'}}
-                                         alt="thumbnail"/>
-                                ) : (
-                                    <img src="/default-thumbnail.jpg"
-                                         style={{marginRight: '20px', width: '130px', height: '90px'}}
-                                         alt="default thumbnail"/>
-                                )}
-                                <Item.Content>
-                                    <Item.Header as='h2' style={{
-                                        fontSize: '1.5em',
-                                        marginBottom: '10px'
-                                    }}>{post.title}</Item.Header>
-                                    <Item.Description style={{marginBottom: '15px'}}>
-                                        {textContent.length >= 15 ? `${textContent.substring(0, 14)}...` : textContent}
-                                    </Item.Description>
-                                    <Item.Meta>
-                <span className='date' style={{fontSize: '0.9em'}}>
-                  {post.modifyDate ? (
-                      `수정일 : ${new Date(post.modifyDate).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: 'numeric',
-                          minute: 'numeric'
-                      })}`
-                  ) : (
-                      `작성일 : ${new Date(post.createDate).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: 'numeric',
-                          minute: 'numeric'
-                      })}`
-                  )}
-                </span>
-                                    </Item.Meta>
-                                </Item.Content>
-                            </Item>
-                            <Divider style={{margin: '10px 0'}}/>
-                        </React.Fragment>
-                    );
-                })}
-            </Item.Group>
+        <div style={{ display: 'flex', position: 'relative' }}>
+            <Container>
+                <Item.Group style={{ paddingTop: '110px', height: '87vh'}}>
+                    {posts.map((post) => {
+                        const { imgSrc, textContent } = getThumbnailAndText(post.content);
+                        return (
+                            <React.Fragment key={post.id}>
+                                <Item
+                                    style={{ marginTop: '75px', height: '150px' }}
+                                    onClick={() => navigate(`/detail-post/${post.id}`)}
+                                >
+                                    {imgSrc ? (
+                                        <img
+                                            src={imgSrc}
+                                            style={{ marginRight: '20px', width: '130px', height: '90px' }}
+                                            alt="thumbnail"
+                                        />
+                                    ) : (
+                                        <img
+                                            src="/default-thumbnail.jpg"
+                                            style={{ marginRight: '20px', width: '130px', height: '90px' }}
+                                            alt="default thumbnail"
+                                        />
+                                    )}
+                                    <Item.Content>
+                                        <Item.Header
+                                            as="h2"
+                                            style={{
+                                                fontSize: '1.5em',
+                                                marginBottom: '10px',
+                                            }}
+                                        >
+                                            {post.title}
+                                        </Item.Header>
+                                        <Item.Description style={{ marginBottom: '15px' }}>
+                                            {textContent.length >= 15 ? `${textContent.substring(0, 14)}...` : textContent}
+                                        </Item.Description>
+                                        <Item.Meta>
+                                            <span
+                                                className="date"
+                                                style={{ fontSize: '0.9em' }}
+                                            >
+                                                {new Date(post.modifyDate).toLocaleDateString('ko-KR', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    hour: 'numeric',
+                                                    minute: 'numeric',
+                                                })}
+                                            </span>
+                                        </Item.Meta>
+                                    </Item.Content>
+                                </Item>
+                                <Divider style={{ margin: '10px 0' }} />
+                            </React.Fragment>
+                        );
+                    })}
+                </Item.Group>
 
-            <Container textAlign='center' style={{ marginBottom: '40px' }}>
-                <Pagination
-                    defaultActivePage={currentPage + 1}
-                    totalPages={totalPages}
-                    onPageChange={(e, { activePage }) => handlePageClick(activePage - 1)}
-                    ellipsisItem={{ content: <Icon name='ellipsis horizontal' />, icon: true }}
-                    firstItem={{ content: <Icon name='angle double left' />, icon: true }}
-                    lastItem={{ content: <Icon name='angle double right' />, icon: true }}
-                    prevItem={{ content: <Icon name='angle left' />, icon: true }}
-                    nextItem={{ content: <Icon name='angle right' />, icon: true }}
-                />
+                <Container textAlign="center" style={{ marginBottom: '40px' }}>
+                    <Pagination
+                        defaultActivePage={currentPage + 1}
+                        totalPages={totalPages}
+                        onPageChange={(e, { activePage }) => handlePageClick(activePage - 1)}
+                        ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
+                        firstItem={{ content: <Icon name="angle double left" />, icon: true }}
+                        lastItem={{ content: <Icon name="angle double right" />, icon: true }}
+                        prevItem={{ content: <Icon name="angle left" />, icon: true }}
+                        nextItem={{ content: <Icon name="angle right" />, icon: true }}
+                    />
+                </Container>
+                {/* <ChatApp /> */}
             </Container>
-        </Container>
+            <div>
+                <ChatApp />
+            </div>
+        </div>
     );
 };
-
 export default CategoryPosts;
