@@ -2,10 +2,6 @@
 <html lang="ko">
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<script>
-    window.location="http://localhost:3000/";
-</script>
-
 <style>
     .container {
         height: auto;

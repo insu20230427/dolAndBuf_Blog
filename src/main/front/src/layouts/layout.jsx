@@ -33,52 +33,54 @@ const Layout = ({ children }) => {
             };
 
             fetchUserId();
-        
-            const fetchBannerInfoByPrincipal = async () => {
-                try {
-                    const response = await axios.get('http://localhost:8080/api/banners', {
-                        withCredentials: true,
-                        headers: {
-                            Authorization: Cookies.get('Authorization')
-                        }
-                    });
-                    if (response.status === 200 && response.data.data) {
-                        setBannerInfo({
-                            bannerImageUrl: response.data.data.bannerImageUrl,
-                            bannerDescription: response.data.data.bannerDescription,
-                            username: response.data.data.username,
-                        });
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch banner info:', error);
-                }
-            };
 
-            const fetchBannerInfoByBlogName = async () => {
-                try {
-                    if(blogName === '') return;
-                    const response = await axios.get(`http://localhost:8080/api/banners/${blogName}`, {
-                        withCredentials: true,
-                        headers: {
-                            Authorization: Cookies.get('Authorization')
-                        }
-                    });
-                    if (response.status === 200 && response.data.data) {
-                        setBannerInfoByBlogName({
-                            bannerImageUrl: response.data.data.bannerImageUrl,
-                            bannerDescription: response.data.data.bannerDescription,
-                            username: response.data.data.username,
-                        });
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch banner info:', error);
-                }
-            };
 
-            fetchBannerInfoByPrincipal();
-            fetchBannerInfoByBlogName();
-        }
-    }, [blogName]);
+        // 배너 정보 가져오기
+        const fetchBannerInfoByPrincipal = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/banners', {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: Cookies.get('Authorization')
+                    }
+                });
+                if (response.status === 200 && response.data.data) {
+                    setBannerInfo({
+                        bannerImageUrl: response.data.data.bannerImageUrl,
+                        bannerDescription: response.data.data.bannerDescription,
+                        username: response.data.data.username,
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch banner info:', error);
+            }
+        };
+
+
+          const fetchBannerInfoByBlogName = async () => {
+            try {
+                if(blogName === '') return;
+                const response = await axios.get(`http://localhost:8080/api/banners/${blogName}`, {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: Cookies.get('Authorization')
+                    }
+                });
+                if (response.status === 200 && response.data.data) {
+                    setBannerInfoByBlogName({
+                        bannerImageUrl: response.data.data.bannerImageUrl,
+                        bannerDescription: response.data.data.bannerDescription,
+                        username: response.data.data.username,
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch banner info:', error);
+            }
+        };
+
+        fetchBannerInfoByPrincipal();
+        fetchBannerInfoByBlogName();
+    }}, [blogName]); // blogName이 변경될 때마다 실행
 
     useEffect(() => {
         if (iframeContainerRef.current && currentPlaylistId) {
@@ -96,6 +98,10 @@ const Layout = ({ children }) => {
             });
         }
     }, [currentPlaylistId]);
+            fetchBannerInfoByPrincipal();
+            fetchBannerInfoByBlogName();
+        }
+    }, [blogName]);
 
     const handleSidebarToggle = () => {
         setSidebarVisible(!sidebarVisible);
@@ -230,5 +236,6 @@ const Layout = ({ children }) => {
             )}
         </div>
     );
-}
+};
+
 export default Layout;
