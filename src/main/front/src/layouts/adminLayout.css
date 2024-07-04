@@ -1,0 +1,14 @@
+.admin-app {
+    display: flex;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+}
+
+.admin-sidebar ul li a:hover {
+    background-color: #16a085;
+}
+
+.admin-content {
+    padding: 20px;
+    width: calc(100% - 250px);
+}
