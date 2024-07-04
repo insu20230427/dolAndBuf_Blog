@@ -1,16 +1,15 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Button, Container, Form, Modal } from 'react-bootstrap'; // Modal 컴포넌트 추가
 import Swal from 'sweetalert2';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate } from 'react-router-dom';
+import './FindIdModal.css';
+import { Button, Form, Modal, Icon, Message } from 'semantic-ui-react';
 
-export default function FindIdModal({ onClose }) { // onClose 함수 추가
+export default function FindIdModal({ onClose }) {
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [emailSent, setEmailSent] = useState(false);
     const [codeVerified, setCodeVerified] = useState(false);
-    const navigate = useNavigate();
 
     const handleSendCode = async () => {
         try {
@@ -69,58 +68,63 @@ export default function FindIdModal({ onClose }) { // onClose 함수 추가
     };
 
     return (
-        <Modal show onHide={onClose} centered>
-            <Modal.Header closeButton>
-                <Modal.Title>아이디 찾기</Modal.Title>
+        <Modal open onClose={onClose} size="small" className="custom-modal">
+            <Modal.Header>
+                <Icon name="user circle" /> 아이디 찾기
             </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group>
-                        <Form.Label>이메일</Form.Label>
-                        <div className="input-group mb-3">
-                            <Form.Control
-                                type="email"
-                                placeholder="인증번호를 보낼 이메일을 입력해주세요."
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={emailSent}
-                            />
-                            <Button onClick={handleSendCode} disabled={emailSent}>인증번호 전송</Button>
-                        </div>
-                        <span id="span-code"></span>
-                    </Form.Group>
+            <Modal.Content>
+                <Form style={{height : '300px'}}>
+                    <Form.Field>
+                        <label>이메일</label>
+                        <Form.Input
+                            type="email"
+                            placeholder="인증번호를 보낼 이메일을 입력해주세요."
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={emailSent}
+                            action={
+                                <Button onClick={handleSendCode} disabled={emailSent} color="blue">
+                                    인증번호 전송
+                                </Button>
+                            }
+                        />
+                    </Form.Field>
                     {emailSent && (
-                        <Form.Group>
-                            <Form.Label>인증번호</Form.Label>
-                            <div className="input-group mb-3">
-                                <Form.Control
-                                    type="text"
-                                    placeholder="인증번호 8자리 입력"
-                                    value={code}
-                                    onChange={(e) => setCode(e.target.value)}
-                                    disabled={codeVerified}
-                                />
-                                <Button onClick={handleVerifyCode} disabled={codeVerified}>인증번호 확인</Button>
-                            </div>
-                            <span id="span-verify"></span>
-                        </Form.Group>
+                        <Form.Field>
+                            <label>인증번호</label>
+                            <Form.Input
+                                type="text"
+                                placeholder="인증번호 8자리 입력"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value)}
+                                disabled={codeVerified}
+                                action={
+                                    <Button onClick={handleVerifyCode} disabled={codeVerified} color="blue">
+                                        인증번호 확인
+                                    </Button>
+                                }
+                            />
+                        </Form.Field>
                     )}
                     {codeVerified && (
-                        <span
-                            id="send-username"
-                            onClick={handleSendUsername}
-                            style={{ color: 'cornflowerblue', cursor: 'pointer' }}
-                        >
-                            인증 완료 시, 링크를 클릭하면 귀하의 이메일로 아이디가 발송됩니다.
-                        </span>
+                        <Message info>
+                            <Message.Header>인증 완료</Message.Header>
+                            <p>
+                                인증 완료 시,{' '}
+                                <span onClick={handleSendUsername} style={{ color: 'blue', cursor: 'pointer' }}>
+                                    링크
+                                </span>
+                                를 클릭하면 귀하의 이메일로 아이디가 발송됩니다.
+                            </p>
+                        </Message>
                     )}
                 </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>
+            </Modal.Content>
+            <Modal.Actions>
+                <Button onClick={onClose} color="grey">
                     돌아가기
                 </Button>
-            </Modal.Footer>
+            </Modal.Actions>
         </Modal>
     );
 }

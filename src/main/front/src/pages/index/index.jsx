@@ -118,20 +118,19 @@ const Index = () => {
                             </React.Fragment>
                         );
                     })}
-                    <Container textAlign="center" style={{ padding: '20px', paddingBottom: '75px', margin: 'auto' }}>
-                        <Pagination
-                            defaultActivePage={currentPage + 1}
-                            totalPages={totalPages}
-                            onPageChange={(e, { activePage }) => handlePageClick(activePage - 1)}
-                            ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
-                            firstItem={{ content: <Icon name="angle double left" />, icon: true }}
-                            lastItem={{ content: <Icon name="angle double right" />, icon: true }}
-                            prevItem={{ content: <Icon name="angle left" />, icon: true }}
-                            nextItem={{ content: <Icon name="angle right" />, icon: true }}
-                        />
-                    </Container>
                 </Item.Group>
-                {/* <ChatApp /> */}
+                <Container textAlign="center" style={{ marginBottom: '40px' }}>
+                    <Pagination
+                        defaultActivePage={currentPage + 1}
+                        totalPages={totalPages}
+                        onPageChange={(e, { activePage }) => handlePageClick(activePage - 1)}
+                        ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
+                        firstItem={{ content: <Icon name="angle double left" />, icon: true }}
+                        lastItem={{ content: <Icon name="angle double right" />, icon: true }}
+                        prevItem={{ content: <Icon name="angle left" />, icon: true }}
+                        nextItem={{ content: <Icon name="angle right" />, icon: true }}
+                    />
+                </Container>
             </Container>
             <div>
                 <ChatApp />
@@ -141,3 +140,4 @@ const Index = () => {
 };
 
 export default Index;
+

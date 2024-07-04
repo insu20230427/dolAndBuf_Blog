@@ -11,7 +11,7 @@ const ChatApp = () => {
     useEffect(() => {
         const handleScroll = () => {
             const scrollTop = window.scrollY;
-            setScrollPosition(scrollTop * 1.14 + 150);
+            setScrollPosition(scrollTop * 1.17);
         };
 
         const handleKeyDown = (event) => {

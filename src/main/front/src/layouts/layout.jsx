@@ -17,7 +17,7 @@ const Layout = ({ children }) => {
     const playerRef = useRef(null);
     const iframeContainerRef = useRef(null);
     const [volume, setVolume] = useState(50);
-    const [bannerInfo, setBannerInfo] = useState({ bannerImageUrl: '', bannerDescription: '', username: '' }); // 배너 정보 상태 추가
+    const [bannerInfo, setBannerInfo] = useState({ bannerImageUrl: '', bannerDescription: '', username: '' });
     const [bannerInfoByBlogName, setBannerInfoByBlogName] = useState({ bannerImageUrl: '', bannerDescription: '', username: '' });
     const { blogName } = useBlog();
 
@@ -34,53 +34,51 @@ const Layout = ({ children }) => {
 
             fetchUserId();
 
-
-        // 배너 정보 가져오기
-        const fetchBannerInfoByPrincipal = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/api/banners', {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: Cookies.get('Authorization')
-                    }
-                });
-                if (response.status === 200 && response.data.data) {
-                    setBannerInfo({
-                        bannerImageUrl: response.data.data.bannerImageUrl,
-                        bannerDescription: response.data.data.bannerDescription,
-                        username: response.data.data.username,
+            const fetchBannerInfoByPrincipal = async () => {
+                try {
+                    const response = await axios.get('http://localhost:8080/api/banners', {
+                        withCredentials: true,
+                        headers: {
+                            Authorization: Cookies.get('Authorization')
+                        }
                     });
-                }
-            } catch (error) {
-                console.error('Failed to fetch banner info:', error);
-            }
-        };
-
-
-          const fetchBannerInfoByBlogName = async () => {
-            try {
-                if(blogName === '') return;
-                const response = await axios.get(`http://localhost:8080/api/banners/${blogName}`, {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: Cookies.get('Authorization')
+                    if (response.status === 200 && response.data.data) {
+                        setBannerInfo({
+                            bannerImageUrl: response.data.data.bannerImageUrl,
+                            bannerDescription: response.data.data.bannerDescription,
+                            username: response.data.data.username,
+                        });
                     }
-                });
-                if (response.status === 200 && response.data.data) {
-                    setBannerInfoByBlogName({
-                        bannerImageUrl: response.data.data.bannerImageUrl,
-                        bannerDescription: response.data.data.bannerDescription,
-                        username: response.data.data.username,
-                    });
+                } catch (error) {
+                    console.error('Failed to fetch banner info:', error);
                 }
-            } catch (error) {
-                console.error('Failed to fetch banner info:', error);
-            }
-        };
+            };
 
-        fetchBannerInfoByPrincipal();
-        fetchBannerInfoByBlogName();
-    }}, [blogName]); // blogName이 변경될 때마다 실행
+            const fetchBannerInfoByBlogName = async () => {
+                try {
+                    if (blogName === '') return;
+                    const response = await axios.get(`http://localhost:8080/api/banners/${blogName}`, {
+                        withCredentials: true,
+                        headers: {
+                            Authorization: Cookies.get('Authorization')
+                        }
+                    });
+                    if (response.status === 200 && response.data.data) {
+                        setBannerInfoByBlogName({
+                            bannerImageUrl: response.data.data.bannerImageUrl,
+                            bannerDescription: response.data.data.bannerDescription,
+                            username: response.data.data.username,
+                        });
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch banner info:', error);
+                }
+            };
+
+            fetchBannerInfoByPrincipal();
+            fetchBannerInfoByBlogName();
+        }
+    }, [blogName]);
 
     useEffect(() => {
         if (iframeContainerRef.current && currentPlaylistId) {
@@ -175,24 +173,24 @@ const Layout = ({ children }) => {
 
     return (
         <div className="layout">
-            <Header onSidebarToggle={handleSidebarToggle} isSidebarVisible={sidebarVisible} />
+            <Header isSidebarVisible={sidebarVisible} />
             <SemanticSidebar.Pushable>
                 <Sidebar userId={userId} visible={sidebarVisible} onClose={() => setSidebarVisible(false)} />
                 <SemanticSidebar.Pusher>
                     {blogName === '' ? (
                         <div className="banner">
-                            <h1>블로그에 오신걸 환영합니다!!</h1>
-                            <p>회원가입 및 로그인을 통해 재밌는 블로그 활동을 해주시길 바랍니다 ㅎㅎ</p>
+                            <h1>Welcome to the Blog!</h1>
+                            <p>Please register or log in to enjoy exciting blog activities.</p>
                         </div>
                     ) : bannerInfo.username === blogName && bannerInfo.bannerImageUrl && bannerInfo.bannerDescription ? (
                         <div className="banner">
-                            <h1>{blogName}블로그</h1>
+                            <h1>{blogName} Blog</h1>
                             <img src={bannerInfo.bannerImageUrl} alt="Banner" />
                             <p>{bannerInfo.bannerDescription}</p>
                         </div>
                     ) : (
                         <div className="banner">
-                            <h1>{blogName}블로그</h1>
+                            <h1>{blogName} Blog</h1>
                             <img src={bannerInfoByBlogName.bannerImageUrl} alt="Banner" />
                             <p>{bannerInfoByBlogName.bannerDescription}</p>
                         </div>
