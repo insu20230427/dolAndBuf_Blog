@@ -33,3 +33,10 @@
 .post-item .content {
     flex-grow: 1;  /* 남은 공간을 차지하도록 */
 }
+
+.ui.menu:not(.vertical) .item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0px !important;
+}

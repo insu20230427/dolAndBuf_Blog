@@ -11,7 +11,7 @@ export default function Footer() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height : '20vh',
+        height : '270px',
         width: '100%',
         boxSizing: 'border-box',
     };

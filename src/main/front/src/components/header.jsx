@@ -1,11 +1,11 @@
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.css';
 import Cookies from 'js-cookie';
-import React, {useEffect, useState} from 'react';
-import {Nav, Navbar} from 'react-bootstrap';
-import {Link, useNavigate} from "react-router-dom";
-import {Button, Dropdown, Icon, Input} from 'semantic-ui-react';
-import {useBlog} from '../contexts/blogContext';
+import React, { useEffect, useState } from 'react';
+import { Nav, Navbar } from 'react-bootstrap';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button, Dropdown, Icon, Input } from 'semantic-ui-react';
+import { useBlog } from '../contexts/blogContext';
 import './Header.css'; // 배너 스타일을 위한 CSS 파일 추가
 import BannerAddModal from './BannerAddModal';
 
@@ -17,6 +17,7 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
     const [showModal, setShowModal] = useState(false); // 모달 표시 여부를 제어하는 상태 변수
     const validToken = Cookies.get('Authorization');
     const navigate = useNavigate();
+    const location = useLocation(); // 현재 경로를 가져오는 useLocation 훅 사용
     const { blogName, setBlogName } = useBlog();
     const [username, setUsername] = useState('');
     const [avatar, setAvatar] = useState('');
@@ -110,16 +111,16 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
         <>
             <Navbar bg="transparent" variant="light" expand="md" className="custom-navbar">
                 {blogName ? (
-                    <Button icon style={{backgroundColor: 'transparent'}} onClick={(e) => {
+                    <Button icon style={{ backgroundColor: 'transparent' }} onClick={(e) => {
                         e.preventDefault();
                         onSidebarToggle();
                     }}>
-                        <Icon name={"bars"} style={{color: 'black'}}/>
+                        <Icon name={"bars"} style={{ color: 'black' }} />
                     </Button>
                 ) : (
                     <></>
                 )}
-                <Navbar.Brand style={{color: 'black'}}>{blogName} blog</Navbar.Brand>
+                <Navbar.Brand style={{ color: 'black' }}>{blogName} blog</Navbar.Brand>
                 <Navbar.Collapse id="collapsibleNavbar">
                     <Nav className="mr-auto" onClick={() => {
                         setBlogName('')
@@ -127,29 +128,33 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                         {isLoggedIn ? (
                             <>
                                 <Nav.Link as={Link} to="/user" className="no-underline">
-                                    {avatar && <img src={avatar} alt="Avatar" style={{width: '30px', height: '30px', borderRadius: '50%'}}/>}
+                                    {avatar && <img src={avatar} alt="Avatar" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />}
                                 </Nav.Link>
                                 {blogName !== '' ? (
                                     <Nav.Link as={Link} to="/" onClick={() => {
                                         setBlogName('')
-                                    }} style={{color: 'black'}}>블로그 홈</Nav.Link>
+                                    }} style={{ color: 'black' }}>블로그 홈</Nav.Link>
                                 ) : (
-                                    <Nav.Link as={Link} to={`/blog/${username}`} style={{color: 'black'}}>내블로그</Nav.Link>
+                                    <Nav.Link as={Link} to={`/blog/${username}`} style={{ color: 'black' }}>내블로그</Nav.Link>
                                 )}
-                                <Nav.Link as={Link} to="/write" style={{color: 'black'}}>글쓰기</Nav.Link>
-                                <Nav.Link onClick={handleLogout} style={{color: 'black'}}>로그아웃</Nav.Link>
-                                <Nav.Link as={Link} to="/game-board" style={{color: 'black'}}>겜</Nav.Link>
+                                <Nav.Link as={Link} to="/write" style={{ color: 'black' }}>글쓰기</Nav.Link>
+                                <Nav.Link onClick={handleLogout} style={{ color: 'black' }}>로그아웃</Nav.Link>
+                                <Nav.Link as={Link} to="/game-board" style={{ color: 'black' }}>겜</Nav.Link>
                                 <>
-                                <Nav.Link onClick={() => setShowModal(true)} style={{cursor: 'pointer', color: 'black'}}>배너</Nav.Link>
-                                {showModal && <BannerAddModal open={showModal} setOpen={setShowModal}/>}
+                                    <Nav.Link onClick={() => setShowModal(true)} style={{ cursor: 'pointer', color: 'black' }}>배너</Nav.Link>
+                                    {showModal && <BannerAddModal open={showModal} setOpen={setShowModal} />}
                                 </>
-                        
-                                <Nav.Link as={Link} to="/category-setting" style={{color: 'black'}}>카테고리</Nav.Link>
+
+                                <Nav.Link as={Link} to="/category-setting" style={{ color: 'black' }}>카테고리</Nav.Link>
                             </>
                         ) : (
                             <>
-                                <Nav.Link as={Link} to="/login" style={{color: 'black'}}>로그인</Nav.Link>
-                                <Nav.Link as={Link} to="/signup" style={{color: 'black'}}>회원가입</Nav.Link>
+                                {location.pathname === '/login' && (
+                                    <>
+                                        <Nav.Link as={Link} to="/" style={{ color: 'black' }}>블로그 홈</Nav.Link>
+                                    </>
+                                )}
+                                    <Nav.Link as={Link} to="/login" style={{ color: 'black' }}>로그인</Nav.Link>
                             </>
                         )}
                     </Nav>
@@ -163,12 +168,12 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                                     id="searchTypeDropdown"
                                     value={searchType}
                                     options={[
-                                        {key: 'title', text: '제목', value: '0'},
-                                        {key: 'contents', text: '내용', value: '1'},
-                                        {key: 'titleAndContents', text: '제목+내용', value: '2'}
+                                        { key: 'title', text: '제목', value: '0' },
+                                        { key: 'contents', text: '내용', value: '1' },
+                                        { key: 'titleAndContents', text: '제목+내용', value: '2' }
                                     ]}
                                     onChange={handleSearchTypeChange}
-                                    style={{minWidth: '105px', marginRight: '10px', borderRadius: '5px'}}
+                                    style={{ minWidth: '105px', marginRight: '10px', borderRadius: '5px' }}
                                 />
                                 <Input
                                     className="prompt"
@@ -178,7 +183,7 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                                     value={searchKeyword}
                                     onChange={(e) => setSearchKeyword(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    style={{minWidth: '200px', paddingRight: '4px', textAlign: 'center'}}
+                                    style={{ minWidth: '200px', paddingRight: '4px', textAlign: 'center' }}
                                 />
                             </>
                         )}
@@ -189,7 +194,7 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                     type="button"
                     color="black"
                     id="searchButton"
-                    style={{border: 'none', background: 'transparent', cursor: 'pointer', marginRight: '10px'}}
+                    style={{ border: 'none', background: 'transparent', cursor: 'pointer', marginRight: '10px' }}
                     onClick={(e) => {
                         toggleSearch(); // 검색 UI 표시 상태를 토글합니다.
                         handleSearchSubmit(e); // 검색을 수행합니다.
@@ -198,5 +203,5 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                 </Button>
             </Navbar>
         </>
-    )
+    );
 }

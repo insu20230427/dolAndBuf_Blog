@@ -131,10 +131,10 @@ const Index = () => {
                         nextItem={{ content: <Icon name="angle right" />, icon: true }}
                     />
                 </Container>
-                <div>
-                    <ChatApp />
-                </div>
             </Container>
+            <div>
+                <ChatApp />
+            </div>
         </div>
     );
 };
