@@ -149,12 +149,12 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                             </>
                         ) : (
                             <>
-                                {location.pathname === '/login' && (
+                                {(location.pathname === '/login' || location.pathname === '/find') && (
                                     <>
                                         <Nav.Link as={Link} to="/" style={{ color: 'black' }}>블로그 홈</Nav.Link>
                                     </>
                                 )}
-                                    <Nav.Link as={Link} to="/login" style={{ color: 'black' }}>로그인</Nav.Link>
+                                <Nav.Link as={Link} to="/login" style={{ color: 'black' }}>로그인</Nav.Link>
                             </>
                         )}
                     </Nav>

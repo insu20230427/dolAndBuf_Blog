@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import './LoginAndSignUp.css'; // 적절한 CSS 파일을 import
-import FindIdModal from '../../components/FindIdModal';
-import FindPasswordModal from '../../components/FindPasswordModal';
+import FindIdAndPasswordModal from '../../components/FindIdAndPasswordModal';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { Navigate, useNavigate } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
 
 const LoginAndSignUp = () => {
     const [isRightPanelActive, setIsRightPanelActive] = useState(false);
@@ -17,8 +15,7 @@ const LoginAndSignUp = () => {
     const [emailError, setEmailError] = useState('');
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
-    const [showFindIdModal, setShowFindIdModal] = useState(false);
-    const [showFindPasswordModal, setShowFindPasswordModal] = useState(false);
+    const [showFindModal, setShowFindModal] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async () => {
@@ -139,41 +136,40 @@ const LoginAndSignUp = () => {
             <div className={`login-signup-container ${isRightPanelActive ? 'right-panel-active' : ''}`} id="loginSignupContainer">
                 <div className="form-container sign-up-container">
                     <form action="#">
-                        <h1>Create Account</h1>
+                        <h1>계정 생성</h1>
                         <br />
-                        <input type="text" placeholder="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                        <input type="text" placeholder="닉네임" value={nickname} onChange={(e) => setNickname(e.target.value)} />
                         {nicknameError && <span className="login-signup-error">{nicknameError}</span>}
-                        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} />
                         {emailError && <span className="login-signup-error">{emailError}</span>}
-                        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                        <input type="text" placeholder="아이디" value={username} onChange={(e) => setUsername(e.target.value)} />
                         {usernameError && <span className="login-signup-error">{usernameError}</span>}
-                        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} />
                         {passwordError && <span className="login-signup-error">{passwordError}</span>}
                         <br /><br />
-                        <button type="button" onClick={handleSignup}>Sign Up</button>
+                        <button type="button" onClick={handleSignup}>회원가입</button>
                     </form>
                 </div>
                 <div className="form-container sign-in-container">
                     <form action="#">
-                        <h1>Sign in</h1>
-                        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                        <a href="#" onClick={() => setShowFindPasswordModal(true)} style={{ margin: '30px 0 -5px 0' }}>Forgot your password?</a>
-                        <a href="#" onClick={() => setShowFindIdModal(true)} style={{ marginBottom: '40px' }}>Forgot your Id?</a>
-                        <button type="button" onClick={handleLogin}>Sign In</button>
+                        <h1>로그인</h1>
+                        <input type="text" placeholder="아이디" value={username} onChange={(e) => setUsername(e.target.value)} />
+                        <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <Link as={Link} to="/find" onClick={() => setShowFindModal(true)} style={{ margin: '30px 0 0 0' }}>아이디/비밀번호를 잊으셨나요?</Link>
+                        <button type="button" onClick={handleLogin}>로그인</button>
                         <div className="login-signup-separator">
                             <p>OR</p>
                         </div>
                         <div className="login-signup-social-buttons">
                             <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ee8abaaf81bcb4e83dff921f9a492de6&redirect_uri=http://localhost:8080/api/oauth2/kakao/callback">
-                                <img src="/images/kakao_login_button.png" className="login-signup-social-button" alt="Kakao Login" />
+                                <img src="/images/kakao_login_button.png" className="login-signup-social-button" alt="카카오 로그인" />
                             </a>
                             <a href="https://nid.naver.com/oauth2.0/authorize?&response_type=code&client_id=INlvRIKGwlO9MzaRzyrE&redirect_uri=http://localhost:8080/api/oauth2/naver/callback">
-                                <img src="/images/naver_login_button.png" className="login-signup-social-button" alt="Naver Login" />
+                                <img src="/images/naver_login_button.png" className="login-signup-social-button" alt="네이버 로그인" />
                             </a>
                             <a href="http://localhost:8080/oauth2/authorization/google">
                                 <div className="login-signup-google-login-wrapper">
-                                    <img src="/images/google_login_button.png" className="login-signup-social-button login-signup-google-login-button" alt="Google Login" />
+                                    <img src="/images/google_login_button.png" className="login-signup-social-button login-signup-google-login-button" alt="구글 로그인" />
                                 </div>
                             </a>
                         </div>
@@ -182,22 +178,19 @@ const LoginAndSignUp = () => {
                 <div className="overlay-container">
                     <div className="overlay">
                         <div className="overlay-panel overlay-left">
-                            <h1>Welcome Back!</h1>
-                            <p>To keep connected with us please login with your personal info</p>
-                            <button className="ghost" onClick={() => setIsRightPanelActive(false)} id="signIn">Sign In</button>
+                            <h1>안농</h1>
+                            <p>로그인 해조.</p>
+                            <button className="ghost" onClick={() => setIsRightPanelActive(false)} id="signIn">로그인</button>
                         </div>
                         <div className="overlay-panel overlay-right">
-                            <h1>Hello, Friend!</h1>
-                            <p>Enter your personal details and start journey with us</p>
-                            <button className="ghost" onClick={() => setIsRightPanelActive(true)} id="signUp">Sign Up</button>
+                            <h1>처음보넹 ㅎㅇ</h1>
+                            <p>회원가입 ㄱ</p>
+                            <button className="ghost" onClick={() => setIsRightPanelActive(true)} id="signUp">회원가입</button>
                         </div>
                     </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {showFindIdModal && <FindIdModal onClose={() => setShowFindIdModal(false)} />}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {showFindPasswordModal && <FindPasswordModal onClose={() => setShowFindPasswordModal(false)} />}
+                    {showFindModal && <FindIdAndPasswordModal onClose={() => setShowFindModal(false)} />}
                 </div>
             </div>
         </div>

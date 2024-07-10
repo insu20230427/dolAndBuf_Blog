@@ -22,6 +22,7 @@ import Dashboard from './pages/admin/dashboard';
 import BannerSetting from './pages/admin/bannerSetting';
 import ManagePosts from './pages/admin/managePosts';
 import ManageReplys from './pages/admin/manageReplys';
+import FindIdAndPasswordModal from './components/FindIdAndPasswordModal';
 
 function App() {
     return (
@@ -36,6 +37,7 @@ function App() {
 function AppRoutes() {
     const location = useLocation();
     const isLoginPage = location.pathname === '/login';
+    const isFindPage = location.pathname === '/find';
 
     if (isLoginPage) {
         return (
@@ -43,6 +45,18 @@ function AppRoutes() {
                 <Header />
                 <Routes>
                     <Route path="/login" element={<LoginAndSignUp />} />
+                </Routes>
+                <Footer />
+            </>
+        );
+    }
+
+    if (isFindPage) {
+        return (
+            <>
+                <Header />
+                <Routes>
+                    <Route path="/find" element={<FindIdAndPasswordModal />} />
                 </Routes>
                 <Footer />
             </>

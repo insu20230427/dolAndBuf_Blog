@@ -8,6 +8,8 @@ import { Button, Input, Sidebar as SemanticSidebar } from 'semantic-ui-react';
 import './layout.css';
 import Cookies from 'js-cookie';
 import YouTubePlayer from 'youtube-player';
+import Chat from '../pages/chat/chat';
+import ChatApp from '../pages/chat/chatApp';
 
 const Layout = ({ children }) => {
     const [userId, setUserId] = useState(null);
@@ -196,6 +198,7 @@ const Layout = ({ children }) => {
                         </div>
                     )}
                     <main className="main-content">
+                    <ChatApp />
                         {children}
                         <div className="toolbar">
                             <div className="player-controls">

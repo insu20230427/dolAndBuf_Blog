@@ -1,0 +1,54 @@
+.chatList-container {
+    right: 30px;
+    width: 350px;
+    height: 380px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    overflow-y: scroll;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    position: fixed; /* position을 문자열이 아닌 속성으로 설정합니다 */
+}
+
+
+.chatList-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.chatList-header h3 {
+    margin: 0;
+}
+
+.chatList-header button {
+    background: none;
+    border: none;
+}
+
+.chatList-container .list .item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 15px 0 !important;
+}
+
+.chatList-container .list .item .content .header {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.chatList-container .list .item .content .description {
+    color: grey;
+    font-size: 1em;
+}
+
+.chatList-container .list .item .content .extra {
+    color: lightgrey;
+    font-size: small;
+    margin-left: auto;
+}

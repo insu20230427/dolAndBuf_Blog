@@ -10,7 +10,7 @@
 .main-content {
     flex: 1;
     padding: 2em;
-    overflow: auto; /* This will prevent the footer from overlapping when content is large */
+    /* overflow: auto; */
 }
 
 footer {

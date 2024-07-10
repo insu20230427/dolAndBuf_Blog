@@ -209,7 +209,7 @@ const WritePost = () => {
             <br />
             <br />
             <div className="container">
-                <Form onSubmit={handlePostSubmit}>
+                <Form style={{display: 'block'}} onSubmit={handlePostSubmit}>
                     <Form.Group>
                         <Dropdown
                             placeholder="Select a category"
