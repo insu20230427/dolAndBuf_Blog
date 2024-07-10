@@ -1,15 +1,22 @@
 package com.insu.blog.service;
 
+import com.insu.blog.dto.request.AdminReplysRequestDto;
 import com.insu.blog.dto.request.ReplyRequestDto;
 import com.insu.blog.entity.*;
+import com.insu.blog.repository.PostRepository;
 import com.insu.blog.repository.ReplyLikeRepository;
 import com.insu.blog.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -17,9 +24,33 @@ public class ReplyService {
 
     private final ReplyRepository replyRepository;
     private final ReplyLikeRepository replyLikeRepository;
+    private final PostRepository postRepository;
 
     public List<Reply> getReply(String postId) {
         return replyRepository.findByPostId(Integer.valueOf(postId));
+    }
+
+    // 유저에 따른 댓글 불러오기
+    // 유저가 쓴 포스트에 달린 댓글들 가져오기 (admin)
+    @Transactional
+    public Page<AdminReplysRequestDto> getRepliesByUserPosts(Pageable pageable, int userId) {
+        Page<Post> postsPage = postRepository.findAllByUserId(pageable, userId);
+        List<Post> posts = postsPage.getContent();
+        List<Reply> replies = posts.stream()
+                .flatMap(post -> post.getReplyList().stream())
+                .collect(Collectors.toList());
+
+        List<AdminReplysRequestDto> replyDtos = replies.stream().map(reply -> {
+            AdminReplysRequestDto dto = new AdminReplysRequestDto();
+            dto.setId(reply.getId());
+            dto.setUser(reply.getUser());
+            dto.setPost(reply.getPost());
+            dto.setContent(reply.getContent());
+            dto.setCreateDate(reply.getCreateDate().toString());
+            return dto;
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(replyDtos, pageable, replies.size());
     }
 
     @Transactional
@@ -42,7 +73,8 @@ public class ReplyService {
 
         Optional<ReplyLike> existingLikesOptional = replyLikeRepository.findByReplyIdAndUserId(replyId, user.getId());
         if (!existingLikesOptional.isPresent()) { // 좋아요를 한번도 누르지 않은 사람
-            Reply reply = replyRepository.findById(replyId).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+            Reply reply = replyRepository.findById(replyId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
 
             ReplyLike newLikes = new ReplyLike(true, reply, user);
             reply.setLikeCnt(reply.getLikeCnt() + 1);
@@ -63,7 +95,8 @@ public class ReplyService {
     // 댓글 좋아요 취소
     public void deleteLikes(int replyId, User user) {
 
-        ReplyLike replyLike = replyLikeRepository.findByReplyIdAndUserId(replyId, user.getId()).orElseThrow(() -> new IllegalArgumentException("해당 댓글의 좋아요가 존재하지 않습니다."));
+        ReplyLike replyLike = replyLikeRepository.findByReplyIdAndUserId(replyId, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글의 좋아요가 존재하지 않습니다."));
 
         likesValid(replyLike, user);
 
