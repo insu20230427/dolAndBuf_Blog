@@ -137,11 +137,7 @@ const CategoryPosts = () => {
                         nextItem={{ content: <Icon name="angle right" />, icon: true }}
                     />
                 </Container>
-                {/* <ChatApp /> */}
             </Container>
-            <div>
-                <ChatApp />
-            </div>
         </div>
     );
 };

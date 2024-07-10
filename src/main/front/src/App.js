@@ -17,6 +17,7 @@ import User from './pages/user/user';
 import GameBoard from './game/GameBoard';
 import Header from './components/header';
 import Footer from './components/footer';
+import FindIdAndPasswordModal from './components/FindIdAndPasswordModal';
 
 function App() {
     return (
@@ -31,6 +32,7 @@ function App() {
 function AppRoutes() {
     const location = useLocation();
     const isLoginPage = location.pathname === '/login';
+    const isFindPage = location.pathname === '/find';
 
     if (isLoginPage) {
         return (
@@ -38,6 +40,18 @@ function AppRoutes() {
                 <Header />
                 <Routes>
                     <Route path="/login" element={<LoginAndSignUp />} />
+                </Routes>
+                <Footer />
+            </>
+        );
+    }
+
+    if (isFindPage) {
+        return (
+            <>
+                <Header />
+                <Routes>
+                    <Route path="/find" element={<FindIdAndPasswordModal />} />
                 </Routes>
                 <Footer />
             </>

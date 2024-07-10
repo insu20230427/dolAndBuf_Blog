@@ -213,7 +213,7 @@ export default function UpdatePost() {
             <br />
             <br />
             <div className="container">
-                <Form>
+                <Form  style={{display: 'block'}}>
                     <Form.Group>
                         <Dropdown
                             placeholder="Select a category"

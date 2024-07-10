@@ -1,12 +1,12 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, {useEffect, useState} from "react";
-import {Link} from "react-router-dom";
-import {Button, Comment, Form, Icon, Label} from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Button, Comment, Form, Icon, Label } from "semantic-ui-react";
 import Swal from "sweetalert2";
 import './Reply.css'
 
-const Reply = ({postId, userId}) => {
+const Reply = ({ postId, userId }) => {
     const [replies, setReplies] = useState([]);
     const [replyContent, setReplyContent] = useState('');
     const [editReplyId, setEditReplyId] = useState(null);
@@ -60,7 +60,7 @@ const Reply = ({postId, userId}) => {
 
                 const subRepliesPromises = repliesData.map(async (reply) => {
                     const subRepliesResponse = await fetchSubReplies(reply.id);
-                    return {[reply.id]: subRepliesResponse};
+                    return { [reply.id]: subRepliesResponse };
                 });
 
                 const subRepliesData = await Promise.all(subRepliesPromises);
@@ -347,30 +347,30 @@ const Reply = ({postId, userId}) => {
                             }}>
                                 <Link to={`/blog/${reply.user.username}`} className="custom-link">
                                     <img src={process.env.PUBLIC_URL + '/images/' + reply.user.nickname + '.jpg'}
-                                         alt="Avatar" style={{
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '50%',
-                                        marginRight: '5px'
-                                    }}/>{reply.user.nickname}
+                                        alt="Avatar" style={{
+                                            width: '20px',
+                                            height: '20px',
+                                            borderRadius: '50%',
+                                            marginRight: '5px'
+                                        }} />{reply.user.nickname}
                                     <Comment.Metadata>
                                         <div
                                             className="date">{new Date(reply.createDate).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'short',
-                                            day: 'numeric',
-                                            hour: 'numeric',
-                                            minute: 'numeric'
-                                        })}</div>
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: 'numeric',
+                                                minute: 'numeric'
+                                            })}</div>
                                     </Comment.Metadata>
                                 </Link>
                                 <Comment.Actions>
                                     {reply.user.id === userId && (
                                         <>
                                             <a onClick={() => handleUpdateReplyForm(reply.id)}
-                                               className="reply">수정</a>
+                                                className="reply">수정</a>
                                             <a onClick={() => handleDeleteReply(reply.id)}
-                                               className="reply">삭제</a>
+                                                className="reply">삭제</a>
                                         </>
                                     )}
                                     <a onClick={() => {
@@ -386,8 +386,8 @@ const Reply = ({postId, userId}) => {
                                             <>
                                                 <Button as='div' labelPosition='right'>
                                                     <Button icon color='red'
-                                                            onClick={() => deleteLikeReply(reply.id)}>
-                                                        <Icon name='heart'/>
+                                                        onClick={() => deleteLikeReply(reply.id)}>
+                                                        <Icon name='heart' />
                                                     </Button>
                                                     <Label basic color='red' pointing='left'>
                                                         {reply.likeCnt}
@@ -398,7 +398,7 @@ const Reply = ({postId, userId}) => {
                                             <>
                                                 <Button as='div' labelPosition='right'>
                                                     <Button icon onClick={() => addLikeReply(reply.id)}>
-                                                        <Icon name='heart'/>
+                                                        <Icon name='heart' />
                                                     </Button>
                                                     <Label basic pointing='left'>
                                                         {reply.likeCnt}
@@ -410,16 +410,7 @@ const Reply = ({postId, userId}) => {
                                 </Comment.Actions>
                             </div>
                         </Comment.Author>
-                        {/*<Comment.Metadata>*/}
-                        {/*    <div*/}
-                        {/*        className="date">{new Date(reply.createDate).toLocaleDateString('en-US', {*/}
-                        {/*        year: 'numeric',*/}
-                        {/*        month: 'short',*/}
-                        {/*        day: 'numeric',*/}
-                        {/*        hour: 'numeric',*/}
-                        {/*        minute: 'numeric'*/}
-                        {/*    })}</div>*/}
-                        {/*</Comment.Metadata>*/}
+
                         {editReplyId === reply.id ? (
                             <Form reply>
                                 <Form.TextArea
@@ -450,22 +441,22 @@ const Reply = ({postId, userId}) => {
                                                                 <img
                                                                     src={process.env.PUBLIC_URL + '/images/' + subReply.user.nickname + '.jpg'}
                                                                     alt="Avatar" style={{
-                                                                    width: '20px',
-                                                                    height: '20px',
-                                                                    borderRadius: '50%',
-                                                                    marginRight: '5px'
-                                                                }}/>{subReply.user.nickname}
+                                                                        width: '20px',
+                                                                        height: '20px',
+                                                                        borderRadius: '50%',
+                                                                        marginRight: '5px'
+                                                                    }} />{subReply.user.nickname}
                                                             </Link>
                                                         </Comment.Author>
                                                         <Comment.Metadata>
                                                             <div
                                                                 className="date">{new Date(subReply.createDate).toLocaleDateString('en-US', {
-                                                                year: 'numeric',
-                                                                month: 'short',
-                                                                day: 'numeric',
-                                                                hour: 'numeric',
-                                                                minute: 'numeric'
-                                                            })}</div>
+                                                                    year: 'numeric',
+                                                                    month: 'short',
+                                                                    day: 'numeric',
+                                                                    hour: 'numeric',
+                                                                    minute: 'numeric'
+                                                                })}</div>
                                                         </Comment.Metadata>
                                                         {subReplyEditId === subReply.id ? (
                                                             <Form reply>
@@ -490,9 +481,9 @@ const Reply = ({postId, userId}) => {
                                                                     {subReply.user.id === userId && (
                                                                         <>
                                                                             <a onClick={() => handleUpdateSubReplyForm(subReply.id, reply.id)}
-                                                                               className="reply">수정</a>
+                                                                                className="reply">수정</a>
                                                                             <a onClick={() => handleDeleteSubReply(subReply.id, reply.id)}
-                                                                               className="reply">삭제</a>
+                                                                                className="reply">삭제</a>
                                                                         </>
                                                                     )}
                                                                 </Comment.Actions>
@@ -506,18 +497,21 @@ const Reply = ({postId, userId}) => {
                                 )}
                                 {showSubReplyFormId === reply.id && (
                                     <Form reply>
-                                        <Form.TextArea
+                                        <textarea
+                                             placeholder="대댓글을 입력하세요..."
                                             value={subReplyContent}
                                             onChange={(e) => setSubReplyContent(e.target.value)}
+                                            style={{ width: '110%', minHeight: '100px', marginBottom: '10px' }}
                                         />
                                         <Button
                                             type={"button"}
-                                            content="대댓글 등록"
-                                            labelPosition="left"
+                                            circular
                                             icon="edit"
-                                            color="blue"
+                                            color="grey"
                                             className="btn-reply-write"
                                             onClick={() => handleWriteSubReply(reply.id)}
+                                                          style={{ position: 'absolute', bottom: '29px', right: '20px' }}
+
                                         />
                                     </Form>
                                 )}
@@ -527,24 +521,21 @@ const Reply = ({postId, userId}) => {
                 </Comment>
             ))}
             {!isEditing && (
-                <Form reply>
-                    <Form.Group>
-                        <Form.Field style={{ width: '100%' }}>
+                <Form >
+                      <br/>
                     <textarea
                         value={replyContent}
                         onChange={(e) => setReplyContent(e.target.value)}
                         placeholder="댓글을 입력하세요..."
-                        style={{ width: '100%', minHeight: '100px', marginBottom: '10px' }}
+                        style={{ width: '110%', minHeight: '100px', marginBottom: '10px' }}
                     />
-                            <Button
-                                circular
-                                icon="edit"
-                                color="grey"
-                                style={{ position: 'absolute', bottom: '23px', right: '10px' }}
-                                onClick={handleWriteReply}
-                            />
-                        </Form.Field>
-                    </Form.Group>
+                    <Button
+                        circular
+                        icon="edit"
+                        color="grey"
+                        style={{ position: 'absolute', bottom: '29px', right: '20px' }}
+                        onClick={handleWriteReply}
+                    />
                 </Form>
             )}
         </Comment.Group>

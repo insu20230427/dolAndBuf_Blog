@@ -1,16 +1,16 @@
-import {ChatContainer, MainContainer, Message, MessageInput, MessageList,} from "@chatscope/chat-ui-kit-react";
-import {Client} from "@stomp/stompjs";
-import axios from "axios";
-import Cookies from "js-cookie";
-import React, {useEffect, useRef, useState} from "react";
-import {Link, useParams} from "react-router-dom";
-import {Button} from "semantic-ui-react";
-import SockJS from "sockjs-client";
+import React, { useState, useEffect, useRef } from 'react';
+import Draggable from 'react-draggable';
+import { ChatContainer, MainContainer, Message, MessageInput, MessageList } from '@chatscope/chat-ui-kit-react';
+import { Client } from '@stomp/stompjs';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { Link } from 'react-router-dom';
+import SockJS from 'sockjs-client';
+import 'semantic-ui-css/semantic.min.css';
 import './chat.css';
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 
-function Chat() {
-    const {roomId, chatRoomName} = useParams();
+function Chat({ roomId, chatRoomName, setShowChat }) {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [roomName, setRoomName] = useState(chatRoomName);
@@ -18,14 +18,35 @@ function Chat() {
     const [nickname, setNickname] = useState('');
     const clientRef = useRef(null);
     const [avatar, setAvatar] = useState('');
+    const [scrollPosition, setScrollPosition] = useState(0);
+    const [chatPosition, setChatPosition] = useState({ x: 0, y: 0 });
 
-    const containerStyle = {
-        height: '87vh'
-    }
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY;
+            setScrollPosition(scrollTop * 1.17);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    useEffect(() => {
+        setChatPosition({ x: 30, y: 30 }); // 기본 위치 설정
+    }, []);
+
+    useEffect(() => {
+        setChatPosition((prevPosition) => ({
+            ...prevPosition,
+            y: scrollPosition,
+        }));
+    }, [scrollPosition]);
 
     useEffect(() => {
         let subscription;
-        let token = Cookies.get('Authorization');
+        const token = Cookies.get('Authorization');
         const socket = new SockJS('http://localhost:8080/ws');
         const client = new Client({
             webSocketFactory: () => socket,
@@ -34,7 +55,7 @@ function Chat() {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             beforeConnect: () => {
-                client.connectHeaders = {'Authorization': token};
+                client.connectHeaders = { 'Authorization': token };
             },
             onConnect: () => {
                 subscription = client.subscribe(`/topic/rooms/${roomId}`, (message) => {
@@ -68,11 +89,10 @@ function Chat() {
                     }
                 });
                 const chatMessageDtoList = response.data.data;
-                // 배열인지 확인하고, 배열이 아니면 빈 배열을 사용
                 setMessages(Array.isArray(chatMessageDtoList) ? chatMessageDtoList : []);
             } catch (error) {
                 console.error('채팅 기록을 가져오는 데 실패했습니다:', error);
-                setMessages([]); // 오류 발생 시 빈 배열 설정
+                setMessages([]);
             }
         };
         fetchChatHistory();
@@ -81,6 +101,20 @@ function Chat() {
     useEffect(() => {
         fetchUser();
     }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setShowChat(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [setShowChat]);
 
     const fetchUser = async () => {
         try {
@@ -99,7 +133,6 @@ function Chat() {
             }
 
             const payload = parts[1];
-            // Base64 URL 디코딩
             const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
             const binaryString = atob(base64);
             const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0));
@@ -108,7 +141,7 @@ function Chat() {
             const claims = JSON.parse(jsonPayload);
             const username = claims.sub;
             const nickname = claims.nickname;
-            console.log("username : " + username)
+            console.log("username : " + username);
             setAvatar(process.env.PUBLIC_URL + '/images/' + nickname + '.jpg');
             setUsername(username);
             setNickname(nickname);
@@ -118,7 +151,6 @@ function Chat() {
     };
 
     const sendMessage = () => {
-
         if (message) {
             const messageData = {
                 roomId: roomId,
@@ -133,7 +165,6 @@ function Chat() {
                 body: JSON.stringify(messageData)
             });
             setMessage('');
-
         }
     }
 
@@ -141,7 +172,6 @@ function Chat() {
         const newRoomName = prompt('새로운 채팅방 이름을 입력하세요:', chatRoomName);
         if (newRoomName) {
             setRoomName(newRoomName);
-            // 서버에 새로운 채팅방 이름 업데이트 요청 보내기
             axios.put(`http://localhost:8080/api/chatRooms/${roomId}`, {
                 newChatRoomName: newRoomName
             }, {
@@ -156,14 +186,15 @@ function Chat() {
         }
     };
 
-
-   return (
-        <div className="chat-container" style={containerStyle}>
-            <div className="chat-header">
-                <h2>{roomName}</h2>
-                <button className="update-room-button" onClick={updateRoomName}>채팅방 이름 수정</button>
-            </div>
-            <div className="message-list">
+    return (
+        <Draggable
+            position={chatPosition}
+            onStop={(e, data) => setChatPosition({ x: data.x, y: data.y })}
+        >
+            <div className="chat-container">
+                <div className="chat-header">
+                    <h2>{roomName}</h2>
+                </div>
                 <MainContainer>
                     <ChatContainer>
                         <MessageList>
@@ -205,29 +236,18 @@ function Chat() {
                                 );
                             })}
                         </MessageList>
-                        <div className="message-input-container">
-                            <MessageInput
-                                placeholder="메시지 입력..."
-                                value={message}
-                                onChange={(val) => setMessage(val)}
-                                attachButton={false}
-                                onSend={sendMessage}
-                            />
-                            <button onClick={sendMessage}>✉️</button>
-                        </div>
-
                         <MessageInput
                             placeholder="메시지 입력..."
                             value={message}
                             onChange={(val) => setMessage(val)}
                             attachButton={false}
                             onSend={sendMessage}
-                            className="message-input-container"
                         />
+                        <button onClick={sendMessage}>✉️</button>
                     </ChatContainer>
                 </MainContainer>
             </div>
-        </div>
+        </Draggable>
     );
 };
 

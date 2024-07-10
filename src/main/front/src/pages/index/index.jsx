@@ -132,9 +132,9 @@ const Index = () => {
                     />
                 </Container>
             </Container>
-            <div>
+            {/* <div>
                 <ChatApp />
-            </div>
+            </div> */}
         </div>
     );
 };
