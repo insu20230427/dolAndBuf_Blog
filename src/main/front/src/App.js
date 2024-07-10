@@ -50,28 +50,11 @@ function AppRoutes() {
     }
 
     return (
-        <Layout>
-            <Routes>
-                <Route path="/" exact element={<Index />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/user" element={<User />} />
-                <Route path="/detail-post/:id" element={<DetailPost />} />
-                <Route path="/write" element={<WritePost />} />
-                <Route path="/update-post/:id" element={<UpdatePost />} />
-                <Route path="/search-post" element={<SearchPost />} />
-                <Route path="/posts/:categoryId" element={<CategoryPosts />} />
-                <Route path="/blog/:blogName" element={<UserBlog />} />
-                <Route path="/chat" element={<ChatApp />} />
-                <Route path="/room/:roomId/:chatRoomName" element={<Chat />} />
-                <Route path="/category-setting" element={<CategorySetting />} />
-                <Route path="/game-board" element={<GameBoard />} />
-            </Routes>
-        </Layout>
             <Layout>
                 <Routes>
                     <Route path="/" exact element={<Index/>}/>
                     <Route path="/signup" element={<Signup/>}/>
-                    <Route path="/login" element={<Login/>}/>
+                    {/* <Route path="/login" element={<Login/>}/> */}
                     <Route path="/user" element={<User/>}/>
                     <Route path="/detail-post/:id" element={<DetailPost/>}/>
                     <Route path="/write" element={<WritePost/>}/>
@@ -93,8 +76,6 @@ function AppRoutes() {
                         </Route>
                 </Routes>
             </Layout>
-            </BlogProvider>
-        </BrowserRouter>
     );
 }
 

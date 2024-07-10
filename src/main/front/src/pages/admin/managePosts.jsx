@@ -12,6 +12,8 @@ const ManagePosts = () => {
     const [searchType, setSearchType] = useState('title');
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
+    const [selectedPosts, setSelectedPosts] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
     const navigate = useNavigate();
     const validToken = Cookies.get('Authorization');
 
@@ -60,6 +62,35 @@ const ManagePosts = () => {
         }
     };
 
+    const handleBulkChange = async (action) => {
+        try {
+            if (action === 'delete') {
+                await Promise.all(selectedPosts.map(postId => axios.delete(`http://localhost:8080/api/posts/${postId}`, {
+                    headers: {
+                        'Authorization': Cookies.get('Authorization')
+                    }
+                })));
+                Swal.fire({
+                    icon: 'success',
+                    text: '선택된 게시글 삭제 성공.'
+                }).then(() => {
+                    setPosts(posts.filter(post => !selectedPosts.includes(post.id)));
+                    setSelectedPosts([]);
+                    setSelectAll(false);
+                });
+            } else {
+                // 공개/비공개 처리 로직 추가
+                // 예시: axios.patch 또는 axios.put을 사용하여 상태 변경 요청 보내기
+            }
+        } catch (error) {
+            console.error('선택된 게시글 처리 실패:', error);
+            await Swal.fire({
+                icon: 'error',
+                text: '선택된 게시글 처리 실패.'
+            });
+        }
+    };
+
     const handleSearch = () => {
         // 검색 기능 구현
     };
@@ -68,28 +99,53 @@ const ManagePosts = () => {
         setCurrentPage(activePage - 1);
     };
 
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedPosts(posts.map(post => post.id));
+        } else {
+            setSelectedPosts([]);
+        }
+        setSelectAll(e.target.checked);
+    };
+
+    const handleSelectPost = (postId) => {
+        const updatedSelectedPosts = selectedPosts.includes(postId)
+            ? selectedPosts.filter(id => id !== postId)
+            : [...selectedPosts, postId];
+
+        setSelectedPosts(updatedSelectedPosts);
+        setSelectAll(updatedSelectedPosts.length === posts.length);
+    };
+
     return (
         <div className={styles.managePosts}>
-            <h3 className={styles.title}>
+            <h2 className={styles.title}>
                 <span>글 관리 <span className={styles.count}>{posts.length}</span></span>
                 <Link to="/write" className={styles.writeLink}>
                     글 쓰기 <Icon name="write" />
                 </Link>
-            </h3>
+            </h2>
             <div className={styles.searchContainer}>
                 <div className={styles.checkboxContainer}>
-                    <Input type="checkbox" id="selectAll" className={styles.checkbox} />
-                    <label htmlFor="selectAll" className={styles.checkboxLabel}>선택 됨</label>
+                    <Input type="checkbox" id="selectAll" className={styles.checkbox} onChange={handleSelectAll} checked={selectAll} />
+                    <label htmlFor="selectAll" className={styles.checkboxLabel}>{selectAll ? '모두 선택됨' : '선택 됨'}</label>
                 </div>
                 <div className={styles.statusChangeContainer}>
-                    <Button type="button" className={styles.changeButton} disabled>
-                        변경 <Icon name="caret down" />
-                    </Button>
-                    <div className={styles.statusOptions}>
-                        <Button type="button" className={styles.statusOption}>공개</Button>
-                        <Button type="button" className={styles.statusOption}>비공개</Button>
-                        <Button type="button" className={styles.statusOption}>삭제</Button>
-                    </div>
+                    <Dropdown
+                        text='변경'
+                        icon='caret down'
+                        floating
+                        labeled
+                        button
+                        className='icon'
+                        disabled={selectedPosts.length === 0}
+                    >
+                        <Dropdown.Menu>
+                            <Dropdown.Item text='공개' onClick={() => handleBulkChange('public')} />
+                            <Dropdown.Item text='비공개' onClick={() => handleBulkChange('private')} />
+                            <Dropdown.Item text='삭제' onClick={() => handleBulkChange('delete')} />
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </div>
                 <form className={styles.searchForm}>
                     <Dropdown
@@ -102,7 +158,7 @@ const ManagePosts = () => {
                         ]}
                         onChange={(e, { value }) => setSearchType(value)}
                         defaultValue='title'
-                        text='제목'
+                        text={searchType === 'title' ? '제목' : searchType === 'content' ? '내용' : '제목+내용'}
                     />
                     <Input
                         type="text"
@@ -117,19 +173,27 @@ const ManagePosts = () => {
                 </form>
             </div>
             <div className={styles.postsList}>
-                {posts.length > 0 ? (
+                {posts && posts.length > 0 ? (
                     posts.map(post => (
                         <div className={styles.postItem} key={post.id}>
-                            <Input type="checkbox" className={styles.postCheckbox} />
+                            <Input
+                                type="checkbox"
+                                className={styles.checkbox}
+                                checked={selectedPosts.includes(post.id)}
+                                onChange={() => handleSelectPost(post.id)}
+                            />
                             <div className={styles.postContent}>
                                 <strong className={styles.postTitle}>
                                     <a href={`/detail-post/${post.id}`}>{post.title}</a>
                                 </strong>
                                 <div className={styles.postMeta}>
                                     <span className={styles.postCategory}>{post.category.name}</span>
-                                    <span className={styles.postAuthor}>{post.user.nickname}</span>
+                                    <span className={styles.postSeparator}>ㆍ</span>
+                                    <span className={styles.postAuthor}>{post.user.nickname}({post.user.username})</span>
+                                    <span className={styles.postSeparator}>ㆍ</span>
                                     <span className={styles.postDate}>{new Date(post.modifyDate).toLocaleString()}</span>
-                                    {post.replyList && post.replyList.length > 0 ? (<span className={styles.postComments}>댓글 {post.replyList.length}</span>) : (<></>)}
+                                    {post.replyList && post.replyList.length > 0 ?
+                                        (<><span className={styles.postSeparator}>ㆍ</span><span className={styles.postComments}>댓글 {post.replyList.length}</span></>) : (<></>)}
                                 </div>
                             </div>
                             <div className={styles.postActions}>
