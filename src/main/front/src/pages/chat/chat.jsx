@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
-import { ChatContainer, MainContainer, Message, MessageInput, MessageList } from '@chatscope/chat-ui-kit-react';
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -8,9 +7,22 @@ import { Link } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import 'semantic-ui-css/semantic.min.css';
 import './chat.css';
-import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
+import { Button, Divider, Icon } from 'semantic-ui-react';
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import 'dayjs/locale/ko';  // 한국어 로케일 추가
 
-function Chat({ roomId, chatRoomName, setShowChat }) {
+dayjs.extend(localizedFormat);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
+
+dayjs.locale('ko');  // 한국어 로케일 설정
+
+function Chat({ roomId, chatRoomName, setVisible, setButtonVisible }) {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [roomName, setRoomName] = useState(chatRoomName);
@@ -20,6 +32,8 @@ function Chat({ roomId, chatRoomName, setShowChat }) {
     const [avatar, setAvatar] = useState('');
     const [scrollPosition, setScrollPosition] = useState(0);
     const [chatPosition, setChatPosition] = useState({ x: 0, y: 0 });
+    const [darkMode, setDarkMode] = useState(false);
+    const messageListRef = useRef(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -105,7 +119,8 @@ function Chat({ roomId, chatRoomName, setShowChat }) {
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === 'Escape') {
-                setShowChat(false);
+                setVisible(null);
+                setButtonVisible(true);
             }
         };
 
@@ -114,7 +129,7 @@ function Chat({ roomId, chatRoomName, setShowChat }) {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [setShowChat]);
+    }, [setVisible, setButtonVisible]);
 
     const fetchUser = async () => {
         try {
@@ -165,90 +180,118 @@ function Chat({ roomId, chatRoomName, setShowChat }) {
                 body: JSON.stringify(messageData)
             });
             setMessage('');
+            scrollToBottom();
         }
     }
 
-    const updateRoomName = () => {
-        const newRoomName = prompt('새로운 채팅방 이름을 입력하세요:', chatRoomName);
-        if (newRoomName) {
-            setRoomName(newRoomName);
-            axios.put(`http://localhost:8080/api/chatRooms/${roomId}`, {
-                newChatRoomName: newRoomName
-            }, {
-                headers: {
-                    'Authorization': Cookies.get('Authorization')
-                }
-            }).then(response => {
-                console.log('채팅방 이름 수정 완료:', response.data);
-            }).catch(error => {
-                console.error('채팅방 이름 수정 실패:', error);
-            });
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
         }
+    }
+
+    const scrollToBottom = () => {
+        if (messageListRef.current) {
+            messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+        }
+    }
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    const formatDateHeader = (date) => {
+        return <Divider horizontal>{dayjs(date).locale('ko').format('YYYY년 M월 D일 dddd')}</Divider>;
+    };
+
+    const renderMessages = () => {
+        const groupedMessages = messages.reduce((acc, message) => {
+            const messageDate = dayjs(message.createdAt, 'YY-MM-DD HH:mm').tz('Asia/Seoul').format('YYYY-MM-DD');
+            if (!acc[messageDate]) {
+                acc[messageDate] = [];
+            }
+            acc[messageDate].push(message);
+            return acc;
+        }, {});
+
+        return Object.keys(groupedMessages).map((date, index) => (
+            <div key={index}>
+                <div className="date-header">{formatDateHeader(date)}</div>
+                {groupedMessages[date].map((msg, msgIndex) => {
+                    const isOutgoing = msg.sender === nickname;
+                    return (
+                        <div key={msgIndex}
+                            className={`message ${isOutgoing ? 'message-outgoing' : 'message-incoming'}`}
+                        >
+                            {!isOutgoing && (
+                                <Link to={`/blog/${msg.username}`}>
+                                    <img src={process.env.PUBLIC_URL + '/images/' + msg.sender + '.jpg'} alt="Avatar"
+                                        className="avatar" />
+                                </Link>
+                            )}
+                            <div className="message-sender">{msg.sender}</div>
+                            <div className="message-body">
+                                <div className="message-content">
+                                    <div className="message-text">{msg.message}</div>
+                                    <div className="message-time">{dayjs(msg.createdAt, 'YY-MM-DD HH:mm').tz('Asia/Seoul').format('HH:mm')}</div>
+                                </div>
+                            </div>
+
+                            {isOutgoing && (
+                                <Link to={`/blog/${msg.username}`}>
+                                    <img src={avatar} alt="Avatar"
+                                        className="avatar" />
+                                </Link>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        ));
     };
 
     return (
         <Draggable
+            handle=".chat-header"
             position={chatPosition}
             onStop={(e, data) => setChatPosition({ x: data.x, y: data.y })}
         >
-            <div className="chat-container">
+            <div className={`chat-container ${darkMode ? 'dark-mode' : ''}`}>
                 <div className="chat-header">
-                    <h2>{roomName}</h2>
+                    <h2 className="roomName">{roomName}</h2>
+                    <button className="close-button" onClick={() => { setVisible(null); setButtonVisible(true); }}>✖</button>
                 </div>
-                <MainContainer>
-                    <ChatContainer>
-                        <MessageList>
-                            {Array.isArray(messages) && messages.map((msg, index) => {
-                                const isOutgoing = msg.sender === nickname;
-
-                                return (
-                                    <div key={index}
-                                         style={{
-                                             display: 'flex',
-                                             alignItems: 'center',
-                                             marginTop: '10px',
-                                             marginBottom: '10px',
-                                             justifyContent: isOutgoing ? 'flex-end' : 'flex-start'
-                                         }}
-                                    >
-                                        {!isOutgoing && (
-                                            <Link to={`/blog/${msg.username}`}>
-                                                <img src={process.env.PUBLIC_URL + '/images/' + msg.sender + '.jpg'} alt="Avatar"
-                                                     style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '5px' }} />
-                                            </Link>
-                                        )}
-                                        <Message
-                                            model={{
-                                                message: msg.message,
-                                                sentTime: msg.sentTime,
-                                                sender: msg.sender,
-                                                direction: isOutgoing ? "outgoing" : "incoming"
-                                            }}
-                                            className={isOutgoing ? "message-outgoing" : "message-incoming"}
-                                        />
-                                        {isOutgoing && (
-                                            <Link to={`/blog/${msg.username}`}>
-                                                <img src={avatar} alt="Avatar"
-                                                     style={{ width: '30px', height: '30px', borderRadius: '50%', marginLeft: '5px' }} />
-                                            </Link>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </MessageList>
-                        <MessageInput
+                <div className="dark-mode-toggle">
+                    <Button className="dark-mode-button"
+                        style={{
+                            backgroundColor: 'transparent',
+                            marginRight: '30px',
+                            marginTop: '19px',
+                        }}
+                        icon
+                        onClick={() => setDarkMode(!darkMode)}>
+                        <Icon name={darkMode ? 'sun' : 'moon'} />
+                    </Button>
+                </div>
+                <div className="chat-content">
+                    <div className="message-list" ref={messageListRef}>
+                        {renderMessages()}
+                    </div>
+                    <div className="message-input-container">
+                        <input
+                            type="text"
                             placeholder="메시지 입력..."
                             value={message}
-                            onChange={(val) => setMessage(val)}
-                            attachButton={false}
-                            onSend={sendMessage}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            className="message-input"
                         />
-                        <button onClick={sendMessage}>✉️</button>
-                    </ChatContainer>
-                </MainContainer>
+                        <Button icon className="send-button" onClick={sendMessage}><Icon name='send' /></Button>
+                    </div>
+                </div>
             </div>
         </Draggable>
     );
-};
+}
 
 export default Chat;

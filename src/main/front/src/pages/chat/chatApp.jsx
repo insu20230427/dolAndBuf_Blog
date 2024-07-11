@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Draggable from 'react-draggable';
-import { Button, Icon, List, Image } from 'semantic-ui-react';
-import 'semantic-ui-css/semantic.min.css';
-import './ChatApp.css';
-import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import React, { useEffect, useRef, useState } from 'react';
+import Draggable from 'react-draggable';
+import 'semantic-ui-css/semantic.min.css';
+import { Button, Header, Icon, Image, List, Divider } from 'semantic-ui-react';
+import SockJS from 'sockjs-client';
 import Chat from './chat';
+import './ChatApp.css';
 
 const ChatApp = () => {
     const [visible, setVisible] = useState(false);
@@ -154,8 +154,10 @@ const ChatApp = () => {
                 <Button
                     id="chatButton"
                     size="huge"
+                    icon
                     style={{
                         backgroundColor: 'transparent',
+                        color: 'black',
                         right: '30px',
                         zIndex: 1000,
                         borderRadius: '50%',
@@ -181,8 +183,10 @@ const ChatApp = () => {
                 >
                     <div className="chatList-container">
                         <div className="chatList-header">
-                            <h3>채팅방</h3>
+                            <Header as='h3'>1:1 대화</Header>
+                            <button className='chatList-close-button' onClick={() => { setVisible(false); setButtonVisible(true); }}>✖</button>                               
                         </div>
+                        <Divider className="custom-divider" />
                         {rooms && rooms.length > 0 && rooms.map((room, index) => {
                             room.users.forEach(user => console.log(`Room ID: ${room.chatRoomId}, Nickname: ${user.nickname}`));
                             console.log('Current Nickname: ' + currentNickname);
@@ -194,7 +198,8 @@ const ChatApp = () => {
                                     <List.Item onClick={() => handleSelectRoom(room)}>
                                         <Image avatar src={imagePath} />
                                         <List.Content>
-                                            <List.Description>{room.chatRoomName}</List.Description>
+                                            {/* <List.Header>{room.chatRoomName}</List.Header> */}
+                                            <List.Description>대화 상대: {firstOtherUser ? firstOtherUser.nickname : '알 수 없음'}</List.Description>
                                         </List.Content>
                                     </List.Item>
                                 </List>

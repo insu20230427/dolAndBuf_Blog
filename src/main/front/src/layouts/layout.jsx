@@ -1,24 +1,17 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
+import Cookies from 'js-cookie';
+import React, { useEffect, useState } from 'react';
+import { Sidebar as SemanticSidebar } from 'semantic-ui-react';
 import Footer from '../components/footer';
 import Header from '../components/header';
 import Sidebar from '../components/sidebar';
 import { useBlog } from '../contexts/blogContext';
-import { Button, Input, Sidebar as SemanticSidebar } from 'semantic-ui-react';
-import './layout.css';
-import Cookies from 'js-cookie';
-import YouTubePlayer from 'youtube-player';
-import Chat from '../pages/chat/chat';
 import ChatApp from '../pages/chat/chatApp';
+import './layout.css';
 
 const Layout = ({ children }) => {
     const [userId, setUserId] = useState(null);
     const [sidebarVisible, setSidebarVisible] = useState(false);
-    const [playlistInput, setPlaylistInput] = useState('');
-    const [currentPlaylistId, setCurrentPlaylistId] = useState('');
-    const playerRef = useRef(null);
-    const iframeContainerRef = useRef(null);
-    const [volume, setVolume] = useState(50);
     const [bannerInfo, setBannerInfo] = useState({ bannerImageUrl: '', bannerDescription: '', username: '' });
     const [bannerInfoByBlogName, setBannerInfoByBlogName] = useState({ bannerImageUrl: '', bannerDescription: '', username: '' });
     const { blogName } = useBlog();
@@ -107,8 +100,10 @@ const Layout = ({ children }) => {
                         </div>
                     )}
                     <main className="main-content">
-                    <ChatApp />
-                        {children}
+                    {Cookies.get('Authorization') && 
+                        <ChatApp />
+                    }
+                    {children}
                     </main>
                 </SemanticSidebar.Pusher>
             </SemanticSidebar.Pushable>

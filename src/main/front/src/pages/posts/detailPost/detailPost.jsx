@@ -18,7 +18,7 @@ const DetailPost = () => {
     const [showChat, setShowChat] = useState(false);
     const [chatRoomId, setChatRoomId] = useState(null);
     const [chatRoomName, setChatRoomName] = useState('');
-
+    const storedToken = Cookies.get('Authorization');
     useEffect(() => {
         const storedToken = Cookies.get('Authorization');
         if (storedToken) {
