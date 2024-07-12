@@ -1,0 +1,56 @@
+.custom-navbar {
+    background-color: transparent !important;
+    font-weight: bold !important;
+    color: black !important;
+    height: 75px; /* 헤더의 세로 크기 조정 */
+    display: flex;
+    align-items: center;
+}
+
+#searchButton {
+    color: black !important;
+    font-weight: bold;
+}
+
+/* Nav.Link hover underline effect - 옅은 노란색 또는 무지개색 */
+.nav-link {
+    position: relative;
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    padding: 0; /* Padding을 제거해서 텍스트에만 밑줄 적용 */
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 50%;
+    background-color: #f7e600; /* 옅은 노란색 */
+    /* background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet); 무지개색 */
+    transition: width 0.3s ease-out, left 0.3s ease-out;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover {
+    color: #f7e600; /* 텍스트 색상도 동일하게 변경 */
+    /* color: #000; 무지개색 사용시 텍스트 색상은 유지 */
+}
+
+.nav-link:hover::after {
+    width: 100%;
+    left: 0;
+    transform: translateX(0);
+}
+
+/* Exclude specific Nav.Link from underline effect */
+.no-underline {
+    position: static; /* 위치 속성을 기본으로 설정하여 ::after 가 영향을 받지 않도록 함 */
+}
+
+.no-underline::after {
+    content: none;
+}

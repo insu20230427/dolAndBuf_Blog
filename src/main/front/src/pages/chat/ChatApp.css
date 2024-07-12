@@ -1,0 +1,95 @@
+.chatList-container {
+    right: 30px;
+    width: 350px;
+    height: 380px;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    border-radius: 15px;
+    overflow-y: auto;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    position: fixed;
+    transition: all 0.4s ease-in-out;
+}
+
+.chatList-container:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    /* 호버 시 그림자 효과 강화 */
+}
+
+.chatList-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: -20px;
+}
+
+.chatList-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.chatList-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+.chatList-header button:hover {
+    color: #e74c3c;
+    /* 호버 시 색상 변경 */
+}
+
+.chatList-container .list .item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 15px 0 !important;
+    /* border-bottom: 1px solid #f1f1f1; */
+    transition: background 0.3s ease-in-out;
+}
+
+.chatList-container .list .item:hover {
+    background: #f9f9f9;
+    /* 호버 시 배경색 변경 */
+}
+
+.chatList-container .list .item .content .header {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.chatList-container .list .item .content .description {
+    color: grey;
+    font-size: 1em;
+}
+
+.chatList-container .list .item .content .extra {
+    color: lightgrey;
+    font-size: small;
+    margin-left: auto;
+}
+
+.chatList-close-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s;
+    padding: 0%;
+    margin-bottom: 30px;
+}
+
+#chatButton {
+    transition: transform 0.3s ease-in-out;
+}
+
+#chatButton:hover {
+    transform: scale(1.1);
+    /* 호버 시 버튼 확대 */
+}

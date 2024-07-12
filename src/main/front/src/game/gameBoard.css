@@ -1,0 +1,10 @@
+.gameBoard {
+    text-align: center;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 한 행에 4개의 카드를 배치합니다 */
+    gap: 20px; /* 카드 사이의 간격을 넓힙니다 */
+    margin-top: 20px;
+}

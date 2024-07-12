@@ -1,0 +1,11 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  script:
+    - git remote add github https://${GITHUB_TOKEN}@github.com/insu20230427/dolAndBuf_Blog.git
+    - git push github --all
+    - git push github --tags
+  only:
+    - branches  # 모든 브랜치에 대해 실행

@@ -1,0 +1,60 @@
+.admin-sidebar {
+    width: 250px;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #ecf0f1;
+    height: 87vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    border-right: 1px solid #ddd;
+    border-radius: 15px; /* 둥근 모서리 */
+    margin: 10px; /* 사이드바와 페이지 사이의 여백 */
+    overflow: hidden; /* 둥근 모서리를 위한 설정 */
+}
+
+.admin-sidebar-header {
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-bottom: 1px solid #ddd;
+    border-top-left-radius: 15px; /* 둥근 모서리 */
+    border-top-right-radius: 15px; /* 둥근 모서리 */
+}
+
+.admin-home-link {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    color: #ecf0f1;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.admin-sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+}
+
+.admin-sidebar ul li {
+    width: 100%;
+}
+
+.admin-sidebar ul li a {
+    color: #ecf0f1;
+    text-decoration: none;
+    display: block;
+    padding: 15px;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 8px; /* 둥근 모서리 */
+    margin: 5px; /* 항목 사이의 여백 */
+}
+
+.admin-sidebar ul li a:hover {
+    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    color: #ffffff;
+}
