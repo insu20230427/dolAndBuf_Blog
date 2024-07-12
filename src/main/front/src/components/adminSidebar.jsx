@@ -5,12 +5,11 @@ import './adminSidebar.css';
 const AdminSidebar = () => {
     return (
         <nav className="admin-sidebar">
-            <div className="admin-sidebar-header">
-                <h2>관리자 메뉴</h2>
-            </div>
             <ul>
                 <li>
-                    <Link to="/admin">블로그 관리 홈</Link>
+                    <div className="admin-sidebar-header"> 
+                        <Link to="/admin" className="admin-home-link">블로그 관리 홈</Link>
+                    </div>
                 </li>
                 <li>
                     <Link to="/admin/manage-posts">게시글 관리</Link>

@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import React, { Component } from 'react';
 import { Accordion, AccordionContent, AccordionTitle, Button, Checkbox, Form, Icon, Menu, MenuItem } from 'semantic-ui-react';
 import Swal from "sweetalert2";
-
+import styles from './categorySetting.module.css';
 class CategorySetting extends Component {
     state = {
         category: {},
@@ -222,7 +222,7 @@ class CategorySetting extends Component {
         const dropdownOptions = this.processDropdownData(categoryData);
 
         return (
-            <div className="container" style={{height: 'auto', margin: '100px auto', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <div className="container">
                 <Accordion as={Menu} vertical>
                     <MenuItem style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <b>카테고리</b>
