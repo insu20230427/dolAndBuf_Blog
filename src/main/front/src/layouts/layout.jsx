@@ -1,21 +1,19 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useEffect, useRef, useState } from 'react';
-import { Sidebar as SemanticSidebar } from 'semantic-ui-react';
 import Footer from '../components/footer';
 import Header from '../components/header';
 import Sidebar from '../components/sidebar';
 import { useBlog } from '../contexts/blogContext';
 import { Button, Input, Sidebar as SemanticSidebar } from 'semantic-ui-react';
 import './layout.css';
-import Cookies from 'js-cookie';
 import YouTubePlayer from 'youtube-player';
 import Chat from '../pages/chat/chat';
 import ChatApp from '../pages/chat/chatApp';
 
 const Layout = ({ children }) => {
     const [userId, setUserId] = useState(null);
-    const [sidebarVisible, setSidebarVisible] = useState(false);
+    const [blogSidebarVisible, setBlogSidebarVisible] = useState(false);
     const [playlistInput, setPlaylistInput] = useState('');
     const [currentPlaylistId, setCurrentPlaylistId] = useState('');
     const playerRef = useRef(null);
@@ -101,8 +99,8 @@ const Layout = ({ children }) => {
         }
     }, [currentPlaylistId]);
 
-    const handleSidebarToggle = () => {
-        setSidebarVisible(!sidebarVisible);
+    const handleBlogSidebarToggle = () => {
+        setBlogSidebarVisible(!blogSidebarVisible);
     };
 
     const handlePlaylistChange = (e) => {
@@ -177,9 +175,9 @@ const Layout = ({ children }) => {
 
     return (
         <div className="layout">
-            <Header isSidebarVisible={sidebarVisible} />
+            <Header onBlogSidebarToggle={handleBlogSidebarToggle} isBlogSidebarVisible={blogSidebarVisible} />
             <SemanticSidebar.Pushable>
-                <Sidebar userId={userId} visible={sidebarVisible} onClose={() => setSidebarVisible(false)} />
+                <Sidebar userId={userId} visible={blogSidebarVisible} onClose={() => setBlogSidebarVisible(false)} />
                 <SemanticSidebar.Pusher>
                     {blogName === '' ? (
                         <div className="banner">
@@ -204,7 +202,6 @@ const Layout = ({ children }) => {
                         <ChatApp />
                     }
                     {children}
-                        {children}
                         <div className="toolbar">
                             <div className="player-controls">
                                 <div className="input-container">
