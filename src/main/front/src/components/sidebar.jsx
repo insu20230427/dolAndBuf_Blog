@@ -140,13 +140,13 @@ const Sidebar = ({ userId, visible, onClose }) => {
     return (
         <div ref={sidebarRef} className={`sidebar ${visible ? 'visible' : ''}`}>
             {renderCategories(categories)}
-            {isOwner && (
+            {/* {isOwner && (
                 <div className="menu-item">
                     <Link to={'/category-setting'} className="menu-link" style={{ color: '#ccc' }}>
                         <Icon name='setting' /> 설정
                     </Link>
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

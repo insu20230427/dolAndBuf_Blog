@@ -1,5 +1,6 @@
 package com.insu.blog.repository;
 
+import com.insu.blog.dto.request.ReplyRequestDto;
 import com.insu.blog.entity.Reply;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,5 +19,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
     void mupdate(int replyId, String content);
 
     List<Reply> findByPostId(Integer postId);
-}
 
+    List<Reply> findAllByUserId(int userId);
+}

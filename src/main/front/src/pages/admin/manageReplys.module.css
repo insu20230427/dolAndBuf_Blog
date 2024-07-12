@@ -1,0 +1,108 @@
+.container {
+    padding: 20px;
+    padding-top: 50px;
+}
+.title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.statusChangeContainer {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox {
+    margin-right: 10px;
+}
+
+.checkboxLabel {
+    margin-right: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 8px;
+}
+
+.table th {
+    background-color: #f4f4f4;
+    text-align: left;
+}
+
+.button {
+    margin-right: 5px;
+}
+
+.replysInfo {
+    display: inline-block;
+    color: #7a7a7a;
+}
+
+.replysInfoSeparator {
+    margin: 0 5px;
+}
+
+.replyItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.replyItem:hover {
+    background-color: #f9f9f9;
+}
+
+.replyContent {
+    flex-grow: 1;
+}
+
+.replyActions {
+    display: none;
+    position: absolute;
+    right: 10px;
+}
+
+.replyItem:hover .replyActions {
+    display: flex;
+    gap: 10px;
+}
+
+.noReplys {
+    text-align: center;
+    color: #999;
+    font-size: 18px;
+}
+
+.replysInfoSeparator{
+    /* margin-left: 10px; */
+    color: #959595;
+}
+
+.button {
+    background-color: #2185d0;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+.button:hover {
+    background-color: #005bb5;
+}

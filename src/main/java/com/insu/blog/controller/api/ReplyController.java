@@ -23,7 +23,7 @@ public class ReplyController {
 
     // 댓글 조회
     @GetMapping("/replys/{postId}")
-    public ResponseEntity<ApiResponseDto> getReply(@PathVariable("postId") String postId){
+    public ResponseEntity<ApiResponseDto> getReply(@PathVariable("postId") String postId) {
         List<Reply> replies = replyService.getReply(postId);
         log.info("댓글 : {}", replies);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 조회 성공!").data(replies).build());
@@ -31,7 +31,7 @@ public class ReplyController {
 
     // 댓글 작성
     @PostMapping("/replys/{postId}")
-    public ResponseEntity<ApiResponseDto> writeReply(@RequestBody ReplyRequestDto replyRequestDto){
+    public ResponseEntity<ApiResponseDto> writeReply(@RequestBody ReplyRequestDto replyRequestDto) {
         log.info("reply : {}", replyRequestDto);
         replyService.writeReply(replyRequestDto);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("게시글 작성 성공!").build());
@@ -46,7 +46,8 @@ public class ReplyController {
 
     // 댓글 수정
     @PutMapping("/replys/{postId}/{replyId}")
-    public ResponseEntity<ApiResponseDto> updateReply(@PathVariable("replyId") int replyId, @RequestBody ReplyRequestDto replyRequestDto) {
+    public ResponseEntity<ApiResponseDto> updateReply(@PathVariable("replyId") int replyId,
+            @RequestBody ReplyRequestDto replyRequestDto) {
         replyService.updateReply(replyId, replyRequestDto);
         return ResponseEntity.ok().body(ApiResponseDto.builder().message("댓글 수정 성공!").build());
     }
@@ -54,7 +55,7 @@ public class ReplyController {
     // 댓글 좋아요 추가
     @PostMapping("/replys/likes/{replyId}")
     public ResponseEntity<ApiResponseDto> createPostLike(@PathVariable("replyId") int replyId,
-                                                         @AuthenticationPrincipal PrincipalDetails userDetails) {
+            @AuthenticationPrincipal PrincipalDetails userDetails) {
         replyService.createLikes(replyId, userDetails.getUser());
         return ResponseEntity.ok()
                 .body(ApiResponseDto.builder().message("좋아요 추가 성공!").data(userDetails.getUser().getId()).build());
@@ -63,7 +64,7 @@ public class ReplyController {
     // 댓글 좋아요 취소
     @DeleteMapping("/replys/likes/{replyId}")
     public ResponseEntity<ApiResponseDto> deletePostLike(@PathVariable("replyId") int replyId,
-                                                         @AuthenticationPrincipal PrincipalDetails userDetails) {
+            @AuthenticationPrincipal PrincipalDetails userDetails) {
         replyService.deleteLikes(replyId, userDetails.getUser());
         return ResponseEntity.ok()
                 .body(ApiResponseDto.builder().message("좋아요 삭제 성공!").data(userDetails.getUser().getId()).build());

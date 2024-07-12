@@ -9,7 +9,7 @@ import { useBlog } from '../contexts/blogContext';
 import './Header.css'; // 배너 스타일을 위한 CSS 파일 추가
 import BannerAddModal from './BannerAddModal';
 
-export default function Header({ onSidebarToggle, isSidebarVisible }) {
+export default function Header({ onBlogSidebarToggle, isSidebarVisible }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchType, setSearchType] = useState(localStorage.getItem('searchType') || '0'); // 로컬 스토리지에서 검색 타입을 가져옵니다.
     const [searchKeyword, setSearchKeyword] = useState(localStorage.getItem('searchKeyword') || '');
@@ -113,7 +113,7 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                 {blogName ? (
                     <Button icon style={{ backgroundColor: 'transparent' }} onClick={(e) => {
                         e.preventDefault();
-                        onSidebarToggle();
+                        onBlogSidebarToggle();
                     }}>
                         <Icon name={"bars"} style={{ color: 'black' }} />
                     </Button>
@@ -127,8 +127,25 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                     }}>
                         {isLoggedIn ? (
                             <>
-                                <Nav.Link as={Link} to="/user" className="no-underline">
-                                    {avatar && <img src={avatar} alt="Avatar" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />}
+                                {/* <Nav.Link as={Link} to="/user" className="no-underline">
+                                    {avatar && <img src={avatar} alt="Avatar" style={{ width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer'  }} />}
+                                </Nav.Link> */}
+                                <Nav.Link>
+                                    <Dropdown
+                                        trigger={
+                                            <img src={avatar} alt="Avatar"
+                                                style={{ width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer' }}
+                                            />
+                                        }
+                                        pointing="top"
+                                        icon={null}
+                                    >
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item text="정보 수정" icon="info" onClick={() => navigate('/user')} />
+                                            <Dropdown.Item text="블로그 관리" icon="adn" onClick={() => navigate('/admin')} />
+                                            <Dropdown.Item text="로그아웃" icon="power off" onClick={handleLogout} />
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </Nav.Link>
                                 {blogName !== '' ? (
                                     <Nav.Link as={Link} to="/" onClick={() => {
@@ -138,14 +155,11 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                                     <Nav.Link as={Link} to={`/blog/${username}`} style={{ color: 'black' }}>내블로그</Nav.Link>
                                 )}
                                 <Nav.Link as={Link} to="/write" style={{ color: 'black' }}>글쓰기</Nav.Link>
-                                <Nav.Link onClick={handleLogout} style={{ color: 'black' }}>로그아웃</Nav.Link>
-                                <Nav.Link as={Link} to="/game-board" style={{ color: 'black' }}>겜</Nav.Link>
-                                <>
+                                {/* <Nav.Link onClick={handleLogout} style={{ color: 'black' }}>로그아웃</Nav.Link>
+                                    <Nav.Link as={Link} to="/game-board" style={{ color: 'black' }}>겜</Nav.Link>
                                     <Nav.Link onClick={() => setShowModal(true)} style={{ cursor: 'pointer', color: 'black' }}>배너</Nav.Link>
-                                    {showModal && <BannerAddModal open={showModal} setOpen={setShowModal} />}
-                                </>
+                                    {showModal && <BannerAddModal open={showModal} setOpen={setShowModal} />} */}
 
-                                <Nav.Link as={Link} to="/category-setting" style={{ color: 'black' }}>카테고리</Nav.Link>
                             </>
                         ) : (
                             <>

@@ -3,7 +3,6 @@ import { BlogProvider } from './contexts/blogContext';
 import Layout from './layouts/layout';
 import UserBlog from './pages/blog/userBlog';
 import CategoryPosts from './pages/category/categoryPosts';
-import CategorySetting from './pages/category/categorySetting';
 import Chat from './pages/chat/chat';
 import ChatApp from './pages/chat/chatApp';
 import Index from './pages/index';
@@ -17,6 +16,12 @@ import User from './pages/user/user';
 import GameBoard from './game/GameBoard';
 import Header from './components/header';
 import Footer from './components/footer';
+import CategorySetting from './pages/admin/categorySetting';
+import AdminLayout from './layouts/adminLayout';
+import Dashboard from './pages/admin/dashboard';
+import BannerSetting from './pages/admin/bannerSetting';
+import ManagePosts from './pages/admin/managePosts';
+import ManageReplys from './pages/admin/manageReplys';
 import FindIdAndPasswordModal from './components/FindIdAndPasswordModal';
 
 function App() {
@@ -72,8 +77,15 @@ function AppRoutes() {
                 <Route path="/blog/:blogName" element={<UserBlog />} />
                 <Route path="/chat" element={<ChatApp />} />
                 <Route path="/room/:roomId/:chatRoomName" element={<Chat />} />
-                <Route path="/category-setting" element={<CategorySetting />} />
                 <Route path="/game-board" element={<GameBoard />} />
+
+                <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="manage-posts" element={<ManagePosts />} />
+                    <Route path="manage-replies" element={<ManageReplys />} />
+                    <Route path="category-setting" element={<CategorySetting />} />
+                    <Route path="banner-setting" element={<BannerSetting />} />
+                </Route>
             </Routes>
         </Layout>
     );

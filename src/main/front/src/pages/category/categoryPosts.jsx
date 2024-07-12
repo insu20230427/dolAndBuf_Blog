@@ -68,7 +68,7 @@ const CategoryPosts = () => {
     return (
         <div style={{ display: 'flex', position: 'relative' }}>
             <Container>
-                <Item.Group style={{ paddingTop: '110px', height: '87vh'}}>
+                <Item.Group style={{ paddingTop: '110px', minHeight: '87vh' }}>
                     {posts.map((post) => {
                         const { imgSrc, textContent } = getThumbnailAndText(post.content);
                         return (
