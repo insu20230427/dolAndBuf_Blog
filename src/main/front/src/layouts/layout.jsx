@@ -1,5 +1,7 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import React, { useEffect, useRef, useState } from 'react';
+import { Sidebar as SemanticSidebar } from 'semantic-ui-react';
 import Footer from '../components/footer';
 import Header from '../components/header';
 import Sidebar from '../components/sidebar';
@@ -198,7 +200,10 @@ const Layout = ({ children }) => {
                         </div>
                     )}
                     <main className="main-content">
+                    {Cookies.get('Authorization') &&
                         <ChatApp />
+                    }
+                    {children}
                         {children}
                         <div className="toolbar">
                             <div className="player-controls">

@@ -3,16 +3,22 @@ import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './FindIdAndPasswordModal.css';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button, Icon, Loader } from 'semantic-ui-react';
 
 export default function FindIdAndPasswordModal({ onClose }) {
     const [isRightPanelActive, setIsRightPanelActive] = useState(false);
-    const [email, setEmail] = useState('');
-    const [code, setCode] = useState('');
-    const [emailSent, setEmailSent] = useState(false);
-    const [codeVerified, setCodeVerified] = useState(false);
+    const [emailForId, setEmailForId] = useState('');
+    const [codeForId, setCodeForId] = useState('');
+    const [emailForPassword, setEmailForPassword] = useState('');
+    const [codeForPassword, setCodeForPassword] = useState('');
+    const [emailSentForId, setEmailSentForId] = useState(false);
+    const [emailSentForPassword, setEmailSentForPassword] = useState(false);
+    const [codeVerifiedForId, setCodeVerifiedForId] = useState(false);
+    const [codeVerifiedForPassword, setCodeVerifiedForPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleSendCode = async () => {
+    const handleSendCodeForId = async (email) => {
+        setLoading(true);
         try {
             await axios.post('http://localhost:8080/api/auth/send-mail/code', null, {
                 params: { email }
@@ -21,17 +27,20 @@ export default function FindIdAndPasswordModal({ onClose }) {
                 icon: 'success',
                 text: '인증코드가 전송됐습니다. 인증코드를 확인하신 후, 인증해주세요.'
             });
-            setEmailSent(true);
+            setEmailSentForId(true);
         } catch (error) {
             Swal.fire({
                 icon: 'error',
                 text: '인증코드를 전송 실패했습니다. 다시 시도해주세요.'
             });
             console.error('인증코드 전송 실패:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleVerifyCode = async () => {
+    const handleVerifyCodeForId = async (code) => {
+        setLoading(true);
         try {
             await axios.post('http://localhost:8080/api/auth/send-mail/code/verify', null, {
                 params: { code }
@@ -40,17 +49,64 @@ export default function FindIdAndPasswordModal({ onClose }) {
                 icon: 'success',
                 text: '인증이 완료되었습니다. 아이디를 찾으실려면 아래 링크를 클릭해주세요.'
             });
-            setCodeVerified(true);
+            setCodeVerifiedForId(true);
         } catch (error) {
             Swal.fire({
                 icon: 'error',
                 text: '인증이 실패했습니다. 다시 시도해주세요.'
             });
             console.error('인증 실패:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleSendUsername = async () => {
+    const handleSendCodeForPassword = async (email) => {
+        setLoading(true);
+        try {
+            await axios.post('http://localhost:8080/api/auth/send-mail/code', null, {
+                params: { email }
+            });
+            Swal.fire({
+                icon: 'success',
+                text: '인증코드가 전송됐습니다. 인증코드를 확인하신 후, 인증해주세요.'
+            });
+            setEmailSentForPassword(true);
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: '인증코드를 전송 실패했습니다. 다시 시도해주세요.'
+            });
+            console.error('인증코드 전송 실패:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyCodeForPassword = async (code) => {
+        setLoading(true);
+        try {
+            await axios.post('http://localhost:8080/api/auth/send-mail/code/verify', null, {
+                params: { code }
+            });
+            Swal.fire({
+                icon: 'success',
+                text: '인증이 완료되었습니다. 비밀번호를 재설정하려면 아래 링크를 클릭해주세요.'
+            });
+            setCodeVerifiedForPassword(true);
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                text: '인증이 실패했습니다. 다시 시도해주세요.'
+            });
+            console.error('인증 실패:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSendUsername = async (email) => {
+        setLoading(true);
         try {
             await axios.post('http://localhost:8080/api/auth/send-mail/username', null, {
                 params: { email }
@@ -65,10 +121,13 @@ export default function FindIdAndPasswordModal({ onClose }) {
                 text: '아이디 전송 실패했습니다. 다시 시도해주세요.'
             });
             console.error('아이디 전송 실패:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleSendTempPassword = async () => {
+    const handleSendTempPassword = async (email) => {
+        setLoading(true);
         try {
             await axios.post('http://localhost:8080/api/auth/send-mail/password', null, {
                 params: { email }
@@ -83,6 +142,8 @@ export default function FindIdAndPasswordModal({ onClose }) {
                 text: '임시 비밀번호 전송 실패했습니다. 다시 시도해주세요.'
             });
             console.error('임시 비밀번호 전송 실패:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -97,41 +158,48 @@ export default function FindIdAndPasswordModal({ onClose }) {
                             <input
                                 type="email"
                                 placeholder="인증코드를 받을 이메일을 입력해주세요."
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={emailSent}
+                                value={emailForId}
+                                onChange={(e) => setEmailForId(e.target.value)}
+                                disabled={emailSentForId}
                             />
                             <Button icon
-                                onClick={handleSendCode}
-                                disabled={emailSent}
+                                circular
+                                onClick={() => handleSendCodeForId(emailForId)}
+                                disabled={emailSentForId || loading}
+                                color='black'
                                 style={{
                                     marginLeft: '10px',
-                                    height: '44.98px'
                                 }}>
                                 <Icon name='send' />
                             </Button>
                         </div>
-                        {emailSent && (
+                        {loading && <Loader active inline='centered' />}
+                        {emailSentForId && (
                             <div className="form-group">
-                                <label>인증코드</label>
                                 <input
                                     type="text"
                                     placeholder="8자리 인증코드를 입력해주세요."
-                                    value={code}
-                                    onChange={(e) => setCode(e.target.value)}
-                                    disabled={codeVerified}
+                                    value={codeForId}
+                                    onChange={(e) => setCodeForId(e.target.value)}
+                                    disabled={codeVerifiedForId}
                                 />
-                                <button onClick={handleVerifyCode} disabled={codeVerified} className="btn btn-primary">
-                                    인증코드 확인
-                                </button>
+                                <Button icon
+                                    circular
+                                    onClick={() => handleVerifyCodeForId(codeForId)}
+                                    disabled={codeVerifiedForId || loading}
+                                    color='black'
+                                    style={{
+                                        marginLeft: '10px',
+                                    }}>
+                                    <Icon name='check' />
+                                </Button>
                             </div>
                         )}
-                        {codeVerified && (
+                        {codeVerifiedForId && (
                             <div className="message info">
-                                <strong>인증 완료</strong>
                                 <p>
                                     인증이 완료되면, {' '}
-                                    <span onClick={handleSendUsername} className="link">
+                                    <span onClick={() => handleSendUsername(emailForId)} className="link">
                                         여기
                                     </span>
                                     를 클릭하여 아이디를 이메일로 받으세요.
@@ -148,41 +216,48 @@ export default function FindIdAndPasswordModal({ onClose }) {
                             <input
                                 type="email"
                                 placeholder="인증코드를 받을 이메일을 입력해주세요."
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={emailSent}
+                                value={emailForPassword}
+                                onChange={(e) => setEmailForPassword(e.target.value)}
+                                disabled={emailSentForPassword}
                             />
-                                <Button icon
-                                onClick={handleSendCode}
-                                disabled={emailSent}
+                            <Button icon
+                                circular
+                                onClick={() => handleSendCodeForPassword(emailForPassword)}
+                                disabled={emailSentForPassword || loading}
+                                color='black'
                                 style={{
                                     marginLeft: '10px',
-                                    height: '44.98px'
                                 }}>
                                 <Icon name='send' />
                             </Button>
                         </div>
-                        {emailSent && (
+                        {loading && <Loader active inline='centered' />}
+                        {emailSentForPassword && (
                             <div className="form-group">
-                                <label>인증코드</label>
                                 <input
                                     type="text"
                                     placeholder="8자리 인증코드를 입력해주세요."
-                                    value={code}
-                                    onChange={(e) => setCode(e.target.value)}
-                                    disabled={codeVerified}
+                                    value={codeForPassword}
+                                    onChange={(e) => setCodeForPassword(e.target.value)}
+                                    disabled={codeVerifiedForPassword}
                                 />
-                                <button onClick={handleVerifyCode} disabled={codeVerified} className="btn btn-success">
-                                    인증코드 확인
-                                </button>
+                                <Button icon
+                                    circular
+                                    onClick={() => handleVerifyCodeForPassword(codeForPassword)}
+                                    disabled={codeVerifiedForPassword || loading}
+                                    color='black'
+                                    style={{
+                                        marginLeft: '10px',
+                                    }}>
+                                    <Icon name='check' />
+                                </Button>
                             </div>
                         )}
-                        {codeVerified && (
+                        {codeVerifiedForPassword && (
                             <div className="message info">
-                                <strong>인증 완료</strong>
                                 <p>
                                     인증이 완료되면, {' '}
-                                    <span onClick={handleSendTempPassword} className="link">
+                                    <span onClick={() => handleSendTempPassword(emailForPassword)} className="link">
                                         여기
                                     </span>
                                     를 클릭하여 임시 비밀번호를 이메일로 받으세요.
