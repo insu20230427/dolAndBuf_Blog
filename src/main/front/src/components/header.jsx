@@ -127,8 +127,25 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                     }}>
                         {isLoggedIn ? (
                             <>
-                                <Nav.Link as={Link} to="/user" className="no-underline">
-                                    {avatar && <img src={avatar} alt="Avatar" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />}
+                                {/* <Nav.Link as={Link} to="/user" className="no-underline">
+                                    {avatar && <img src={avatar} alt="Avatar" style={{ width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer'  }} />}
+                                </Nav.Link> */}
+                                <Nav.Link>
+                                    <Dropdown
+                                        trigger={
+                                            <img src={avatar} alt="Avatar"
+                                                style={{ width: '30px', height: '30px', borderRadius: '50%', cursor: 'pointer' }}
+                                            />
+                                        }
+                                        pointing="top"
+                                        icon={null}
+                                    >
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item text="정보 수정" icon="info" onClick={() => navigate('/user')}/>
+                                            <Dropdown.Item text="블로그 관리" icon="adn" onClick={() => navigate('/admin')}/>
+                                            <Dropdown.Item text="로그아웃" icon="power off" onClick={handleLogout}/>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </Nav.Link>
                                 {blogName !== '' ? (
                                     <Nav.Link as={Link} to="/" onClick={() => {
@@ -138,14 +155,14 @@ export default function Header({ onSidebarToggle, isSidebarVisible }) {
                                     <Nav.Link as={Link} to={`/blog/${username}`} style={{ color: 'black' }}>내블로그</Nav.Link>
                                 )}
                                 <Nav.Link as={Link} to="/write" style={{ color: 'black' }}>글쓰기</Nav.Link>
-                                <Nav.Link onClick={handleLogout} style={{ color: 'black' }}>로그아웃</Nav.Link>
+                                {/* <Nav.Link onClick={handleLogout} style={{ color: 'black' }}>로그아웃</Nav.Link> */}
                                 <Nav.Link as={Link} to="/game-board" style={{ color: 'black' }}>겜</Nav.Link>
                                 <>
                                     <Nav.Link onClick={() => setShowModal(true)} style={{ cursor: 'pointer', color: 'black' }}>배너</Nav.Link>
                                     {showModal && <BannerAddModal open={showModal} setOpen={setShowModal} />}
                                 </>
 
-                                <Nav.Link as={Link} to="/category-setting" style={{ color: 'black' }}>카테고리</Nav.Link>
+                                {/* <Nav.Link as={Link} to="/category-setting" style={{ color: 'black' }}>카테고리</Nav.Link> */}
                             </>
                         ) : (
                             <>

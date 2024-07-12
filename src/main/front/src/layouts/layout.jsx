@@ -198,7 +198,7 @@ const Layout = ({ children }) => {
                         </div>
                     )}
                     <main className="main-content">
-                    <ChatApp />
+                        <ChatApp />
                         {children}
                         <div className="toolbar">
                             <div className="player-controls">

@@ -54,7 +54,7 @@ const BannerSetting = () => {
     }, []);
 
     return (
-        <div>
+        <div style={{padding: '20px'}}>
             <h2>배너 설정</h2>
             <Form>
                 <Form.Field>
