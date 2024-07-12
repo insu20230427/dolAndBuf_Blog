@@ -165,7 +165,7 @@ const ManageReplys = () => {
 
     return (
         <div className={styles.container}>
-            <h2>댓글 관리</h2>
+            <h2 className={styles.title}>댓글 관리</h2>
             <table className={styles.table}>
                 <thead>
                     <tr>

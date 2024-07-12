@@ -18,7 +18,7 @@ const BannerSetting = () => {
             });
             const currentUrl = response.data.data.bannerImageUrl;
             const currentDescription = response.data.data.bannerDescription;
-            setCurrentBanner({ url : currentUrl , bannerDescription : currentDescription});
+            setCurrentBanner({ url: currentUrl, bannerDescription: currentDescription });
             setBannerUrl(response.data.data.url);
             setBannerDescription(response.data.data.bannerDescription);
         } catch (error) {
@@ -54,9 +54,12 @@ const BannerSetting = () => {
     }, []);
 
     return (
-        <div style={{padding: '20px'}}>
-            <h2>배너 설정</h2>
-            <Form>
+        <div style={{ padding: '20px', paddingTop: '50px' }}>
+            <h2 style={{
+                display: 'flex', fontSize: '28px',
+                fontWeight: 'bold'
+            }}>배너 관리</h2>
+            <Form style={{ width: '100%' }}>
                 <Form.Field>
                     <label>배너 URL</label>
                     <input

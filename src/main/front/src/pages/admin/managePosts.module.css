@@ -6,18 +6,28 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 24px;
     margin-bottom: 20px;
 }
-
+.title span {
+    font-size: 28px;
+    font-weight: bold;
+}
 .count {
     margin-left: 10px;
     color: #999;
 }
 
 .writeLink {
-    display: flex;
-    align-items: center;
+    display: inline-block;
+    width: 120px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #E0E1E2;
+    border-radius: 8px;
+    text-align: center;
+    
 }
 
 .searchContainer {
@@ -39,16 +49,17 @@
 
 .searchForm {
     display: flex;
+    flex-direction: row;
     align-items: center;
 }
 
 .searchDropdown {
-    margin-right: 10px;
+    /* margin-right: 10px; */
 }
 
 .searchInput {
     width: 300px;
-    margin-right: 10px;
+    /* margin-right: 10px; */
 }
 
 .searchButton {
@@ -57,7 +68,7 @@
 }
 
 .statusChangeContainer {
-    position: relative;
+    /* position: relative; */
 }
 
 .changeButton {

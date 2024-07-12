@@ -222,7 +222,8 @@ class CategorySetting extends Component {
         const dropdownOptions = this.processDropdownData(categoryData);
 
         return (
-            <div className="container">
+            <div className={styles.container}>
+                <h2 className={styles.title}>카테고리 관리</h2>
                 <Accordion as={Menu} vertical>
                     <MenuItem style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <b>카테고리</b>

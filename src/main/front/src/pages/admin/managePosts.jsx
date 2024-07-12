@@ -120,7 +120,7 @@ const ManagePosts = () => {
     return (
         <div className={styles.managePosts}>
             <h2 className={styles.title}>
-                <span>글 관리 <span className={styles.count}>{posts.length}</span></span>
+                <span>글 관리 {posts ? <span className={styles.count}>{posts.length}</span> : (<></>)}</span>
                 <Link to="/write" className={styles.writeLink}>
                     글 쓰기 <Icon name="write" />
                 </Link>
@@ -147,7 +147,7 @@ const ManagePosts = () => {
                         </Dropdown.Menu>
                     </Dropdown>
                 </div>
-                <form className={styles.searchForm}>
+                <form className={styles.searchForm} style={{padding:0}}>
                     <Dropdown
                         button
                         className={styles.searchDropdown}
